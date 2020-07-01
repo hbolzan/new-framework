@@ -14,6 +14,9 @@
         ]
     },
     "dependencies": {
+        "ag-grid-community": "^23.2.1",
+        "lodash": "^4.17.15",
+        "mustache": "^4.0.1",
         "uikit": "^3.5.4"
     },
     "devDependencies": {
