@@ -1,13 +1,17 @@
-import UIkit from "uikit";
-import Icons from "uikit/dist/js/uikit-icons";
 import { singleButtonHtml } from "./button_templates.js";
-import { htmlToElement } from "../../common/render.js";
+import { htmlToElement, addChildren } from "../../common/dom.js";
 
-UIkit.use(Icons);
+function singleButton(document, attrs) {
+    // ["button", {class: ["a", "b", "c"], "uk-icon": "trash", disabled}]
+    return htmlToElement(document, singleButtonTemplate(attrs));
+}
 
-// UIkit.notification("I am a great example!!");
+function buttonGroup(document, buttons, attrs) {
+    return addChildren(htmlToElement(document, buttonGroupTemplate(attrs)), buttons);
+}
 
-const singleButton = (document, label, classes) => htmlToElement(document, singleButtonHtml(label, classes));
+function toolBar(document, groups) {
+    return addChildren(htmlToElement(document, toolBarTemplate()), groups);
+}
 
-export { singleButton };
-
+export { singleButton, buttonGroup, toolBar };
