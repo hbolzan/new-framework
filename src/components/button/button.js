@@ -1,17 +1,45 @@
-import { singleButtonHtml } from "./button_templates.js";
-import { htmlToElement, addChildren } from "../../common/dom.js";
+import _ from "lodash";
 
-function singleButton(document, attrs) {
-    // ["button", {class: ["a", "b", "c"], "uk-icon": "trash", disabled}]
-    return htmlToElement(document, singleButtonTemplate(attrs));
+const buttonTypes = {
+    default: "uk-button-default",
+    primary: "uk-button-primary",
+    secondary: "uk-button-secondary",
+    danger: "uk-button-danger",
+    text: "uk-button-text",
+    link: "uk-button-link"
+};
+
+function buttonClasses(params = {}) {
+    const attrsClass = _.get(params, "attrs.class");
+    return ["uk-button", buttonTypes[params.type] || buttonTypes.default]
+        .concat(attrsClass ? attrsClass : []);
 }
 
-function buttonGroup(document, buttons, attrs) {
-    return addChildren(htmlToElement(document, buttonGroupTemplate(attrs)), buttons);
+function buttonAttrs(attrs, params = {}) {
+    return _.merge(attrs, _.pickBy(params.attrs, (v, k) => k != "class"));
 }
 
-function toolBar(document, groups) {
-    return addChildren(htmlToElement(document, toolBarTemplate()), groups);
+function singleButton(_params, ...children) {
+    let params = _params || {};
+    return ["button", buttonAttrs({ class: buttonClasses(params) }, params)]
+        .concat(params.label ? params.label : [])
+        .concat(children);
 }
 
-export { singleButton, buttonGroup, toolBar };
+function buttonGroup(align, ...children) {
+    const validAlignment = (a) => ["left", "right"].includes(a) ? a : "left";
+    return [
+        "div",
+        {
+            class: [`uk-align-${ validAlignment(align) }`],
+            style: {backgroundColor: "#f9f9f9", padding: "4px", margin: "2px" }
+        }
+    ]
+        .concat(children);
+}
+
+function toolBar(...children) {
+    return ["div", { style: { height: "67px" } }].concat(children);
+}
+
+export { buttonClasses, buttonAttrs, singleButton, buttonGroup, toolBar };
