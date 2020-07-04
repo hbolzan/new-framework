@@ -4,13 +4,43 @@ import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 import Icons from "uikit/dist/js/uikit-icons";
 import UIkit from "uikit";
 
-import { singleButton } from "./components/button/button.js";
+import { complexForm } from "./components/forms/complex.js";
+import { formInputField, form } from "./components/forms/form.js";
+import { htmlToElement } from "./common/dom.js";
+import { toHtml } from "./logic/hiccup.js";
 
 UIkit.use(Icons);
 
+let input = formInputField("ID", "1-6");
+let input2 = formInputField("CPF", "1-3");
 
-// document.querySelector("#app").append(singleButton(document, "Um Botão"));
-// document.querySelector("#app").append(singleButton(document, "Um Botão", ["uk-button-large"]));
+
+let div = ["div", { class: ["uk-grid-small", "uk-margin-top"], ukGrid: "uk-grid" },
+           ["div", { class: ["uk-width-1-6"], style: { height: "35px",  border: "solid 1px" } }],
+           ["div", { class: ["uk-width-expand"], style: { height: "35px",  border: "solid 1px" } }],
+           ["div", { class: ["uk-width-1-4"], style: { height: "35px",  border: "solid 1px" } }],
+           ["div", { class: ["uk-width-expand"], style: { height: "35px",  border: "solid 1px" } }],
+           ["div", { class: ["uk-width-expand"], style: { height: "35px",  border: "solid 1px" } }],
+           ["div", { class: ["uk-width-expand"], style: { height: "35px",  border: "solid 1px" } }],
+           ["div", { class: ["uk-width-expand"], style: { height: "35px",  border: "solid 1px" } }],
+           ["div", { class: ["uk-width-expand"], style: { height: "35px",  border: "solid 1px" } }],
+          ];
+
+document.querySelector("#app-body")
+    .append(htmlToElement(document, toHtml(div)));
+
+/*
+document.querySelector("#app-body")
+    .append(htmlToElement(document, toHtml(
+        complexForm(
+            "Cadastro de clientes",
+            form(input, input2)
+        )
+    )));
+
+*/
+
+/*
 
 import {Grid} from 'ag-grid-community';
 
@@ -36,3 +66,5 @@ var gridOptions = {
 var eGridDiv = document.querySelector('#grid-container');
 
 new Grid(eGridDiv, gridOptions);
+
+*/

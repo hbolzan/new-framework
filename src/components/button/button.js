@@ -39,7 +39,7 @@ function buttonGroup(align, ...children) {
 }
 
 function toolBar(...children) {
-    return ["div", { style: { height: "67px" } }].concat(children);
+    return ["div", { style: { height: "67px" } }, ...children];
 }
 
 export { buttonClasses, buttonAttrs, singleButton, buttonGroup, toolBar };
