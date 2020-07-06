@@ -1,30 +1,31 @@
 import { _ } from "lodash";
 
-const CONSTRAINTS = {
-    maxWidth: 90,
-    threshold: 65,
-    tolerance: 10
-};
-
 const WIDTH_STEPS = [7, 15, 18, 23, 30, 36, 45, 54, 60, 68, 72, 75, 999];
 
 const WIDTH_MAP = {
-    7: "expand",
-    15: "1-6",
-    18: "1-5",
-    23: "1-4",
-    30: "1-3",
-    36: "2-5",
-    45: "1-2",
-    54: "3-5",
-    60: "2-3",
-    68: "3-4",
-    72: "4-5",
-    75: "5-6",
-    80: "1-1"
+    7: "uk-width-expand",
+    15: "uk-width-1-6",
+    18: "uk-width-1-5",
+    23: "uk-width-1-4",
+    30: "uk-width-1-3",
+    36: "uk-width-2-5",
+    45: "uk-width-1-2",
+    54: "uk-width-3-5",
+    60: "uk-width-2-3",
+    68: "uk-width-3-4",
+    72: "uk-width-4-5",
+    75: "uk-width-5-6",
+    90: "uk-width-1-1"
 };
 
-const standardWidth = (widthSteps, w) => Math.min(80, _.takeRightWhile(widthSteps, x => x >= w)[0]*1);
+const CONSTRAINTS = {
+    maxWidth: _.last(_.keys(WIDTH_MAP))*1
+};
+
+const standardWidth = (widthSteps, w) => Math.min(
+    CONSTRAINTS.maxWidth,
+    _.takeRightWhile(widthSteps, x => x >= w)[0]*1
+);
 
 function adjustdWidth(widthSteps, field) {
     let stdWidth = standardWidth(widthSteps, field["width"]);
@@ -33,8 +34,8 @@ function adjustdWidth(widthSteps, field) {
 
 const adjustdWidths = (widthSteps, fields) => _.map(fields, field => adjustdWidth(widthSteps, field));
 
-function mayAppendFieldToRow({ maxWidth, threshold, tolerance }, sum, width) {
-    return sum + width <= maxWidth || (sum < threshold && sum + width <= maxWidth + threshold);
+function mayAppendFieldToRow({ maxWidth }, sum, width) {
+    return sum + width <= maxWidth;
 };
 
 function smartRow(constraints, result, field) {
@@ -69,4 +70,35 @@ function smartRows(constraints, fields) {
     return result;
 }
 
-export { WIDTH_MAP, WIDTH_STEPS, standardWidth, adjustdWidth, nextSmartRow, smartRows };
+const modifiedSum = (firstWidth, secondWidth, row) => _.reduce(
+    row,
+    (sum, field) => sum + (field.width == firstWidth ? secondWidth : field.width),
+    0
+);
+
+function classToApply(widthMap, row, field) {
+    let widths = _.keys(widthMap),
+        firstWidth = widths[0],
+        secondWidth = widths[1],
+        maxWidth = _.last(widths);
+    if ( field.width == firstWidth && modifiedSum(firstWidth, secondWidth, row) <= maxWidth) {
+        return widthMap[secondWidth];
+    }
+    return widthMap[field.width];
+}
+
+function applyClasses(widthMap, row) {
+    return _.map(row, (field) => Object.assign({}, field, { class: classToApply(widthMap, row, field) }));
+}
+
+export {
+    WIDTH_MAP,
+    WIDTH_STEPS,
+    standardWidth,
+    adjustdWidth,
+    nextSmartRow,
+    smartRows,
+    modifiedSum,
+    classToApply,
+    applyClasses
+};
