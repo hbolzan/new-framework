@@ -18,8 +18,11 @@ const WIDTH_MAP = {
     90: "uk-width-1-1"
 };
 
+const lastWidth = widthMap => _.last(_.keys(widthMap))*1;
+
 const CONSTRAINTS = {
-    maxWidth: _.last(_.keys(WIDTH_MAP))*1
+    maxWidth: lastWidth(WIDTH_MAP),
+    threshold: 75
 };
 
 const standardWidth = (widthSteps, w) => Math.min(
@@ -72,7 +75,7 @@ function smartRows(constraints, fields) {
 
 const modifiedSum = (firstWidth, secondWidth, row) => _.reduce(
     row,
-    (sum, field) => sum + (field.width == firstWidth ? secondWidth : field.width),
+    (sum, field) => sum + (field.width == firstWidth ? secondWidth*1 : field.width*1),
     0
 );
 
@@ -80,15 +83,50 @@ function classToApply(widthMap, row, field) {
     let widths = _.keys(widthMap),
         firstWidth = widths[0],
         secondWidth = widths[1],
-        maxWidth = _.last(widths);
+        maxWidth = _.last(widths)*1;
     if ( field.width == firstWidth && modifiedSum(firstWidth, secondWidth, row) <= maxWidth) {
         return widthMap[secondWidth];
     }
     return widthMap[field.width];
 }
 
-function applyClasses(widthMap, row) {
-    return _.map(row, (field) => Object.assign({}, field, { class: classToApply(widthMap, row, field) }));
+function containsExpanded(row, widthMap) {
+    let expandClass = widthMap[_.keys(widthMap)[0]];
+    return _.reduce(row, (result, field) => result || field.class == expandClass, false);
+}
+
+const maxWidth = row => _.max(_.map(row, field => field.width));
+
+function changeClassByWidth(width, newClass, field) {
+    return field.width == width ? Object.assign({}, field, { class: newClass }) : field;
+}
+
+function widthIsEligibleForReview(width, threshold, widthMap) {
+    return width > threshold && width != lastWidth(widthMap);
+}
+
+function reviewClasses({ threshold }, widthMap, row) {
+    let widths = _.keys(widthMap);
+
+    if (containsExpanded(row, widthMap) ||
+        ! widthIsEligibleForReview(modifiedSum(widths[0], widths[1], row), threshold, widthMap)) {
+        return row;
+    }
+
+    let max = maxWidth(row),
+        expandClass = widthMap[widths[0]];
+    return _.map(row, field => changeClassByWidth(max, expandClass, field));
+}
+
+function applyClasses(constraints, widthMap, row) {
+    return reviewClasses(
+        constraints,
+        widthMap,
+        _.map(
+            row,
+            field => Object.assign({}, field, { class: classToApply(widthMap, row, field) })
+        )
+    );
 }
 
 export {

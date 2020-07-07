@@ -103,7 +103,7 @@ describe("objToHtml", () => {
             .toBe("<div><p></p><span></span></div>");
     });
 
-    test("render tag with everythin", () => {
+    test("render tag with everything", () => {
         expect(objToHtml({
             tag: "div",
             attrs: {style: {color: "blue", height: "10px"}},

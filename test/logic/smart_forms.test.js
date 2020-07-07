@@ -3,7 +3,6 @@ import {
     WIDTH_MAP,
     WIDTH_STEPS,
     standardWidth,
-    smartDistribution,
     adjustdWidth,
     nextSmartRow,
     smartRows,
@@ -25,9 +24,11 @@ describe("standardWidth", () => {
 });
 
 describe("adjustdWidth", () => {
-    test("change width to standard width", () => {
-        expect(adjustdWidth(WIDTH_STEPS, { name: "x", width: 20 }))
-            .toEqual({ name: "x", width: 23 });
+    test("change field width to standard width", () => {
+        expect(adjustdWidth(WIDTH_STEPS, { name: "x", width: 1 })).toEqual({ name: "x", width: 7 });
+        expect(adjustdWidth(WIDTH_STEPS, { name: "x", width: 20 })).toEqual({ name: "x", width: 23 });
+        expect(adjustdWidth(WIDTH_STEPS, { name: "x", width: 30 })).toEqual({ name: "x", width: 30 });
+        expect(adjustdWidth(WIDTH_STEPS, { name: "x", width: 31 })).toEqual({ name: "x", width: 36 });
     });
 });
 
@@ -77,24 +78,6 @@ describe("smartRows", () => {
     });
 });
 
-
-describe("applyClasses happy path", () => {
-    test("single field in a row", () => {
-        expect(applyClasses(WIDTH_MAP, [{ order: 2, width: 90 }]))
-            .toEqual([{ order: 2, width: 90, class: "uk-width-1-1" }]);
-        expect(applyClasses(WIDTH_MAP, [{ order: 2, width: 72 }]))
-            .toEqual([{ order: 2, width: 72, class: "uk-width-4-5" }]);
-    });
-
-    test("multiple fields in a row", () => {
-        expect(applyClasses(WIDTH_MAP, [{ order: 3, width: 23 }, { order: 4, width: 68 }]))
-            .toEqual([
-                { order: 3, width: 23, class: "uk-width-1-4" },
-                { order: 4, width: 68, class: "uk-width-3-4" }
-            ]);
-    });
-});
-
 describe("modifiedSum", () => {
     test("sum fields widths", () => {
         expect(modifiedSum(7, 15, [{ width: 15 }, { width: 23 }, { width: 30 }])).toBe(68);
@@ -112,20 +95,37 @@ describe("classToApply", () => {
             .toEqual("uk-width-1-6");
     });
 
-    test("don't apply extended if it would sum to less than total width", () => {
+    test("don't apply extended if row will sum less than maximum width", () => {
         expect(classToApply(WIDTH_MAP, [{ width: 15 }, { width: 7 }, { width: 30 }], { width: 7 }))
             .toEqual("uk-width-1-6");
     });
 });
 
+describe("applyClasses happy path", () => {
+    test("single field in a row", () => {
+        expect(applyClasses({ threshold: 90 }, WIDTH_MAP, [{ order: 2, width: 90 }]))
+            .toEqual([{ order: 2, width: 90, class: "uk-width-1-1" }]);
+        expect(applyClasses({ threshold: 90 }, WIDTH_MAP, [{ order: 2, width: 72 }]))
+            .toEqual([{ order: 2, width: 72, class: "uk-width-4-5" }]);
+    });
+
+    test("multiple fields in a row", () => {
+        expect(applyClasses({ threshold: 90 }, WIDTH_MAP, [{ order: 3, width: 23 }, { order: 4, width: 68 }]))
+            .toEqual([
+                { order: 3, width: 23, class: "uk-width-1-4" },
+                { order: 4, width: 68, class: "uk-width-expand" }
+            ]);
+    });
+});
+
 describe("applyClasses corner cases", () => {
     test("we don't want a single field with expand class", () => {
-        expect(applyClasses(WIDTH_MAP, [{ order: 1, width: 7 }]))
+        expect(applyClasses({ threshold: 90 }, WIDTH_MAP, [{ order: 1, width: 7 }]))
             .toEqual([{ order: 1, width: 7, class: "uk-width-1-6" }]);
     });
 
     test("convert expand fields to 1/6 if the new total width is less than maximum", () => {
-        expect(applyClasses(WIDTH_MAP, [
+        expect(applyClasses({ threshold: 90 }, WIDTH_MAP, [
             { order: 1, width: 7 },
             { order: 2, width: 7 },
             { order: 3, width: 7 },
@@ -140,35 +140,18 @@ describe("applyClasses corner cases", () => {
                 { order: 5, width: 18, class: "uk-width-1-5" }
             ]);
     });
+
+    test("when total width is above threshold, expands the widest fields", () => {
+        expect(applyClasses({ threshold: 80 }, WIDTH_MAP, [{ order: 1, width: 45 }, { order: 2, width: 36 }]))
+            .toEqual([
+                { order: 1, width: 45, class: "uk-width-expand" },
+                { order: 2, width: 36, class: "uk-width-2-5" }
+            ]);
+    });
 });
 
-// describe("splitToRows", () => {
-//     let input = [
-//         { order: 1, width: 24 },
-//         { order: 2, width: 46 },
-//         { order: 3, width: 20 },
-//         { order: 4, width: 70 },
-//         { order: 5, width: 10 },
-//     ],
-//         expected = [
-//             [
-//                 { order: 1, width: 30 },
-//                 { order: 2, width: 54 },
-//             ],
-//             [
-//                 { order: 3, width: 23 },
-//                 { order: 4, width: 72 },
-//             ],
-//             [
-//             ]
-//         ]
-//     test("split fields list to rows limited to maximum width", () => {
-//         expect(splitToRows([{ width}]));
-//     });
-// });
-
-// describe("smartDistribution", () => {
-//     test("limit fields by row", () => {
-//         expect(smartDistribution(WIDTH_STEPS, 90, fields)).toEqual(expectedRows);
-//     });
-// });
+describe("smartForm", () => {
+    test("limit fields by row", () => {
+        expect(smartDistribution(WIDTH_STEPS, 90, fields)).toEqual(expectedRows);
+    });
+});
