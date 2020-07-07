@@ -1,15 +1,18 @@
 import { _ } from "lodash";
 import {
     WIDTH_MAP,
-    WIDTH_STEPS,
     standardWidth,
     adjustdWidth,
     nextSmartRow,
     smartRows,
     modifiedSum,
     classToApply,
-    applyClasses
+    applyClasses,
+    smartForm
 } from "../../src/logic/smart_forms.js";
+import { smartFormTestData } from "./smart_forms.data.js";
+
+const WIDTH_STEPS = [7, 15, 18, 23, 30, 36, 45, 54, 60, 68, 72, 75, 999];
 
 describe("standardWidth", () => {
     test("convert width to standard width", () => {
@@ -151,7 +154,8 @@ describe("applyClasses corner cases", () => {
 });
 
 describe("smartForm", () => {
-    test("limit fields by row", () => {
-        expect(smartDistribution(WIDTH_STEPS, 90, fields)).toEqual(expectedRows);
+    test("adjust widths, split in columns and apply classes", () => {
+        expect(smartForm(WIDTH_MAP, { maxWidth: 90, threshold: 80 }, smartFormTestData.input))
+            .toEqual(smartFormTestData.expected);
     });
 });

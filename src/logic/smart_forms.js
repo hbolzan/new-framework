@@ -1,6 +1,5 @@
 import { _ } from "lodash";
 
-const WIDTH_STEPS = [7, 15, 18, 23, 30, 36, 45, 54, 60, 68, 72, 75, 999];
 
 const WIDTH_MAP = {
     7: "uk-width-expand",
@@ -18,6 +17,7 @@ const WIDTH_MAP = {
     90: "uk-width-1-1"
 };
 
+const widthSteps = widthMap => _.map(_.pull(_.keys(widthMap), _.last(_.keys(widthMap))).concat(999), x => x*1);
 const lastWidth = widthMap => _.last(_.keys(widthMap))*1;
 
 const CONSTRAINTS = {
@@ -25,17 +25,20 @@ const CONSTRAINTS = {
     threshold: 75
 };
 
-const standardWidth = (widthSteps, w) => Math.min(
+const standardWidth = (steps, w) => Math.min(
     CONSTRAINTS.maxWidth,
-    _.takeRightWhile(widthSteps, x => x >= w)[0]*1
+    _.takeRightWhile(steps, x => x >= w)[0]*1
 );
 
-function adjustdWidth(widthSteps, field) {
-    let stdWidth = standardWidth(widthSteps, field["width"]);
+function adjustdWidth(steps, field) {
+    let stdWidth = standardWidth(steps, field["width"]);
     return Object.assign({}, field, { width: stdWidth });
 }
 
-const adjustdWidths = (widthSteps, fields) => _.map(fields, field => adjustdWidth(widthSteps, field));
+function adjustdWidths(widthMap, fields) {
+    let steps = widthSteps(widthMap);
+    return _.map(fields, field => adjustdWidth(steps, field));
+};
 
 function mayAppendFieldToRow({ maxWidth }, sum, width) {
     return sum + width <= maxWidth;
@@ -129,14 +132,24 @@ function applyClasses(constraints, widthMap, row) {
     );
 }
 
+function smartForm(widthMap, constraints, fields) {
+    return _.map(
+        smartRows(
+            constraints,
+            adjustdWidths(widthMap, fields)
+        ),
+        row => applyClasses(constraints, widthMap, row)
+    );
+}
+
 export {
     WIDTH_MAP,
-    WIDTH_STEPS,
     standardWidth,
     adjustdWidth,
     nextSmartRow,
     smartRows,
     modifiedSum,
     classToApply,
-    applyClasses
+    applyClasses,
+    smartForm
 };
