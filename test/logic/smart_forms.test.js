@@ -134,14 +134,13 @@ describe("applyClasses corner cases", () => {
             { order: 3, width: 7 },
             { order: 4, width: 7 },
             { order: 5, width: 18 }
-        ]))
-            .toEqual([
-                { order: 1, width: 7, class: "uk-width-1-6" },
-                { order: 2, width: 7, class: "uk-width-1-6" },
-                { order: 3, width: 7, class: "uk-width-1-6" },
-                { order: 4, width: 7, class: "uk-width-1-6" },
-                { order: 5, width: 18, class: "uk-width-1-5" }
-            ]);
+        ])).toEqual([
+            { order: 1, width: 7, class: "uk-width-1-6" },
+            { order: 2, width: 7, class: "uk-width-1-6" },
+            { order: 3, width: 7, class: "uk-width-1-6" },
+            { order: 4, width: 7, class: "uk-width-1-6" },
+            { order: 5, width: 18, class: "uk-width-1-5" }
+        ]);
     });
 
     test("when total width is above threshold, expands the widest fields", () => {
@@ -150,6 +149,98 @@ describe("applyClasses corner cases", () => {
                 { order: 1, width: 45, class: "uk-width-expand" },
                 { order: 2, width: 36, class: "uk-width-2-5" }
             ]);
+    });
+
+    test("serveral rows from a real scenario", () => {
+        expect(applyClasses({ threshold: 80 }, WIDTH_MAP, [
+            { order: 1, width: 7 },   //  7
+            { order: 3, width: 15 },  // 15
+            { order: 4, width: 18 },  // 18
+            { order: 5, width: 18 },  // 18
+            { order: 6, width: 18 },  // 18 - 76 or 84
+        ])).toEqual([
+            { order: 1, width: 7, class: "uk-width-1-6" },
+            { order: 3, width: 15, class: "uk-width-1-6" },
+            { order: 4, width: 18, class: "uk-width-expand" },
+            { order: 5, width: 18, class: "uk-width-expand" },
+            { order: 6, width: 18, class: "uk-width-expand" },
+        ]);
+
+        expect(applyClasses({ threshold: 80 }, WIDTH_MAP, [
+            { order: 7, width: 23 },  // 23
+            { order: 8, width: 18 },  // 18
+            { order: 9, width: 36 },  // 36 - 77
+        ])).toEqual([
+            { order: 7, width: 23, class: "uk-width-1-4" },
+            { order: 8, width: 18, class: "uk-width-1-5" },
+            { order: 9, width: 36, class: "uk-width-2-5" },
+        ]);
+
+        expect(applyClasses({ threshold: 80 }, WIDTH_MAP, [
+            { order: 11, width: 23 }, // 23
+            { order: 14, width: 23 }, // 23
+            { order: 16, width: 23 }, // 23 - 69
+        ])).toEqual([
+            { order: 11, width: 23, class: "uk-width-1-4" }, // 23
+            { order: 14, width: 23, class: "uk-width-1-4" }, // 23
+            { order: 16, width: 23, class: "uk-width-1-4" }, // 23 - 69
+        ]);
+
+        expect(applyClasses({ threshold: 80 }, WIDTH_MAP, [
+            { order: 17, width: 23 }, // 23
+            { order: 18, width: 30 }, // 30
+            { order: 21, width: 30 }, // 30 - 83
+        ])).toEqual([
+            { order: 17, width: 23, class: "uk-width-1-4" },
+            { order: 18, width: 30, class: "uk-width-expand" },
+            { order: 21, width: 30, class: "uk-width-expand" },
+        ]);
+
+        expect(applyClasses({ threshold: 80 }, WIDTH_MAP, [
+            { order: 22, width: 30 }, // 30
+            { order: 25, width: 23 }, // 23
+            { order: 26, width: 15 }, // 15
+            { order: 28, width: 7 },  //  7 - 75 or 83
+        ])).toEqual([
+            { order: 22, width: 30, class: "uk-width-expand" },
+            { order: 25, width: 23, class: "uk-width-1-4" },
+            { order: 26, width: 15, class: "uk-width-1-6" },
+            { order: 28, width: 7, class: "uk-width-1-6"},
+        ]);
+
+        expect(applyClasses({ threshold: 80 }, WIDTH_MAP, [
+            { order: 31, width: 30 }, // 30
+            { order: 33, width: 15 }, // 15
+            { order: 34, width: 30 }, // 30
+            { order: 35, width: 15 }, // 15 - 90
+        ])).toEqual([
+            { order: 31, width: 30, class: "uk-width-1-3" },
+            { order: 33, width: 15, class: "uk-width-1-6" },
+            { order: 34, width: 30, class: "uk-width-1-3" },
+            { order: 35, width: 15, class: "uk-width-1-6" },
+        ]);
+
+        expect(applyClasses({ threshold: 80 }, WIDTH_MAP, [
+            { order: 36, width: 18 }, // 18
+            { order: 37, width: 18 }, // 18
+            { order: 38, width: 18 }, // 18
+            { order: 41, width: 23 }, // 23 - 76
+        ])).toEqual([
+            { order: 36, width: 18, class: "uk-width-1-5" },
+            { order: 37, width: 18, class: "uk-width-1-5" },
+            { order: 38, width: 18, class: "uk-width-1-5" },
+            { order: 41, width: 23, class: "uk-width-1-4" },
+        ]);
+
+        expect(applyClasses({ threshold: 80 }, WIDTH_MAP, [
+            { order: 42, width: 23 }, // 23
+            { order: 43, width: 36 }, // 36
+            { order: 44, width: 30 }, // 30 - 89
+        ])).toEqual([
+            { order: 42, width: 23, class: "uk-width-1-4" },
+            { order: 43, width: 36, class: "uk-width-expand" },
+            { order: 44, width: 30, class: "uk-width-1-3" },
+        ]);
     });
 });
 
