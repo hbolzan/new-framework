@@ -1,8 +1,6 @@
-import { _ } from "lodash";
-
-
 const WIDTH_MAP = {
     7: "uk-width-expand",
+    // 7: "uk-width-1-6",
     15: "uk-width-1-6",
     18: "uk-width-1-5",
     23: "uk-width-1-4",
@@ -18,26 +16,31 @@ const WIDTH_MAP = {
 };
 
 const widthSteps = widthMap => _.map(_.pull(_.keys(widthMap), _.last(_.keys(widthMap))).concat(999), x => x*1);
-const lastWidth = widthMap => _.last(_.keys(widthMap))*1;
 
-const CONSTRAINTS = {
-    maxWidth: lastWidth(WIDTH_MAP),
-    threshold: 75
-};
+function lastWidth(widthMap) {
+    return widthMap => _.last(_.keys(widthMap))*1;
+}
 
-const standardWidth = (steps, w) => Math.min(
-    CONSTRAINTS.maxWidth,
+function constraints(widthMap) {
+    return {
+        maxWidth: _.last(_.keys(widthMap))*1,
+        threshold: 60
+    };
+}
+
+const standardWidth = (widthMap, steps, w) => Math.min(
+    constraints(widthMap).maxWidth,
     _.takeRightWhile(steps, x => x >= w)[0]*1
 );
 
-function adjustdWidth(steps, field) {
-    let stdWidth = standardWidth(steps, field["width"]);
+function adjustdWidth(widthMap, steps, field) {
+    let stdWidth = standardWidth(widthMap, steps, field["width"]);
     return Object.assign({}, field, { width: stdWidth });
 }
 
 function adjustdWidths(widthMap, fields) {
     let steps = widthSteps(widthMap);
-    return _.map(fields, field => adjustdWidth(steps, field));
+    return _.map(fields, field => adjustdWidth(widthMap, steps, field));
 };
 
 function mayAppendFieldToRow({ maxWidth }, sum, width) {
@@ -105,7 +108,7 @@ function changeClassByWidth(width, newClass, field) {
 }
 
 function widthIsEligibleForReview(width, threshold, widthMap) {
-    return width > threshold && width != lastWidth(widthMap);
+    return width > threshold && width != _.last(_.keys(widthMap))*1;
 }
 
 function reviewClasses({ threshold }, widthMap, row) {
@@ -136,7 +139,10 @@ function smartForm(widthMap, constraints, fields) {
     return _.map(
         smartRows(
             constraints,
-            adjustdWidths(widthMap, fields)
+            adjustdWidths(
+                widthMap,
+                _.filter(fields, field => field.visible !== false)
+            )
         ),
         row => applyClasses(constraints, widthMap, row)
     );
@@ -144,6 +150,7 @@ function smartForm(widthMap, constraints, fields) {
 
 export {
     WIDTH_MAP,
+    constraints,
     standardWidth,
     adjustdWidth,
     nextSmartRow,

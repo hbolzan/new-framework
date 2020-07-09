@@ -1,44 +1,32 @@
 import "uikit/dist/css/uikit.css";
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
+import "./css/dashboard.css";
 import Icons from "uikit/dist/js/uikit-icons";
 import UIkit from "uikit";
 
 import { complexForm } from "./components/forms/complex.js";
 import { formInputField, form } from "./components/forms/form.js";
+import { smartFields } from "./components/forms/smart_fields.js";
 import { htmlToElement } from "./common/dom.js";
 import { toHtml } from "./logic/hiccup.js";
 
+import { clientesDefinitions } from "./data/form_sample.js";
+
 UIkit.use(Icons);
 
-let input = formInputField("ID", "1-6");
-let input2 = formInputField("CPF", "1-3");
+let input = formInputField("ID", "uk-width-1-6");
+let input2 = formInputField("CPF", "uk-width-1-3");
+let fields = smartFields(clientesDefinitions);
 
-
-let div = ["div", { class: ["uk-grid-small", "uk-margin-top"], ukGrid: "uk-grid" },
-           ["div", { class: ["uk-width-1-6"], style: { height: "35px",  border: "solid 1px" } }],
-           ["div", { class: ["uk-width-expand"], style: { height: "35px",  border: "solid 1px" } }],
-           ["div", { class: ["uk-width-1-4"], style: { height: "35px",  border: "solid 1px" } }],
-           ["div", { class: ["uk-width-expand"], style: { height: "35px",  border: "solid 1px" } }],
-           ["div", { class: ["uk-width-expand"], style: { height: "35px",  border: "solid 1px" } }],
-           ["div", { class: ["uk-width-expand"], style: { height: "35px",  border: "solid 1px" } }],
-           ["div", { class: ["uk-width-expand"], style: { height: "35px",  border: "solid 1px" } }],
-           ["div", { class: ["uk-width-expand"], style: { height: "35px",  border: "solid 1px" } }],
-          ];
-
-document.querySelector("#app-body")
-    .append(htmlToElement(document, toHtml(div)));
-
-/*
 document.querySelector("#app-body")
     .append(htmlToElement(document, toHtml(
         complexForm(
             "Cadastro de clientes",
-            form(input, input2)
+            form(...fields)
         )
     )));
 
-*/
 
 /*
 

@@ -16,22 +16,22 @@ const WIDTH_STEPS = [7, 15, 18, 23, 30, 36, 45, 54, 60, 68, 72, 75, 999];
 
 describe("standardWidth", () => {
     test("convert width to standard width", () => {
-        expect(standardWidth(WIDTH_STEPS, 1)).toBe(7);
-        expect(_.map([7, 15, 18, 23, 30, 36, 45, 54, 60, 68, 72, 75, 90], _.partial(standardWidth, WIDTH_STEPS)))
+        expect(standardWidth(WIDTH_MAP, WIDTH_STEPS, 1)).toBe(7);
+        expect(_.map([7, 15, 18, 23, 30, 36, 45, 54, 60, 68, 72, 75, 90], _.partial(standardWidth, WIDTH_MAP, WIDTH_STEPS)))
             .toEqual([7, 15, 18, 23, 30, 36, 45, 54, 60, 68, 72, 75, 90]);
-        expect(_.map([6, 14, 17, 22, 29, 35, 44, 53, 59, 67, 71, 74, 79], _.partial(standardWidth, WIDTH_STEPS)))
+        expect(_.map([6, 14, 17, 22, 29, 35, 44, 53, 59, 67, 71, 74, 79], _.partial(standardWidth, WIDTH_MAP, WIDTH_STEPS)))
             .toEqual([7, 15, 18, 23, 30, 36, 45, 54, 60, 68, 72, 75, 90]);
-        expect(_.map([8, 16, 19, 24, 31, 37, 46, 55, 61, 69, 73, 76, 91], _.partial(standardWidth, WIDTH_STEPS)))
+        expect(_.map([8, 16, 19, 24, 31, 37, 46, 55, 61, 69, 73, 76, 91], _.partial(standardWidth, WIDTH_MAP, WIDTH_STEPS)))
             .toEqual([15, 18, 23, 30, 36, 45, 54, 60, 68, 72, 75, 90, 90]);
     });
 });
 
 describe("adjustdWidth", () => {
     test("change field width to standard width", () => {
-        expect(adjustdWidth(WIDTH_STEPS, { name: "x", width: 1 })).toEqual({ name: "x", width: 7 });
-        expect(adjustdWidth(WIDTH_STEPS, { name: "x", width: 20 })).toEqual({ name: "x", width: 23 });
-        expect(adjustdWidth(WIDTH_STEPS, { name: "x", width: 30 })).toEqual({ name: "x", width: 30 });
-        expect(adjustdWidth(WIDTH_STEPS, { name: "x", width: 31 })).toEqual({ name: "x", width: 36 });
+        expect(adjustdWidth(WIDTH_MAP, WIDTH_STEPS, { name: "x", width: 1 })).toEqual({ name: "x", width: 7 });
+        expect(adjustdWidth(WIDTH_MAP, WIDTH_STEPS, { name: "x", width: 20 })).toEqual({ name: "x", width: 23 });
+        expect(adjustdWidth(WIDTH_MAP, WIDTH_STEPS, { name: "x", width: 30 })).toEqual({ name: "x", width: 30 });
+        expect(adjustdWidth(WIDTH_MAP, WIDTH_STEPS, { name: "x", width: 31 })).toEqual({ name: "x", width: 36 });
     });
 });
 
@@ -151,7 +151,7 @@ describe("applyClasses corner cases", () => {
             ]);
     });
 
-    test("serveral rows from a real scenario", () => {
+    test("several rows from a real scenario", () => {
         expect(applyClasses({ threshold: 80 }, WIDTH_MAP, [
             { order: 1, width: 7 },   //  7
             { order: 3, width: 15 },  // 15
@@ -245,7 +245,7 @@ describe("applyClasses corner cases", () => {
 });
 
 describe("smartForm", () => {
-    test("adjust widths, split in columns and apply classes", () => {
+    test("ignore invisible fields, adjust widths, split in columns and apply classes", () => {
         expect(smartForm(WIDTH_MAP, { maxWidth: 90, threshold: 80 }, smartFormTestData.input))
             .toEqual(smartFormTestData.expected);
     });

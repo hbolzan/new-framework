@@ -1,6 +1,7 @@
 const smartFormTestData = {
     input: [
         { order: 1, width: 7 },   //  7
+        { order: 2, width: 80, visible: false },
         { order: 3, width: 11 },  // 15
         { order: 4, width: 18 },  // 18
         { order: 5, width: 16 },  // 18
@@ -9,10 +10,12 @@ const smartFormTestData = {
         { order: 8, width: 16 },  // 18
         { order: 9, width: 35 },  // 36 - 77
         { order: 11, width: 19 }, // 23
+        { order: 12, width: 60, visible: false },
         { order: 14, width: 20 }, // 23
         { order: 16, width: 19 }, // 23 - 69
         { order: 17, width: 19 }, // 23
         { order: 18, width: 24 }, // 30
+        { order: 19, width: 60, visible: false },
         { order: 21, width: 28 }, // 30 - 83
         { order: 22, width: 25 }, // 30
         { order: 25, width: 19 }, // 23
