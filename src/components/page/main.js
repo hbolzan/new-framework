@@ -22,11 +22,30 @@ function topNavRight(content) {
 
 function topNav(logo, contentLeft, contentRight) {
     return ["nav", { class: ["uk-navbar", "uk-light"], dataUkNavbar: { mode: "click", duration: 250 } },
-            topNavLeft(logo, contentLeft)];
+            topNavLeft(logo, contentLeft),
+            topNavRight(contentRight)];
 }
 
-function leftSideBar() {
+function pageHeader(logo, itemsLeft, itemsRight) {
+    return ["header", { class: ["uk-position-fixed"] },
+            ["div", { class: ["uk-container", "uk-container-expand", "uk-background-primary"] },
+             topNav(logo, itemsLeft, itemsRight)]];
 }
 
-function pageHeader() {
+function leftBarLogo({ src, url }) {
+    return ["div", { class: ["left-logo", "uk-flex", "uk-flex-middle"] },
+            ["img", { class: "cutom-logo", src: src }]];
 }
+
+function leftBar(logo, content) {
+    return ["div", { class: ["left-content-box", "content-box-dark"] },
+            leftBarLogo(logo)];
+}
+
+function mainContent(content) {
+    return ["div", { dataUkHeightViewport: { expand: true } },
+            ["div", { class: ["uk-container", "uk-container-expand"] },
+             ...content]];
+}
+
+export { pageHeader, leftBar, mainContent };

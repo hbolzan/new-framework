@@ -8,6 +8,7 @@ import UIkit from "uikit";
 import { complexForm } from "./components/forms/complex.js";
 import { formInputField, form } from "./components/forms/form.js";
 import { smartFields } from "./components/forms/smart_fields.js";
+import { pageHeader, leftBar, mainContent } from "./components/page/main.js";
 import { htmlToElement } from "./common/dom.js";
 import { toHtml } from "./logic/hiccup.js";
 
@@ -15,17 +16,17 @@ import { clientesDefinitions } from "./data/form_sample.js";
 
 UIkit.use(Icons);
 
-let input = formInputField("ID", "uk-width-1-6");
-let input2 = formInputField("CPF", "uk-width-1-3");
-let fields = smartFields(clientesDefinitions);
+let input = formInputField("ID", "uk-width-1-6"),
+    input2 = formInputField("CPF", "uk-width-1-3"),
+    fields = smartFields(clientesDefinitions),
+    clientes = complexForm("Cadastro de clientes", form(...fields)),
+    page = ["section",
+            pageHeader({ src: "", url: "#" }),
+            leftBar({ src: "", url: "#" }),
+            mainContent(clientes)];
 
 document.querySelector("#app-body")
-    .append(htmlToElement(document, toHtml(
-        complexForm(
-            "Cadastro de clientes",
-            form(...fields)
-        )
-    )));
+    .append(htmlToElement(document, toHtml(page)));
 
 
 /*
