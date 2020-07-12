@@ -25,7 +25,7 @@ function containerFooter(...children) {
 }
 
 function formContainer(...children) {
-    return ["div", { class: ["uk-card-default", "uk-width-1"] }, ...children];
+    return ["div", { class: ["uk-card-default", "uk-width-1", "uk-card-hover"] }, ...children];
 }
 
 export { containerHeader, containerBody, containerFooter, formContainer };
