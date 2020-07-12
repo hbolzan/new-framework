@@ -1,6 +1,8 @@
 import _ from "lodash";
 
-const hiccupAttrs = hiccup => _.isObject(hiccup[1]) && ! _.isArray(hiccup[1]) ? { attrs: hiccup[1] } : null;
+const hiccupAttrs = hiccup => hiccup ?
+      (_.isObject(hiccup[1]) && ! _.isArray(hiccup[1]) ? { attrs: hiccup[1] } : null) :
+      null;
 const hiccupInnerText = remaining => _.isString(remaining[0]) ? { innerText: remaining[0] } : null;
 const parseChildren = remaining => _.map(remaining, child => hiccupToObj(child));
 const hiccupChildren = children => _.isEmpty(children) ? null : { children };
@@ -29,11 +31,12 @@ function renderAttrs(attrs) {
 }
 
 function objToHtml(hiccupObj) {
-    return `<${hiccupObj.tag
+    return hiccupObj ? `<${hiccupObj.tag
         }${renderAttrs(hiccupObj.attrs)
         }>${hiccupObj.innerText ? hiccupObj.innerText : ""
         }${_.map(hiccupObj.children, objToHtml).join("")
-        }</${hiccupObj.tag}>`;
+        }</${hiccupObj.tag}>` :
+        "ERRO";
 }
 
 function toHtml(hiccup) {

@@ -9,7 +9,7 @@ function smartFields(defs) {
         visibleRows,
         row => ["div",
                 { class: "uk-grid-small", ukGrid: "uk-grid" },
-                ...(_.map(row, field => formInputField(field.label, field.class)))]
+                ...(_.map(row, field => formInputField(field)))]
     );
 }
 

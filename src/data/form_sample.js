@@ -27,7 +27,7 @@ const clientesDefinitions = [
         "order": 3,
         "name": "tipo_de_pessoa",
         "label": "Tipo de pessoa",
-        "field-kind": "lookup",
+        "field-kind": "x-lookup",
         "required": false,
         "visible": true,
         "search-visible": false,
