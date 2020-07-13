@@ -1,4 +1,4 @@
-import { _ } from "lodash";
+window._ = require("lodash");
 import {
     WIDTH_MAP,
     standardWidth,
@@ -17,11 +17,11 @@ const WIDTH_STEPS = [7, 15, 18, 23, 30, 36, 45, 54, 60, 68, 72, 75, 999];
 describe("standardWidth", () => {
     test("convert width to standard width", () => {
         expect(standardWidth(WIDTH_MAP, WIDTH_STEPS, 1)).toBe(7);
-        expect(_.map([7, 15, 18, 23, 30, 36, 45, 54, 60, 68, 72, 75, 90], _.partial(standardWidth, WIDTH_MAP, WIDTH_STEPS)))
+        expect([7, 15, 18, 23, 30, 36, 45, 54, 60, 68, 72, 75, 90].map(_.partial(standardWidth, WIDTH_MAP, WIDTH_STEPS)))
             .toEqual([7, 15, 18, 23, 30, 36, 45, 54, 60, 68, 72, 75, 90]);
-        expect(_.map([6, 14, 17, 22, 29, 35, 44, 53, 59, 67, 71, 74, 79], _.partial(standardWidth, WIDTH_MAP, WIDTH_STEPS)))
+        expect([6, 14, 17, 22, 29, 35, 44, 53, 59, 67, 71, 74, 79].map(_.partial(standardWidth, WIDTH_MAP, WIDTH_STEPS)))
             .toEqual([7, 15, 18, 23, 30, 36, 45, 54, 60, 68, 72, 75, 90]);
-        expect(_.map([8, 16, 19, 24, 31, 37, 46, 55, 61, 69, 73, 76, 91], _.partial(standardWidth, WIDTH_MAP, WIDTH_STEPS)))
+        expect([8, 16, 19, 24, 31, 37, 46, 55, 61, 69, 73, 76, 91].map(_.partial(standardWidth, WIDTH_MAP, WIDTH_STEPS)))
             .toEqual([15, 18, 23, 30, 36, 45, 54, 60, 68, 72, 75, 90, 90]);
     });
 });
