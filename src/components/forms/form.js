@@ -6,8 +6,12 @@ function selectEmptyOption() {
     return ["option", { value: "" }, " -- selecione --"];
 }
 
-function selectOption(option, lookupKey, lookupResult) {
-    return ["option", { value: option[lookupKey] }, option[lookupResult]];
+function selectOption(option, value, lookupKey, lookupResult) {
+    let attrs = _.assign(
+        { value: option[lookupKey] },
+        value == option[lookupKey] ? { selected: "selected"} : option[lookupResult]
+    );
+    return ["option", attrs, option[lookupResult]];
 }
 
 function inputSelect(field) {
@@ -15,12 +19,14 @@ function inputSelect(field) {
         lookupResult = field["lookup-result"];
     return ["select", { class: ["uk-select"] },
             selectEmptyOption(),
-            ..._.map(field.options, option => selectOption(option, lookupKey, lookupResult))];
+            ..._.map(field.options, option => selectOption(option, field.value, lookupKey, lookupResult))];
 }
 
 const inputByType = {
     "data/char": inputText,
+    "data/integer": inputText,
     "lookup/char": inputSelect,
+    "lookup/integer": inputSelect,
     default: inputText
 };
 
