@@ -1,3 +1,4 @@
+import { _ } from "../../node_modules/lodash/lodash.js";
 import { toHtml, renderAttrValue, camelToKebab, hiccupToObj, objToHtml } from "../../src/logic/hiccup.js";
 
 /** hiccup notation
@@ -35,36 +36,37 @@ describe("renderAttrValue", () => {
 
 describe("hiccupToObj", () => {
     test("convert hiccup to obj", () => {
-        expect(hiccupToObj(["div"])).toEqual({tag: "div"});
-        expect(hiccupToObj(["div", {class: "x"}])).toEqual({tag: "div", attrs: {class: "x"}});
+        expect(hiccupToObj(["div"])).toEqual({tag: "div", private: {}});
+        expect(hiccupToObj(["div", {class: "x"}])).toEqual({tag: "div", attrs: {class: "x"}, private: {}});
     });
 
     test("convert children recursively", () => {
         expect(hiccupToObj(["div", {class: "x"}, ["span"]]))
-            .toEqual({tag: "div", attrs: {class: "x"}, children: [{tag: "span"}]});
+            .toEqual({tag: "div", attrs: {class: "x"}, private: {}, children: [{tag: "span", private: {}}]});
     });
 
     test("if second element is not an object, there are no attrs", () => {
         expect(hiccupToObj(["div", ["span"]]))
-            .toEqual({tag: "div", children: [{tag: "span"}]});
+            .toEqual({ tag: "div", private: {}, children: [{ tag: "span", private: {} }] });
     });
 
     test("add innerText to object when second or third element is a string", () => {
         expect(hiccupToObj(["div", "some text here", ["span"]]))
-            .toEqual({tag: "div", innerText: "some text here", children: [{tag: "span"}]});
+            .toEqual({tag: "div", private: {}, innerText: "some text here", children: [{tag: "span", private: {}}]});
 
         expect(hiccupToObj(["div", {class: "x"}, "some text here", ["span"]]))
             .toEqual({
                 tag: "div",
                 attrs: {class: "x"},
+                private: {},
                 innerText: "some text here",
-                children: [{tag: "span"}]
+                children: [{tag: "span", private: {}}]
             });
     });
 
     test("add multiple children", () => {
         expect(hiccupToObj(["div", ["span"], ["p", "Some text here"]]))
-            .toEqual({tag: "div", children: [{tag: "span"}, {tag: "p", innerText: "Some text here"}]});
+            .toEqual({tag: "div", private: {}, children: [{tag: "span", private: {}}, {tag: "p", private: {}, innerText: "Some text here"}]});
     });
 });
 
@@ -99,7 +101,7 @@ describe("objToHtml", () => {
         expect(objToHtml({tag: "div", children: [{tag: "p"}]}))
             .toBe("<div><p></p></div>");
 
-        expect(objToHtml({tag: "div", children: [{tag: "p"}, {tag: "span"}]}))
+        expect(objToHtml({tag: "div", private: {}, children: [{tag: "p"}, {tag: "span"}]}))
             .toBe("<div><p></p><span></span></div>");
     });
 
