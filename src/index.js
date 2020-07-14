@@ -13,6 +13,7 @@ import { htmlToElement } from "./common/dom.js";
 import { toHtml } from "./logic/hiccup.js";
 
 import { clientesDefinitions } from "./data/form_sample.js";
+import { v4 as uuidv4 } from "uuid";
 
 UIkit.use(Icons);
 
@@ -26,7 +27,7 @@ let input = formInputField("ID", "uk-width-1-6"),
             mainContent(clientes)];
 
 document.querySelector("#app-body")
-    .append(htmlToElement(document, toHtml(page)));
+    .append(htmlToElement(document, toHtml(page, uuidv4)));
 
 
 /*

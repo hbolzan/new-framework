@@ -4,19 +4,20 @@ const hiccupAttrs = hiccup => hiccup ?
       (_.isObject(hiccup[1]) && ! _.isArray(hiccup[1]) ? { attrs: hiccup[1] } : null) :
       null;
 const hiccupInnerText = remaining => _.isString(remaining[0]) ? { innerText: remaining[0] } : null;
-const parseChildren = remaining => _.map(remaining, child => hiccupToObj(child));
+const parseChildren = (remaining, idGenFn) => _.map(remaining, child => hiccupToObj(child, idGenFn));
 const hiccupChildren = children => _.isEmpty(children) ? null : { children };
+const withId = (attrs, idGenFn) => (attrs || {}).id ? attrs : Object.assign( { id: idGenFn() }, attrs);
 
-function hiccupToObj(hiccup) {
+function hiccupToObj(hiccup, idGenFn) {
     const allAttrs = hiccupAttrs(hiccup) || {},
           attrs = _.omit(allAttrs, ["attrs.private"]),
           remaining = _.slice(hiccup, _.isEmpty(attrs) ? 1 : 2),
           innerText = hiccupInnerText(remaining),
-          children = parseChildren(innerText ? _.slice(remaining, 1) : _.slice(remaining, 0));
+          children = parseChildren(innerText ? _.slice(remaining, 1) : _.slice(remaining, 0), idGenFn);
     return hiccup ?
         _.merge(
             { tag: hiccup[0] },
-            _.isEmpty(attrs.attrs) ? null : attrs,
+            { attrs: withId(attrs.attrs, idGenFn) },
             { private: _.get(allAttrs, "attrs.private", {}) },
             innerText,
             hiccupChildren(children)
@@ -41,7 +42,8 @@ function renderAttrs(attrs) {
 }
 
 function objToHtml(hiccupObj) {
-    return hiccupObj ? `<${hiccupObj.tag
+    return hiccupObj ?
+        `<${ hiccupObj.tag
         }${ renderAttrs(hiccupObj.attrs)
         }>${ hiccupObj.innerText ? hiccupObj.innerText : ""
         }${ _.map(hiccupObj.children, objToHtml).join("")
@@ -49,8 +51,8 @@ function objToHtml(hiccupObj) {
         "ERRO";
 }
 
-function toHtml(hiccup) {
-    return objToHtml(hiccupToObj(hiccup));
+function toHtml(hiccup, idGenFn) {
+    return objToHtml(hiccupToObj(hiccup, idGenFn));
 }
 
 export { toHtml, renderAttrValue, camelToKebab, hiccupToObj, objToHtml };

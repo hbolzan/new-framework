@@ -35,50 +35,99 @@ describe("renderAttrValue", () => {
 });
 
 describe("hiccupToObj", () => {
+    const idGenFn = () => "xyz";
+
     test("convert hiccup to obj", () => {
-        expect(hiccupToObj(["div"])).toEqual({tag: "div", private: {}});
-        expect(hiccupToObj(["div", {class: "x"}])).toEqual({tag: "div", attrs: {class: "x"}, private: {}});
+        expect(hiccupToObj(["div"], idGenFn)).toEqual({tag: "div", attrs: { id: "xyz" }, private: {}});
+        expect(hiccupToObj(["div", {class: "x"}], idGenFn))
+            .toEqual({tag: "div", attrs: {id: "xyz", class: "x"}, private: {}});
     });
 
     test("convert children recursively", () => {
-        expect(hiccupToObj(["div", {class: "x"}, ["span"]]))
-            .toEqual({tag: "div", attrs: {class: "x"}, private: {}, children: [{tag: "span", private: {}}]});
+        expect(hiccupToObj(["div", {class: "x"}, ["span"]], idGenFn))
+            .toEqual({
+                tag: "div",
+                attrs: {id: "xyz", class: "x"},
+                private: {},
+                children: [{tag: "span", attrs: { id: "xyz" }, private: {}}]
+            });
     });
 
-    test("if second element is not an object, there are no attrs", () => {
-        expect(hiccupToObj(["div", ["span"]]))
-            .toEqual({ tag: "div", private: {}, children: [{ tag: "span", private: {} }] });
+    test("if second element is not an object, attrs receives only generated id", () => {
+        expect(hiccupToObj(["div", ["span"]], idGenFn))
+            .toEqual({
+                tag: "div",
+                attrs: { id: "xyz" },
+                private: {},
+                children: [{ tag: "span", attrs: { id: "xyz" }, private: {} }]
+            });
     });
 
     test("add innerText to object when second or third element is a string", () => {
-        expect(hiccupToObj(["div", "some text here", ["span"]]))
-            .toEqual({tag: "div", private: {}, innerText: "some text here", children: [{tag: "span", private: {}}]});
-
-        expect(hiccupToObj(["div", {class: "x"}, "some text here", ["span"]]))
+        expect(hiccupToObj(["div", "some text here", ["span"]], idGenFn))
             .toEqual({
                 tag: "div",
-                attrs: {class: "x"},
+                attrs: { id: "xyz" },
                 private: {},
                 innerText: "some text here",
-                children: [{tag: "span", private: {}}]
+                children: [{tag: "span", attrs: { id: "xyz" }, private: {}}]
+            });
+
+        expect(hiccupToObj(["div", {class: "x"}, "some text here", ["span"]], idGenFn))
+            .toEqual({
+                tag: "div",
+                attrs: { id: "xyz", class: "x" },
+                private: {},
+                innerText: "some text here",
+                children: [{tag: "span", attrs: { id: "xyz" }, private: {}}]
             });
     });
 
     test("add multiple children", () => {
-        expect(hiccupToObj(["div", ["span"], ["p", "Some text here"]]))
-            .toEqual({tag: "div", private: {}, children: [{tag: "span", private: {}}, {tag: "p", private: {}, innerText: "Some text here"}]});
+        expect(hiccupToObj(["div", ["span"], ["p", "Some text here"]], idGenFn))
+            .toEqual({
+                tag: "div",
+                attrs: { id: "xyz" },
+                private: {},
+                children: [
+                    {tag: "span", attrs: { id: "xyz" }, private: {}},
+                    {tag: "p", attrs: { id: "xyz" }, private: {}, innerText: "Some text here"}
+                ]
+            });
     });
 
     test("private attribute is not included in attrs", () => {
-        expect(hiccupToObj(["div", { private: { x: 1, y: 2 }}, ["span"]]))
-            .toEqual({ tag: "div", private: { x: 1, y: 2 }, children: [{ tag: "span", private: {} }] });
-
-        expect(hiccupToObj(["div", { class: ["a", "b"], private: { x: 1, y: 2 }}, ["span"]]))
+        expect(hiccupToObj(["div", { private: { x: 1, y: 2 }}, ["span"]], idGenFn))
             .toEqual({
                 tag: "div",
-                attrs: { class: ["a", "b"] },
+                attrs: { id: "xyz" },
                 private: { x: 1, y: 2 },
-                children: [{ tag: "span", private: {} }]
+                children: [{ tag: "span", attrs: { id: "xyz" }, private: {} }]
+            });
+
+        expect(hiccupToObj(["div", { class: ["a", "b"], private: { x: 1, y: 2 }}, ["span"]], idGenFn))
+            .toEqual({
+                tag: "div",
+                attrs: { id: "xyz", class: ["a", "b"] },
+                private: { x: 1, y: 2 },
+                children: [{ tag: "span", attrs: { id: "xyz" }, private: {} }]
+            });
+    });
+
+    test("don't generate id if it already exists in hiccup", () => {
+        expect(hiccupToObj(["div", { id: "some-id" }], idGenFn))
+            .toEqual({
+                tag: "div",
+                attrs: { id: "some-id" },
+                private: {}
+            });
+
+        expect(hiccupToObj(["div", { id: "some-id", class: ["abc"] }, "Inner Text"], idGenFn))
+            .toEqual({
+                tag: "div",
+                attrs: { id: "some-id", class: ["abc"] },
+                private: {},
+                innerText: "Inner Text"
             });
     });
 });
@@ -130,31 +179,33 @@ describe("objToHtml", () => {
 });
 
 describe("toHtml", () => {
+    const idGenFn = () => "abc";
+
     test("render html tag", () => {
-        expect(toHtml(["div"])).toBe("<div></div>");
-        expect(toHtml(["section"])).toBe("<section></section>");
+        expect(toHtml(["div"], idGenFn)).toBe("<div id=\"abc\"></div>");
+        expect(toHtml(["section"], idGenFn)).toBe("<section id=\"abc\"></section>");
     });
 
     test("render tag with attributes", () => {
-        expect(toHtml(["i", {class: "a b c", "uk-icon": "trash"}]))
-            .toBe('<i class="a b c" uk-icon="trash"></i>');
+        expect(toHtml(["i", {class: "a b c", "uk-icon": "trash"}], idGenFn))
+            .toBe('<i id=\"abc\" class="a b c" uk-icon="trash"></i>');
     });
 
     test("render array attr value as values separated by spaces", () => {
-        expect(toHtml(["i", {class: ["a", "b", "c"]}]))
-            .toBe('<i class="a b c"></i>');
+        expect(toHtml(["i", {class: ["a", "b", "c"]}], idGenFn))
+            .toBe('<i id=\"abc\" class="a b c"></i>');
     });
 
     test("render map attr value as key-value list separated by semicolons", () => {
-        expect(toHtml(["div", {style: {color: "blue"}}]))
-            .toBe('<div style="color: blue;"></div>');
+        expect(toHtml(["div", {style: {color: "blue"}}], idGenFn))
+            .toBe('<div id=\"abc\" style="color: blue;"></div>');
 
-        expect(toHtml(["div", {style: {color: "blue", height: "10px"}}]))
-            .toBe('<div style="color: blue; height: 10px;"></div>');
+        expect(toHtml(["div", {style: {color: "blue", height: "10px"}}], idGenFn))
+            .toBe('<div id=\"abc\" style="color: blue; height: 10px;"></div>');
     });
 
     test("convert attributes names from to kebab case", () => {
-        expect(toHtml(["i", {ukIcon: "trash"}]))
-            .toBe('<i uk-icon="trash"></i>');
+        expect(toHtml(["i", {ukIcon: "trash"}], idGenFn))
+            .toBe('<i id=\"abc\" uk-icon="trash"></i>');
     });
 });
