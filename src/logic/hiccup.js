@@ -9,15 +9,15 @@ const hiccupChildren = children => _.isEmpty(children) ? null : { children };
 
 function hiccupToObj(hiccup) {
     const allAttrs = hiccupAttrs(hiccup) || {},
-          attrs = _.reduce(allAttrs, (a, v, k) => k == "private" ? a : _.assign(a, { [k]: v }), {}),
+          attrs = _.omit(allAttrs, ["attrs.private"]),
           remaining = _.slice(hiccup, _.isEmpty(attrs) ? 1 : 2),
           innerText = hiccupInnerText(remaining),
           children = parseChildren(innerText ? _.slice(remaining, 1) : _.slice(remaining, 0));
     return hiccup ?
         _.merge(
             { tag: hiccup[0] },
-            attrs,
-            { private: allAttrs.private || {} },
+            _.isEmpty(attrs.attrs) ? null : attrs,
+            { private: _.get(allAttrs, "attrs.private", {}) },
             innerText,
             hiccupChildren(children)
         ) :

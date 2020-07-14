@@ -68,6 +68,19 @@ describe("hiccupToObj", () => {
         expect(hiccupToObj(["div", ["span"], ["p", "Some text here"]]))
             .toEqual({tag: "div", private: {}, children: [{tag: "span", private: {}}, {tag: "p", private: {}, innerText: "Some text here"}]});
     });
+
+    test("private attribute is not included in attrs", () => {
+        expect(hiccupToObj(["div", { private: { x: 1, y: 2 }}, ["span"]]))
+            .toEqual({ tag: "div", private: { x: 1, y: 2 }, children: [{ tag: "span", private: {} }] });
+
+        expect(hiccupToObj(["div", { class: ["a", "b"], private: { x: 1, y: 2 }}, ["span"]]))
+            .toEqual({
+                tag: "div",
+                attrs: { class: ["a", "b"] },
+                private: { x: 1, y: 2 },
+                children: [{ tag: "span", private: {} }]
+            });
+    });
 });
 
 describe("objToHtml", () => {
