@@ -1,5 +1,6 @@
 import { _ } from "../../node_modules/lodash/lodash.js";
-import { toHtml, renderAttrValue, camelToKebab, hiccupToObj, objToHtml } from "../../src/logic/hiccup.js";
+import { toHtml, renderAttrValue, camelToKebab, hiccupToObj, objToHtml, indexNodes }
+from "../../src/logic/hiccup.js";
 
 /** hiccup notation
  *
@@ -97,7 +98,7 @@ describe("hiccupToObj", () => {
     });
 
     test("private attribute is not included in attrs", () => {
-        expect(hiccupToObj(["div", { private: { x: 1, y: 2 }}, ["span"]], idGenFn))
+        expect(hiccupToObj(["div", { private: { x: 1, y: 2 } }, ["span"]], idGenFn))
             .toEqual({
                 tag: "div",
                 attrs: { id: "xyz" },
@@ -128,6 +129,17 @@ describe("hiccupToObj", () => {
                 attrs: { id: "some-id", class: ["abc"] },
                 private: {},
                 innerText: "Inner Text"
+            });
+    });
+
+    test("attributes wich values are functions are put in a separated attribute called events", () => {
+        let onClick = x => x;
+        expect(hiccupToObj(["button", { class: ["xy"], onclick: onClick }], idGenFn))
+            .toEqual({
+                tag: "button",
+                attrs: { id: "xyz", class: ["xy"] },
+                private: {},
+                events: { onclick: onClick }
             });
     });
 });
@@ -207,5 +219,20 @@ describe("toHtml", () => {
     test("convert attributes names from to kebab case", () => {
         expect(toHtml(["i", {ukIcon: "trash"}], idGenFn))
             .toBe('<i id=\"abc\" uk-icon="trash"></i>');
+    });
+});
+
+describe("indexNodes", () => {
+    test("create a map with hiccup id's as keys", () => {
+        expect(indexNodes({ tag: "div", attrs: { id: "a" } }))
+            .toEqual({ "a": { tag: "div", attrs: { id: "a" } } });
+    });
+
+    test("traverse hiccup children", () => {
+        expect(indexNodes({ tag: "div", attrs: { id: "a" }, children: [{ tag: "i", attrs: { id: "b" }}] }))
+            .toEqual({
+                "a": { tag: "div", attrs: { id: "a" }, children: [{ tag: "i", attrs: { id: "b" }}] },
+                "b": { tag: "i", attrs: { id: "b" } }
+            });
     });
 });

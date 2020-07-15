@@ -7,20 +7,34 @@ const hiccupInnerText = remaining => _.isString(remaining[0]) ? { innerText: rem
 const parseChildren = (remaining, idGenFn) => _.map(remaining, child => hiccupToObj(child, idGenFn));
 const hiccupChildren = children => _.isEmpty(children) ? null : { children };
 const withId = (attrs, idGenFn) => (attrs || {}).id ? attrs : Object.assign( { id: idGenFn() }, attrs);
+const filterAttrs = attrs => _.reduce(
+    attrs,
+    (result, v, k) => _.isFunction(v) || k == "private" ? result : Object.assign(result, { [k]: v }),
+    {}
+);
+const events = attrs => _.reduce(attrs, (e, v, k) => _.isFunction(v) ? Object.assign(e, { [k]: v }) : e, {});
+const withEvents = (hiccupObj, events) => _.isEmpty(events) ? hiccupObj : Object.assign({}, hiccupObj, { events: events });
+const trace = x => {
+    console.log(x);
+    return x;
+};
 
 function hiccupToObj(hiccup, idGenFn) {
     const allAttrs = hiccupAttrs(hiccup) || {},
-          attrs = _.omit(allAttrs, ["attrs.private"]),
-          remaining = _.slice(hiccup, _.isEmpty(attrs) ? 1 : 2),
+          attrs = { attrs: withId(filterAttrs(allAttrs.attrs), idGenFn) },
+          remaining = _.slice(hiccup, _.isEmpty(allAttrs) ? 1 : 2),
           innerText = hiccupInnerText(remaining),
           children = parseChildren(innerText ? _.slice(remaining, 1) : _.slice(remaining, 0), idGenFn);
     return hiccup ?
-        _.merge(
-            { tag: hiccup[0] },
-            { attrs: withId(attrs.attrs, idGenFn) },
-            { private: _.get(allAttrs, "attrs.private", {}) },
-            innerText,
-            hiccupChildren(children)
+        withEvents(
+            _.merge(
+                { tag: hiccup[0] },
+                attrs,
+                { private: _.get(allAttrs, "attrs.private", {}) },
+                innerText,
+                hiccupChildren(children)
+            ),
+            events(allAttrs.attrs)
         ) :
         null;
 }
@@ -55,4 +69,14 @@ function toHtml(hiccup, idGenFn) {
     return objToHtml(hiccupToObj(hiccup, idGenFn));
 }
 
-export { toHtml, renderAttrValue, camelToKebab, hiccupToObj, objToHtml };
+const nodeId = node => _.get(node, "attrs.id");
+const indexNode = (node, index) => Object.assign({ [nodeId(node)]: node }, index);
+const indexChildren = (children, index) => _.reduce(children, (idx, child) => indexNodes(child, idx), index);
+
+function indexNodes(node, index = {}) {
+    return _.isArray(node) ?
+        indexChildren(node, index) :
+        (node ? indexNodes(node.children, indexNode(node, index)) : index);
+}
+
+export { toHtml, renderAttrValue, camelToKebab, hiccupToObj, objToHtml, indexNodes };
