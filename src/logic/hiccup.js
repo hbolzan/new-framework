@@ -14,10 +14,6 @@ const filterAttrs = attrs => _.reduce(
 );
 const events = attrs => _.reduce(attrs, (e, v, k) => _.isFunction(v) ? Object.assign(e, { [k]: v }) : e, {});
 const withEvents = (hiccupObj, events) => _.isEmpty(events) ? hiccupObj : Object.assign({}, hiccupObj, { events: events });
-const trace = x => {
-    console.log(x);
-    return x;
-};
 
 function hiccupToObj(hiccup, idGenFn) {
     const allAttrs = hiccupAttrs(hiccup) || {},
