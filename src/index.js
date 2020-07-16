@@ -1,34 +1,62 @@
 import "uikit/dist/css/uikit.css";
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
+import "js-datepicker/dist/datepicker.min.css";
 import "./css/dashboard.css";
 import Icons from "uikit/dist/js/uikit-icons";
 import UIkit from "uikit";
 
-import { complexForm } from "./components/forms/complex.js";
-import { formInputField, form } from "./components/forms/form.js";
-import { smartFields } from "./components/forms/smart_fields.js";
-import { pageHeader, leftBar, mainContent } from "./components/page/main.js";
-import { htmlToElement } from "./common/dom.js";
-import { toHtml } from "./logic/hiccup.js";
+import { toHtml, hiccupToObj, objToHtml } from "./logic/hiccup.js";
+import { complexForm } from "./views/forms/complex.js";
+import { formInputField, form } from "./views/forms/form.js";
+import { smartFields } from "./views/forms/smart_fields.js";
+import { pageHeader, leftBar, mainContent } from "./views/page/main.js";
+import { Dom } from "./components/dom.js";
 
 import { clientesDefinitions } from "./data/form_sample.js";
 import { v4 as uuidv4 } from "uuid";
 
+import datepicker from "js-datepicker";
+
 UIkit.use(Icons);
 
-let input = formInputField("ID", "uk-width-1-6"),
-    input2 = formInputField("CPF", "uk-width-1-3"),
-    fields = smartFields(clientesDefinitions),
+let fields = smartFields(clientesDefinitions),
     clientes = complexForm("Cadastro de clientes", form(...fields)),
-    page = ["section",
-            pageHeader({ src: "", url: "#" }),
-            leftBar({ src: "", url: "#" }),
-            mainContent(clientes)];
+    pageHiccup = ["section",
+                  pageHeader({ src: "", url: "#" }),
+                  leftBar({ src: "", url: "#" }),
+                  mainContent(clientes)],
+    pageDom = Dom(document, uuidv4, pageHiccup);
 
-document.querySelector("#app-body")
-    .append(htmlToElement(document, toHtml(page, uuidv4)));
+// pageDom.render("app-body");
 
+// let buttonHiccup = ["button", { onclick: x => alert(x) }, "Click Me!!"],
+//     buttonDom = Dom(document, uuidv4, buttonHiccup);
+// buttonDom.render("app-body");
+
+const inputFormatter = (input, date, instance) => {
+    input.value = date.toLocaleDateString("pt-BR");
+};
+const datePickerOptions = {
+    formatter: inputFormatter,
+    position: "br",
+    customDays: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
+    customMonths: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"],
+    customOverlayMonths: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Ou", "Nov", "Dez"],
+    overlayButton: "Confirmar",
+    overlayPlaceholder: "Digite o ano",
+    showAllDates: true,
+    respectDisabledReadOnly: true,
+};
+
+let inputHiccup = ["input",
+                   {
+                       class: ["uk-input"],
+                       type: "text",
+                       private: { init: ({ id }) => datepicker(`#${ id }`, datePickerOptions) }
+                   }],
+    inputDom = Dom(document, uuidv4, inputHiccup);
+inputDom.render("app-body");
 
 /*
 
