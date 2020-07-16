@@ -1,4 +1,4 @@
-import { buttonClasses, buttonAttrs, singleButton, buttonGroup, toolBar } from "../../src/components/button/button.js";
+import { buttonClasses, buttonAttrs, singleButton, buttonGroup, toolBar } from "../../src/views/button/button.js";
 
 describe("buttonClasses", () => {
     test("mandatory classes", () => {
