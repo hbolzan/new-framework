@@ -8,10 +8,11 @@ import UIkit from "uikit";
 
 import { toHtml, hiccupToObj, objToHtml } from "./logic/hiccup.js";
 import { complexForm } from "./views/forms/complex.js";
-import { formInputField, form } from "./views/forms/form.js";
+import { form } from "./views/forms/form.js";
 import { smartFields } from "./views/forms/smart_fields.js";
 import { pageHeader, leftBar, mainContent } from "./views/page/main.js";
-import { Dom } from "./components/dom.js";
+import { Dom } from "./components/dom/dom.js";
+import I18n from "./components/i18n/i18n.js";
 
 import { clientesDefinitions } from "./data/form_sample.js";
 import { v4 as uuidv4 } from "uuid";
@@ -20,15 +21,17 @@ import datepicker from "js-datepicker";
 
 UIkit.use(Icons);
 
+const components = { document, uuidGen: uuidv4, i18n: I18n("pt-BR") };
+
 let fields = smartFields(clientesDefinitions),
     clientes = complexForm("Cadastro de clientes", form(...fields)),
     pageHiccup = ["section",
                   pageHeader({ src: "", url: "#" }),
                   leftBar({ src: "", url: "#" }),
                   mainContent(clientes)],
-    pageDom = Dom(document, uuidv4, pageHiccup);
+    pageDom = Dom(components, pageHiccup);
 
-// pageDom.render("app-body");
+pageDom.render("app-body");
 
 // let buttonHiccup = ["button", { onclick: x => alert(x) }, "Click Me!!"],
 //     buttonDom = Dom(document, uuidv4, buttonHiccup);
@@ -55,8 +58,8 @@ let inputHiccup = ["input",
                        type: "text",
                        private: { init: ({ id }) => datepicker(`#${ id }`, datePickerOptions) }
                    }],
-    inputDom = Dom(document, uuidv4, inputHiccup);
-inputDom.render("app-body");
+    inputDom = Dom(components, inputHiccup);
+// inputDom.render("app-body");
 
 /*
 

@@ -45,7 +45,7 @@ function leftBar(logo, content) {
             ["div", { class: ["left-content-box", "content-box-dark"]},
 
              ["img", { src: "", class: ["uk-border-circle", "profile-img"] }],
-             ["h4", { class: ["uk-text-center", "uk-margin-remove-vertical", "text-light"] }, "MiniPCP"]],
+             ["h4", { class: ["uk-text-center", "uk-margin-remove-vertical", "text-light"] }, "WebMRP"]],
             ["div", { class: ["left-nav-wrap"] }],
             ["div", { class: ["bar-bottom"] }]
            ];

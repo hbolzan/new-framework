@@ -67,7 +67,7 @@ const clientesDefinitions = [
         "search-visible": true,
         "read-only": false,
         "persistent?": true,
-        "data-type": "char",
+        "data-type": "date",
         "alignment": "default",
         "default": null,
         "size": 20,
