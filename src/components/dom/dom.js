@@ -1,6 +1,6 @@
-import { hiccupToObj, objToHtml, indexNodes } from "../logic/hiccup.js";
+import { hiccupToObj, objToHtml, indexNodes } from "../../logic/hiccup.js";
 
-function Dom(document, uuidGen, hiccup) {
+function Dom({ document, uuidGen, i18n }, hiccup) {
     const asObj = hiccupToObj(hiccup, uuidGen),
           hiccupHashMap = indexNodes(asObj),
           asHtml = objToHtml(asObj);
@@ -16,11 +16,10 @@ function Dom(document, uuidGen, hiccup) {
 
     function initNode(node) {
         if ( node.private.init ) {
-            node.private.init({
-                id: node.attrs.id,
-                self: node,
-                document: document,
-            });
+            node.private.init(
+                { id: node.attrs.id, self: node },
+                { i18n, document }
+            );
         }
     }
 
