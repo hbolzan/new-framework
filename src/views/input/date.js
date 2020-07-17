@@ -27,9 +27,7 @@ function dateInput(field) {
     return ["div",
             ["div", { class: ["uk-inline" ]},
              ["input", Object.assign(basicInputAttrs(field), { private: init(), style: { cursor: "pointer"} })],
-             ["span", {
-                 class: ["uk-form-icon", "uk-form-icon-flip"], ukIcon: "calendar", style: { cursor: "pointer"}
-             }],
+             ["span", { class: ["uk-form-icon", "uk-form-icon-flip"], ukIcon: "calendar" }],
             ]];
 }
 export default dateInput;
