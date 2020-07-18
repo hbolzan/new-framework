@@ -75,4 +75,6 @@ function indexNodes(node, index = {}) {
         (node ? indexNodes(node.children, indexNode(node, index)) : index);
 }
 
-export { toHtml, renderAttrValue, camelToKebab, hiccupToObj, objToHtml, indexNodes };
+const mergeAttrs = (base, local) => _.defaultsDeep(base, local);
+
+export { toHtml, renderAttrValue, camelToKebab, hiccupToObj, objToHtml, indexNodes, mergeAttrs };

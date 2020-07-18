@@ -1,9 +1,9 @@
-import { basicInputAttrs } from "./base.js";
+import { inputAttrs } from "./base.js";
 import select from "./select.js";
 import dateInput from "./date.js";
 
-const hidden = field => ["input", basicInputAttrs(field, "hidden")];
-const text = (field) => ["input", basicInputAttrs(field)];
+const hidden = field => ["input", inputAttrs(field, {}, "hidden")];
+const text = (field) => ["input", inputAttrs(field)];
 
 const inputByType = {
     "data/char": text,

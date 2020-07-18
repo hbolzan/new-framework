@@ -15,12 +15,10 @@ function Dom({ document, uuidGen, i18n }, hiccup) {
     }
 
     function initNode(node) {
-        if ( node.private.init ) {
-            node.private.init(
-                { id: node.attrs.id, self: node },
-                { i18n, document }
-            );
-        }
+        _.each(node.private, (value, name) => _.isFunction(value) ?
+               value({ id: node.attrs.id, self: node },
+                     { i18n, document }) :
+               null);
     }
 
     function render(parentNodeId) {
@@ -31,11 +29,16 @@ function Dom({ document, uuidGen, i18n }, hiccup) {
         });
     }
 
+    function findFirst(attrName, value) {
+        return _.filter(hiccupHashMap, node => _.get(node, attrName) == value)[0];
+    }
+
     return {
         hiccup,
         asObj,
         asHtml,
         render,
+        findFirst,
     };
 }
 

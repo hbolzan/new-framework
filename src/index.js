@@ -21,45 +21,27 @@ import datepicker from "js-datepicker";
 
 UIkit.use(Icons);
 
-const components = { document, uuidGen: uuidv4, i18n: I18n("pt-BR") };
+function pageDom() {
+    const components = {
+        document,
+        uuidGen: uuidv4,
+        i18n: I18n("pt-BR"),
+    };
 
-let fields = smartFields(clientesDefinitions),
-    clientes = complexForm("Cadastro de clientes", form(...fields)),
-    pageHiccup = ["section",
-                  pageHeader({ src: "", url: "#" }),
-                  leftBar({ src: "", url: "#" }),
-                  mainContent(clientes)],
-    pageDom = Dom(components, pageHiccup);
+    let fields = smartFields(clientesDefinitions),
+        clientes = complexForm("Cadastro de clientes", form(...fields)),
+        pageHiccup = ["section",
+                      pageHeader({ src: "", url: "#" }),
+                      leftBar({ src: "", url: "#" }),
+                      mainContent(clientes)];
+    return Dom(components, pageHiccup);
+}
 
-pageDom.render("app-body");
-
-// let buttonHiccup = ["button", { onclick: x => alert(x) }, "Click Me!!"],
-//     buttonDom = Dom(document, uuidv4, buttonHiccup);
-// buttonDom.render("app-body");
-
-const inputFormatter = (input, date, instance) => {
-    input.value = date.toLocaleDateString("pt-BR");
-};
-const datePickerOptions = {
-    formatter: inputFormatter,
-    position: "br",
-    customDays: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
-    customMonths: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"],
-    customOverlayMonths: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Ou", "Nov", "Dez"],
-    overlayButton: "Confirmar",
-    overlayPlaceholder: "Digite o ano",
-    showAllDates: true,
-    respectDisabledReadOnly: true,
-};
-
-let inputHiccup = ["input",
-                   {
-                       class: ["uk-input"],
-                       type: "text",
-                       private: { init: ({ id }) => datepicker(`#${ id }`, datePickerOptions) }
-                   }],
-    inputDom = Dom(components, inputHiccup);
-// inputDom.render("app-body");
+let dom = pageDom();
+dom.render("app-body");
+let idField = dom.findFirst("attrs.name", "id");
+console.log(idField);
+idField.value("XYZ");
 
 /*
 

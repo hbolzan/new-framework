@@ -1,5 +1,5 @@
 import { _ } from "../../node_modules/lodash/lodash.js";
-import { toHtml, renderAttrValue, camelToKebab, hiccupToObj, objToHtml, indexNodes }
+import { toHtml, renderAttrValue, camelToKebab, hiccupToObj, objToHtml, indexNodes, mergeAttrs }
 from "../../src/logic/hiccup.js";
 
 /** hiccup notation
@@ -234,5 +234,12 @@ describe("indexNodes", () => {
                 "a": { tag: "div", attrs: { id: "a" }, children: [{ tag: "i", attrs: { id: "b" }}] },
                 "b": { tag: "i", attrs: { id: "b" } }
             });
+    });
+});
+
+describe("mergeAttrs", () => {
+    test("merge hiccup attrs object", () => {
+        expect(mergeAttrs({ class: "x", private: { x: 1 }}, { style: "y", private: { y: 2 } }))
+            .toEqual({ class: "x", style: "y", private: { x: 1, y: 2 } });
     });
 });
