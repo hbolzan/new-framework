@@ -1,21 +1,25 @@
 import Inputmask from "inputmask";
+import { parseMask } from "../../logic/mask.js";
 import { inputAttrs } from "./base.js";
 
-function inputMask(i18n, digits) {
-    return Inputmask({
-        alias: "decimal",
-        radixPoint: i18n.translate("inputMaskDecimalSeparetor"),
-        groupSeparator: i18n.translate("inputMaskGroupSeparator"),
-        digits: digits,
-    });
+function inputMask(i18n, options) {
+    return Inputmask(
+        Object.assign(
+            {
+                radixPoint: i18n.translate("inputMaskDecimalSeparetor"),
+                groupSeparator: i18n.translate("inputMaskGroupSeparator"),
+                prefix: "",
+            },
+            options,
+        )
+    );
 }
 
-function init({ id }, { document, i18n }) {
-    inputMask(i18n, 0).mask(document.getElementById(id));
-}
+const initFn = (options) => ({ id }, { document, i18n }) =>
+      inputMask(i18n, options).mask(document.getElementById(id));
 
-function integer(field) {
-    return ["input", inputAttrs(field, { private: { init: init } })];
-}
+const numeric = (field, options) => ["input", inputAttrs(field, { private: { init: initFn(options)} })];
+const integer = field => numeric(field, { alias: "integer" });
+const float = field => numeric(field, parseMask(field.mask));
 
-export { integer };
+export { integer, float };

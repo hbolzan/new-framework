@@ -1,4 +1,3 @@
-import { _ } from "../../node_modules/lodash/lodash.js";
 import { toHtml, renderAttrValue, camelToKebab, hiccupToObj, objToHtml, indexNodes, mergeAttrs }
 from "../../src/logic/hiccup.js";
 
