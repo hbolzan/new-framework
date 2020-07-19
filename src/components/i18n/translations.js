@@ -1,5 +1,7 @@
 const translations = {
     "pt-BR": {
+        inputMaskDateInputFormat: "dd/mm/yyyy",
+        inputMaskDatePlaceHolder: "dd/mm/aaaa",
         "Submit": "Confirmar",
         "4-digit-year": "Ano no formato AAAA",
         abbreviatedWeekDays: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],

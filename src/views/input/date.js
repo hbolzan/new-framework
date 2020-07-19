@@ -1,5 +1,6 @@
 import { trace } from "../../common/misc.js";
 import datepicker from "js-datepicker";
+import Inputmask from "inputmask";
 import { inputAttrs } from "./base.js";
 
 const datePickerFormatter = locale => (input, date, instance) => {
@@ -20,8 +21,14 @@ function datePickerOptions(i18n) {
     };
 }
 
-function init ({ id }, { i18n }) {
+function init ({ id }, { document, i18n }) {
     datepicker(`#${ id }`, datePickerOptions(i18n));
+    Inputmask({
+        alias: "datetime",
+        inputFormat: i18n.translate("inputMaskDateInputFormat"),
+        placeholder: i18n.translate("inputMaskDatePlaceHolder"),
+        clearIncomplete: true
+    }).mask(document.getElementById(id));
 }
 
 function dateInput(field) {

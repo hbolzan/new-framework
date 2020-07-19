@@ -17,8 +17,6 @@ import I18n from "./components/i18n/i18n.js";
 import { clientesDefinitions } from "./data/form_sample.js";
 import { v4 as uuidv4 } from "uuid";
 
-import datepicker from "js-datepicker";
-
 UIkit.use(Icons);
 
 function pageDom() {
@@ -40,7 +38,6 @@ function pageDom() {
 let dom = pageDom();
 dom.render("app-body");
 let idField = dom.findFirst("attrs.name", "id");
-console.log(idField);
 idField.value("XYZ");
 
 /*
