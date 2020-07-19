@@ -27,7 +27,7 @@ function init ({ id }, { document, i18n }) {
         alias: "datetime",
         inputFormat: i18n.translate("inputMaskDateInputFormat"),
         placeholder: i18n.translate("inputMaskDatePlaceHolder"),
-        clearIncomplete: true
+        clearIncomplete: true,
     }).mask(document.getElementById(id));
 }
 
