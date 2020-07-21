@@ -38,7 +38,8 @@ function pageDom() {
 let dom = pageDom();
 dom.render("app-body");
 let idField = dom.findFirst("attrs.name", "id");
-idField.value("XYZ");
+idField.value(12345.67);
+dom.findFirst("attrs.name", "dados_adicionais").value("Teste de campo Memo");
 
 /*
 

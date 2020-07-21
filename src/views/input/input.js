@@ -3,6 +3,7 @@ import select from "./select.js";
 import dateInput from "./date.js";
 import maskedInput from "./masked_input.js";
 import { integer, float } from "./numeric.js";
+import textArea from "./text_area.js";
 
 const hidden = field => ["input", inputAttrs(field, {}, "hidden")];
 const text = field => field.mask ? maskedInput(field) : ["input", inputAttrs(field)];
@@ -12,6 +13,7 @@ const inputByType = {
     "data/integer": integer,
     "data/float": float,
     "data/date": dateInput,
+    "data/memo": textArea,
     "lookup/char": select,
     "lookup/integer": select,
     "hidden": hidden,

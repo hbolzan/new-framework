@@ -979,7 +979,7 @@ const clientesDefinitions = [
         "alignment": "default",
         "default": null,
         "size": 4,
-        "width": 30,
+        "width": 80,
         "lookup-key": "",
         "lookup-result": "",
         "lookup-filter": "",

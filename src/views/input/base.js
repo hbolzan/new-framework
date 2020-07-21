@@ -22,4 +22,4 @@ const basicInputAttrs = (field, type) => {
 
 const inputAttrs = (field, attrs = {}, type = "text") => mergeAttrs(basicInputAttrs(field, type), attrs);
 
-export { inputAttrs };
+export { initValueGetterSetter, inputAttrs };
