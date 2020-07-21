@@ -10,7 +10,11 @@ function titleBar(title) {
 }
 
 function containerHeader(formTitle, ...children) {
-    return ["div", { class: ["uk-card-header"], style: { padding: "10px" } },
+    return ["div", {
+        class: ["uk-card-header"],
+        style: { padding: "10px", zIndex: 980, backgroundColor: "#fdfdfd" },
+        ukSticky: "bottom: #offset",
+    },
             ["div", { class: ["container"], style: { height: "60px" } },
              titleBar(formTitle),
              ...children]];
