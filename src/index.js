@@ -40,6 +40,7 @@ dom.render("app-body");
 let idField = dom.findFirst("attrs.name", "id");
 idField.value(12345.67);
 dom.findFirst("attrs.name", "dados_adicionais").value("Teste de campo Memo");
+dom.findFirst("attrs.name", "tipo_de_pessoa").value("J");
 
 /*
 
