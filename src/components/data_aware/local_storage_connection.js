@@ -14,12 +14,16 @@ function _delete(params, resource) {
     return true;
 }
 
+function promiseRequest(resolveFn, ...args) {
+    return new Promise((resolve, reject) => resolve(resolveFn(...args)));
+}
+
 function LocaStorageConnection(params) {
     return DataConnection(params, {
-        get: _get,
-        delete: _delete,
-        post: _set,
-        put: _set,
+        get: (params, resource) => promiseRequest(_get, params, resource),
+        delete: (params, resource) => promiseRequest(_delete, params, resource),
+        post: (params, resource, payload) => promiseRequest(_set, params, resource, payload),
+        put: (params, resource, payload) => promiseRequest(_set, params, resource, payload),
     });
 }
 
