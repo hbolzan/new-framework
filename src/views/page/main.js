@@ -51,10 +51,12 @@ function leftBar(logo, content) {
            ];
 }
 
-function mainContent(content = []) {
+function mainContent(content = [], containerId) {
     return ["div", { id: "content", dataUkHeightViewport: { expand: true } },
-            ["div", { class: ["uk-container", "uk-container-expand"] },
-             content]];
+            ["div", Object.assign(
+                { class: ["uk-container", "uk-container-expand"] },
+                containerId ? { id: containerId } : {}
+            ), content]];
 }
 
 export { pageHeader, leftBar, mainContent };
