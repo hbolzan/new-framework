@@ -21,17 +21,19 @@ describe("LocalStorageConnection", () => {
     let storage = LocaStorageConnection(params);
     it("posts data to resource", () => {
         expect.assertions(1);
-        return storage.post("test", { a: 1, b: 2}).then(data => expect(data).toEqual({ a: 1, b: 2}));
+        return storage.post("test", { a: 1, b: 2 })
+            .then(data => expect(data).toEqual({ status: "OK", data: [{ a: 1, b: 2 }]}));
     });
 
     it("gets data from resource", () => {
         expect.assertions(1);
-        return storage.get("test").then(data => expect(data).toEqual({ a: 1, b: 2}));
+        return storage.get("test")
+            .then(data => expect(data).toEqual({ status: "OK", data: [{ a: 1, b: 2 }]}));
     });
 
     it("deletes resource", () => {
         expect.assertions(2);
         storage.delete("test").then(result => expect(result).toBe(true));
-        return storage.get("test").then(data => expect(data).toBeUndefined());
+        return storage.get("test").then(data => expect(data).toEqual({ status: "OK", data: [] }));
     });
 });

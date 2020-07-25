@@ -13,11 +13,18 @@ import { smartFields } from "./views/forms/smart_fields.js";
 import { pageHeader, leftBar, mainContent } from "./views/page/main.js";
 import { Dom } from "./components/dom/dom.js";
 import I18n from "./components/i18n/i18n.js";
+import HttpConnection from "./components/data_aware/http_connection.js";
 
 import { clientesDefinitions } from "./data/form_sample.js";
 import { v4 as uuidv4 } from "uuid";
 
 UIkit.use(Icons);
+
+function buildComplexForm(dataConnection, complexId) {
+    return dataConnection
+        .get(`/api/query/persistent/complex-tables/?id=${ complexId }&middleware=complex_forms&depth=1`)
+        .then(resp => complexForm(resp.data[0].title, smartFields(resp.data[0]["fields-defs"])));
+}
 
 function pageDom() {
     const components = {
@@ -25,22 +32,23 @@ function pageDom() {
         uuidGen: uuidv4,
         i18n: I18n("pt-BR"),
     };
+    const connection = HttpConnection({ host: "http://127.0.0.1:8000"});
 
-    let fields = smartFields(clientesDefinitions),
-        clientes = complexForm("Cadastro de clientes", form(...fields)),
-        pageHiccup = ["section",
-                      pageHeader({ src: "", url: "#" }),
-                      leftBar({ src: "", url: "#" }),
-                      mainContent(clientes)];
-    return Dom(components, pageHiccup);
+    return buildComplexForm(connection, "CAD_FORNECEDORES")
+        .then(fornecedores => {
+            let pageHiccup = ["section",
+                              pageHeader({ src: "", url: "#" }),
+                              leftBar({ src: "", url: "#" }),
+                              mainContent(fornecedores)];
+            return Dom(components, pageHiccup);
+        });
 }
 
-let dom = pageDom();
-dom.render("app-body");
-let idField = dom.findFirst("attrs.name", "id");
-idField.value(12345.67);
-dom.findFirst("attrs.name", "dados_adicionais").value("Teste de campo Memo");
-dom.findFirst("attrs.name", "tipo_de_pessoa").value("J");
+pageDom().then(dom => dom.render("app-body"));
+// let idField = dom.findFirst("attrs.name", "id");
+// idField.value(12345.67);
+// dom.findFirst("attrs.name", "dados_adicionais").value("Teste de campo Memo");
+// dom.findFirst("attrs.name", "tipo_de_pessoa").value("J");
 
 /*
 

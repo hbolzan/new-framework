@@ -1,7 +1,10 @@
 import DataConnection from "./data_connection.js";
 
 function _get(params, resource) {
-    return params.JSON.parse(params.localStorage.getItem(resource));
+    return {
+        status: "OK",
+        data: [params.JSON.parse(params.localStorage.getItem(resource))].filter(x => x != undefined),
+    };
 };
 
 function _set(params, resource, payload) {

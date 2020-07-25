@@ -10,9 +10,9 @@ function smartFields(defs) {
         visibleRows,
         row => ["div",
                 { class: "uk-grid-small", ukGrid: "uk-grid" },
-                ...(_.map(row, field => formField(field))),
-                ..._.map(hiddenFields, field => hidden(field))
-               ]
+                ...(_.map(row, field => formField(field))),]
+    ).concat(
+        _.map(hiddenFields, field => hidden(field))
     );
 }
 

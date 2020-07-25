@@ -49,7 +49,7 @@ function formToolBar() {
 function complexForm(formTitle, masterContents, detailContents) {
     return formContainer(
         containerHeader(formTitle, formToolBar()),
-        containerBody(masterContents)
+        containerBody(...masterContents)
     );
 }
 
