@@ -8,7 +8,8 @@ import { v4 as uuidv4 } from "uuid";
 
 UIkit.use(Icons);
 
-const host = () => "http://127.0.0.1:8000";
+const host = () => "http://127.0.0.1:8000",
+      complexFormsResource = () => "/api/query/persistent/complex-tables/?middleware=complex_forms&depth=1&id=";
 
 const baseComponents = {
     document,
@@ -16,9 +17,7 @@ const baseComponents = {
     HttpConnection,
     uuidGen: uuidv4,
     i18n: I18n("pt-BR"),
-    formsConnection: HttpConnection({
-        host: `${ host() }/api/query/persistent/complex-tables/?middleware=complex_forms&depth=1&id=`
-    }),
+    formsConnection: HttpConnection({ host: `${ host() }${ complexFormsResource() }` }),
 };
 
 const components = Object.assign(
