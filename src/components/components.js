@@ -24,7 +24,7 @@ const baseComponents = {
 const components = Object.assign(
     baseComponents,
     {
-        pageDom: containerId => pageDom(baseComponents, containerId),
+        pageDom: mainContainerId => pageDom(baseComponents, mainContainerId),
         ComplexForm: (...params) => ComplexFormDom(baseComponents, ...params),
     }
 );

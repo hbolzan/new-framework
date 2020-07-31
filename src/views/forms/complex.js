@@ -1,13 +1,13 @@
 import { containerHeader, containerBody, containerFooter, formContainer } from "./container.js";
 import { singleButton, buttonGroup, toolBar } from "../button/button.js";
 
-function newToolButton(icon) {
+function newToolButton(icon, attrs = {}) {
     return singleButton({
-        attrs: {
+        attrs: Object.assign({
             class: ["uk-button-large"],
             ukIcon: icon,
             style: { padding: "0", width: "55px", backgroundColor: "#fdfdfd" }
-        }
+        }, attrs)
     });
 }
 
