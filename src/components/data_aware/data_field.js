@@ -1,5 +1,4 @@
 import BaseComponent from "../common/base.js";
-import { runEvent } from "../common/controller.js";
 
 const events = {
     onChange: "change",
@@ -8,6 +7,7 @@ const events = {
 const isDataSet = dataSet =>
       _.isObject(dataSet) &&
       _.isFunction(dataSet.edit) &&
+      _.isFunction(dataSet.afterDelete) &&
       _.isFunction(dataSet.afterPost);
 
 function initialRegisteredEvents(self, dataSet) {
@@ -17,8 +17,7 @@ function initialRegisteredEvents(self, dataSet) {
 function DataField(fieldDef, dataSet) {
     let self = BaseComponent(),
         value = fieldDef.default || null,
-        oldValue = value,
-        dataSetAfterPostHandler = () => oldValue = value;
+        oldValue = value;
 
     // TODO: value data type validation
     function setValue(newValue) {
@@ -26,13 +25,14 @@ function DataField(fieldDef, dataSet) {
             return;
         }
         value = newValue;
-        runEvent(events.onChange, registeredEvents, [self, value]);
+        self.events.run(events.onChange, [self, value]);
     }
 
     function init() {
         if (isDataSet(dataSet)) {
-            dataSet.afterPost(dataSetAfterPostHandler);
-            self.on(events.onChange, () => dataSet.edit(), {});
+            let dataSetAfterPostKey = dataSet.afterPost(() => oldValue = value);
+            dataSet.afterDelete(() => dataSet.events.off(dataSetAfterPostKey));
+            self.events.on(events.onChange, () => dataSet.edit());
         }
     }
     init();
@@ -43,7 +43,7 @@ function DataField(fieldDef, dataSet) {
             ...fieldDef,
             value: (newValue) => _.isUndefined(newValue) ? value : setValue(newValue),
             valueChanged: () => value != oldValue,
-            onChange: handler => self.on(events.onChange, handler),
+            onChange: handler => self.events.on(events.onChange, handler),
         });
 }
 

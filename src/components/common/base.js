@@ -1,16 +1,24 @@
 import { registerEvent, unregisterEvent } from "../../logic/components.js";
 
+function runEvent(event, registeredEvents, args) {
+    console.log(registeredEvents);
+    _.each(registeredEvents[event], handler => handler(...args));
+}
+
 function BaseComponent() {
     let registeredEvents = {};
 
     function onEvent(event, handler) {
-        registeredEvents = registerEvent;
+        registeredEvents = registerEvent(event, handler, registeredEvents);
         return [event, handler];
     }
 
     return {
-        on: (event, handler) => onEvent(event, handler),
-        off: (eventKey) => registeredEvents = unregisterEvent(eventKey, registeredEvents),
+        events: {
+            on: (event, handler) => onEvent(event, handler),
+            off: (eventKey) => registeredEvents = unregisterEvent(eventKey, registeredEvents),
+            run: (event, args) => runEvent(event, registeredEvents, args),
+        },
     };
 };
 

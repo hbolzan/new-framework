@@ -3,6 +3,7 @@ import { DataField } from "../../../src/components/data_aware/data_field.js";
 const mockedDataSet = {
     edit: jest.fn(),
     afterPost: jest.fn(),
+    afterDelete: jest.fn(),
 };
 
 const fieldsDefs = [
@@ -13,10 +14,10 @@ const fieldsDefs = [
 
 describe("DataField", () => {
 
-    it("self registers in dataset afterPost listener", () => {
+    it("self registers in dataset afterPost and afterDelete events", () => {
         DataField(fieldsDefs[0], mockedDataSet);
         expect(mockedDataSet.afterPost).toHaveBeenCalled();
-        // expect(mockedDataSet.edit).toHaveBeenCalledTimes(0);
+        expect(mockedDataSet.afterDelete).toHaveBeenCalled();
     });
 
     it("is initialized with fieldDef default value", () => {
