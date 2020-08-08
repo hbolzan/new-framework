@@ -1,30 +1,50 @@
-const newValue = fieldDef => fieldDef.default || null;
+import BaseComponent from "../common/base.js";
+import { runEvent } from "../common/controller.js";
+
 const events = {
     onChange: "change",
 };
 
-// TODO: value data type validation
+const isDataSet = dataSet =>
+      _.isObject(dataSet) &&
+      _.isFunction(dataSet.edit) &&
+      _.isFunction(dataSet.afterPost);
 
-function DataField(fieldDef, dataSource) {
-    let value = newValue(fieldDef),
+function initialRegisteredEvents(self, dataSet) {
+    return isDataSet(dataSet) ? registerEvent(events.onChange, () => dataSet.edit(), {}) : {};
+}
+
+function DataField(fieldDef, dataSet) {
+    let self = BaseComponent(),
+        value = fieldDef.default || null,
         oldValue = value,
-        registeredEvents = {};
+        dataSetAfterPostHandler = () => oldValue = value;
 
+    // TODO: value data type validation
     function setValue(newValue) {
         if (newValue == value) {
             return;
         }
-        value = newValue();
-        // dataSource.edit();
+        value = newValue;
+        runEvent(events.onChange, registeredEvents, [self, value]);
     }
 
-    function registerEvents(event, handler) {
-
+    function init() {
+        if (isDataSet(dataSet)) {
+            dataSet.afterPost(dataSetAfterPostHandler);
+            self.on(events.onChange, () => dataSet.edit(), {});
+        }
     }
+    init();
 
-    return {
-        ...fieldDef,
-        value: (newValue) => _.isUndefined(newValue) ? value : setValue(newValue),
-        onChange: handler => registerEvent(events.onChange, handler)
-    };
+    return Object.assign(
+        self,
+        {
+            ...fieldDef,
+            value: (newValue) => _.isUndefined(newValue) ? value : setValue(newValue),
+            valueChanged: () => value != oldValue,
+            onChange: handler => self.on(events.onChange, handler),
+        });
 }
+
+export { DataField };

@@ -11,28 +11,26 @@ const recordSates = {
     edit: "edit",
 };
 
-const newValue = fieldDef => fieldDef.default || null;
-
-function newRecord(fieldsDefs) {
+function newRecord(fieldsDefs, dataSet, DataField) {
     return {
         state: recordSates.new,
         record: _.reduce(
             fieldsDefs,
-            (record, fieldDef) => Object.assign({ [fieldDef.name]: newValue(fieldDef) }, record),
+            (record, fieldDef) => Object.assign({ [fieldDef.name]: DataField(fieldDef, dataSet) }, record),
             {}
         )};
 }
 
-function appendRecord(data, fieldsDefs) {
+function appendRecord(dataSet, fieldsDefs, DataField, data) {
     return  Object.assign(
         {},
         data,
         {
-            records: data.records.concat([newRecord(fieldsDefs)]),
+            records: data.records.concat(newRecord(fieldsDefs, dataSet, DataField)),
             recordIndex: data.records.length+1,
             state: datasetStates.insert,
         }
     );
 };
 
-export { datasetStates, recordSates, newRecord };
+export { datasetStates, recordSates, appendRecord };

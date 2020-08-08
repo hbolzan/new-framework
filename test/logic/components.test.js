@@ -1,4 +1,4 @@
-import { registerEvent } from "../../src/logic/components.js";
+import { registerEvent, unregisterEvent } from "../../src/logic/components.js";
 
 const dummyHandler = (x) => x,
       otherHandler = (y) => y,
@@ -24,5 +24,46 @@ describe("registerEvent", () => {
                 { click: [dummyHandler], change: [otherHandler] }
             )
         ).toEqual({ click: [dummyHandler], change: [otherHandler, changeHandler] });
+    });
+});
+
+describe("unregisterEvent", () => {
+    let handlerA = (x) => x,
+        handlerB = (y) => y,
+        handlerC = (z) => z,
+        handlerD = (t) => t,
+        handlerE = (w) => w;
+
+    it("removes a handler from event handlers list", () => {
+        expect(
+            unregisterEvent(
+                ["click", handlerB],
+                { click: [handlerA, handlerB, handlerC], change: [handlerD, handlerE] }
+            )
+        ).toEqual(
+            { click: [handlerA, handlerC], change: [handlerD, handlerE] }
+        );
+    });
+
+    it("does nothing if handler is not in the events list", () => {
+        expect(
+            unregisterEvent(
+                ["click", handlerB],
+                { click: [handlerA, handlerC], change: [handlerD, handlerE] }
+            )
+        ).toEqual(
+            { click: [handlerA, handlerC], change: [handlerD, handlerE] }
+        );
+    });
+
+    it("does nothing if event doesn't exist", () => {
+        expect(
+            unregisterEvent(
+                ["click", handlerB],
+                { change: [handlerD, handlerE] }
+            )
+        ).toEqual(
+            { change: [handlerD, handlerE] }
+        );
     });
 });
