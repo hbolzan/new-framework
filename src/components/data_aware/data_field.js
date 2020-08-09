@@ -47,4 +47,4 @@ function DataField(fieldDef, dataSet) {
         });
 }
 
-export { DataField };
+export default DataField;

@@ -1,4 +1,4 @@
-import { DataField } from "../../../src/components/data_aware/data_field.js";
+import DataField from "../../../src/components/data_aware/data_field.js";
 
 const mockedDataSet = {
     edit: jest.fn(),
