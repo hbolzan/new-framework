@@ -7,14 +7,9 @@ const events = {
 const isDataSet = dataSet =>
       _.isObject(dataSet) &&
       _.isFunction(dataSet.edit) &&
-      _.isFunction(dataSet.afterDelete) &&
       _.isFunction(dataSet.afterPost);
 
-function initialRegisteredEvents(self, dataSet) {
-    return isDataSet(dataSet) ? registerEvent(events.onChange, () => dataSet.edit(), {}) : {};
-}
-
-function DataField(fieldDef, dataSet) {
+function DataField(fieldDef, dataSet, eventHandlers) {
     let self = BaseComponent(),
         value = fieldDef.default || null,
         oldValue = value;
@@ -29,10 +24,10 @@ function DataField(fieldDef, dataSet) {
     }
 
     function init() {
+        _.each(eventHandlers, ({ event, handler }) => self.events.on(event, handler));
         if (isDataSet(dataSet)) {
-            let dataSetAfterPostKey = dataSet.afterPost(() => oldValue = value);
-            dataSet.afterDelete(() => dataSet.events.off(dataSetAfterPostKey));
-            self.events.on(events.onChange, () => dataSet.edit());
+            // TODO: listen to dataset onDataChange event
+            dataSet.afterPost(() => oldValue = value);
         }
     }
     init();

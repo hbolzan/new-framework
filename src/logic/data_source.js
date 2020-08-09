@@ -11,26 +11,36 @@ const recordSates = {
     edit: "edit",
 };
 
-function newRecord(fieldsDefs, dataSet, DataField) {
-    return {
-        state: recordSates.new,
-        record: _.reduce(
-            fieldsDefs,
-            (record, fieldDef) => Object.assign({ [fieldDef.name]: DataField(fieldDef, dataSet) }, record),
-            {}
-        )};
+function dataFields({ self, fieldsDefs, DataField, onChangeHandler }) {
+    return _.reduce(
+        fieldsDefs,
+        (fields, fieldDef) => Object.assign({ [fieldDef.name]: DataField(fieldDef, dataSet) }, fields),
+        {}
+    );
 }
 
-function appendRecord(dataSet, fieldsDefs, DataField, data) {
+function newRow(fieldsDefs, rowData={}) {
+    return _.reduce(
+        fieldsDefs,
+        (row, fieldDef) => Object.assign(
+            {},
+            row,
+            { [fieldDef.name]: rowData[fieldDef.name] || fieldDef.default || null }
+        ),
+        {}
+    );
+}
+
+function appendRow(data, fieldsDefs, rowData) {
     return  Object.assign(
         {},
         data,
         {
-            records: data.records.concat(newRecord(fieldsDefs, dataSet, DataField)),
+            rows: data.rows.concat(newRow(fieldsDefs, rowData)),
             recordIndex: data.records.length+1,
             state: datasetStates.insert,
         }
     );
 };
 
-export { datasetStates, recordSates, appendRecord };
+export { datasetStates, recordSates, dataFields, newRow, appendRow };

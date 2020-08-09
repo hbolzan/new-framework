@@ -1,6 +1,5 @@
-import { datasetStates, recordSates, appendRecord } from "../../logic/data_source.js";
+import { datasetStates, recordSates, dataFields, newRow, appendRow } from "../../logic/data_source.js";
 import BaseComponent from "../common/base.js";
-import DataField from "./data_field.js";
 
 const events = {
     beforeEdit: "beforeEdit",
@@ -20,10 +19,10 @@ const events = {
 };
 
 const navMethods = {
-    first: (data) => data.records.length > 0 ? 0 : data.recordIndex,
+    first: (data) => data.rows.length > 0 ? 0 : data.recordIndex,
     prior: (data) => data.recordIndex > 0 ? data.recordIndex - 1 : data.recordIndex,
-    next: (data) => data.recordIndex < data.records.length - 1 ? data.recordIndex + 1 : data.recordIndex,
-    last: (data) => data.records.length - 1,
+    next: (data) => data.recordIndex < data.rows.length - 1 ? data.recordIndex + 1 : data.recordIndex,
+    last: (data) => data.rows.length - 1,
 };
 
 function throwIfInactive(self, data) {
@@ -35,38 +34,48 @@ function throwIfInactive(self, data) {
     }
 }
 
-function emptyData() {
+function resetData({ rows, recordIndex, state }) {
     return {
-        records: [],
-        recordIndex: -1,
-        state: datasetStates.inactive,
+        rows: rows || [],
+        recordIndex: recordIndex || -1,
+        state: state || datasetStates.inactive,
         modified: false,
     };
 }
 
-function DataSet({ connection, fieldsDefs }) {
+function fieldChangeHandler(self) {
+    dataField => self.events.run(events.onDataChange, [self, dataField]);
+}
+
+function DataSet({ connection, DataField, fieldsDefs }) {
     let self = BaseComponent(),
-        data = emptyData();
+        fields = dataFields({
+            self,
+            fieldsDefs,
+            DataField,
+            onChangeHandler: fieldChangeHandler(self),
+        }),
+        data = resetData();
+
+    function loadData(newRows) {
+        let rows = _.map(newRows, rowData => newRow(fieldsDefs, rowData));
+        data = resetData({
+            rows,
+            recordIndex: navMethods["first"](data),
+            state: datasetStates.browse
+        });
+        self.events.run(events.onDataChange, [self]);
+        self.events.run(events.onStateChange, [self, data.state]);
+        self.events.run(events.afterScroll, [self]);
+    }
 
     function append() {
         throwIfInactive(self, data);
         self.events.run(events.beforeInsert, [self]);
-        data = appendRecord(self, fieldsDefs, DataField, data);
+        data = appendRow(data, fieldsDefs);
         self.events.run(events.afterInsert, [self]);
         self.events.run(events.onStateChange, [self, data.state]);
-        return data.records[data.recordIndex];
-    }
-
-    function loadData(records) {
-        data = emptyData;
-        _.each(records, record => {
-            data = appendRecord(self, fieldsDefs, DataField, data);
-        });
-        data.state = datasetStates.browse;
-        self.events.run(events.onDataChange, [self]);
-        self.events.run(events.onStateChange, [self, data.state]);
-        data.recordIndex = navMethods["first"](data);
-        self.events.run(events.afterScroll, [self]);
+        return data.rows[data.recordIndex];
     }
 
     function edit() {
@@ -93,7 +102,7 @@ function DataSet({ connection, fieldsDefs }) {
 
     function commit() {
         self.events.run(events.beforeCommit, [self]);
-        // TODO: implement commit to API action
+        // TODO: implement commit to API action (modified must be reset to false)
         data.state = datasetStates.browse;
         self.events.run(events.afterCommit, [self]);
         self.events.run(events.onStateChange, [self, data.state]);
@@ -101,16 +110,20 @@ function DataSet({ connection, fieldsDefs }) {
 
     function _delete() {
         self.events.run(events.beforeDelete, [self]);
-        // TODO: implement delete action
+        // TODO: implement delete action (modified must be true)
         data.state = datasetStates.browse;
         self.events.run(events.afterDelete, [self]);
         self.events.run(events.onStateChange, [self, data.state]);
     }
 
     function navigate(direction) {
+        let recordIndex = data.recordIndex;
         self.events.run(events.beforeScroll, [self]);
         data.recordIndex = navMethods[direction](data);
         self.events.run(events.afterScroll, [self]);
+        if (data.recordIndex != recordIndex) {
+            self.events.run(events.onDataChange, [self]);
+        };
     }
 
     return Object.assign(
@@ -125,7 +138,7 @@ function DataSet({ connection, fieldsDefs }) {
         _.reduce(navMethods, (nav, _, d) => Object.assign({}, nav, { [direction]: navigate(d) }), {}),
 
         {
-            records: () => data.records,
+            rows: () => data.rows,
             recordIndex: () => data.recordIndex,
             state: () => data.state,
             eof: () => data.recordIndex == data.records.length-1,
