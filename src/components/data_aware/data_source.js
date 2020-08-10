@@ -53,7 +53,10 @@ function DataSet({ connection, DataField, fieldsDefs }) {
             self,
             fieldsDefs,
             DataField,
-            onChangeHandler: fieldChangeHandler(self),
+            eventHandlers: [
+                { onChange: fieldChangeHandler(self) },
+                { onChange: dataField => self.edit() },
+            ],
         }),
         data = resetData();
 
