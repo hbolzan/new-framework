@@ -1,3 +1,7 @@
+if (window._ == undefined) {
+    window._ = require("lodash");
+}
+
 const datasetStates = {
     inactive: "inactive",
     browse: "browse",
@@ -39,10 +43,24 @@ function appendRow(data, fieldsDefs, rowData) {
         data,
         {
             rows: data.rows.concat(newRow(fieldsDefs, rowData)),
-            recordIndex: data.records.length+1,
+            recordIndex: data.rows.length,
             state: datasetStates.insert,
         }
     );
 };
 
-export { datasetStates, recordSates, dataFields, newRow, appendRow };
+function deleteRow(data) {
+    let rows = _.slice(data.rows, 0, data.recordIndex).concat(_.slice(data.rows, data.recordIndex + 1));
+    return  Object.assign(
+        {},
+        data,
+        {
+            rows: rows,
+            recordIndex: rows.length <= data.recordIndex ? rows.length - 1 : data.recordIndex,
+            pending: rows.length == data.rows.length ? data.pending : true,
+            state: datasetStates.browse,
+        }
+    );
+};
+
+export { datasetStates, recordSates, dataFields, newRow, appendRow, deleteRow };

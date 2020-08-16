@@ -1,10 +1,402 @@
 import { DataSet } from "../../../src/components/data_aware/data_source.js";
 
-describe("DataSet", () => {
+describe("DataSet constructor", () => {
     const DataField = jest.fn(),
-          fieldsDefs = [{ name: "a" }, { name: "b" }];
+          fieldsDefs = [{ name: "a" }, { name: "b" }],
+          dataSet = DataSet({ DataField, fieldsDefs });
+
     it("initializes data fields", () => {
-        let dataSet = DataSet({ DataField, fieldsDefs });
         expect(DataField).toHaveBeenCalledTimes(2);
+    });
+
+    it("starts inactive with no data", () => {
+        expect(dataSet.state()).toBe("inactive");
+        expect(dataSet.isEmpty()).toBeTruthy();
+        expect(dataSet.eof()).toBeTruthy();
+        expect(dataSet.bof()).toBeTruthy();
+        expect(dataSet.recordIndex()).toBe(-1);
+    });
+});
+
+describe("DataSet load data", () => {
+    const DataField = jest.fn(),
+          fieldsDefs = [{ name: "a" }, { name: "b" }],
+          initialData = [{ a: 1, b: 2 }, { a: 10, b: 20 }],
+          dataSet =  DataSet({ DataField, fieldsDefs }),
+          onDataChange = jest.fn(),
+          onDataChangeB = jest.fn(),
+          onStateChange = jest.fn(),
+          onStateChangeB = jest.fn(),
+          onStateChangeC = jest.fn(),
+          afterScroll = jest.fn(),
+          afterEdit = jest.fn(),
+          beforePost = jest.fn();
+
+    dataSet.onDataChange(onDataChange);
+    dataSet.onDataChange(onDataChangeB);
+    dataSet.onStateChange(onStateChange);
+    dataSet.onStateChange(onStateChangeB);
+    dataSet.onStateChange(onStateChangeC);
+    dataSet.afterScroll(afterScroll);
+    dataSet.afterEdit(afterEdit);
+    dataSet.beforePost(beforePost);
+
+    dataSet.loadData(initialData);
+
+    it("sets rows with loaded data and changes state to browse", () => {
+        expect(dataSet.recordCount()).toBe(2);
+        expect(dataSet.state()).toBe("browse");
+    });
+
+    it("sets record index to first record", () => {
+        expect(dataSet.recordIndex()).toBe(0);
+    });
+
+    it("returns bof and eof correct states", () => {
+        expect(dataSet.bof()).toBeTruthy();
+        expect(dataSet.eof()).toBeFalsy();
+    });
+
+    it("calls all listeners for onDataChange, onStateChange and afterScroll events", () => {
+        expect(onDataChange).toHaveBeenCalledTimes(1);
+        expect(onDataChangeB).toHaveBeenCalledTimes(1);
+        expect(onStateChange).toHaveBeenCalledTimes(1);
+        expect(onStateChangeB).toHaveBeenCalledTimes(1);
+        expect(onStateChangeC).toHaveBeenCalledTimes(1);
+        expect(afterScroll).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not call listeners for other events", () => {
+        expect(afterEdit).toHaveBeenCalledTimes(0);
+        expect(beforePost).toHaveBeenCalledTimes(0);
+    });
+
+});
+
+describe("DataSet actions", () => {
+    const DataField = jest.fn(),
+          fieldsDefs = [{ name: "a" }, { name: "b" }],
+          initialData = [{ a: 1, b: 2 }, { a: 10, b: 20 }, { a: 100, b: 200 }];
+
+    describe("navigation", () => {
+        it("doesn't trigger onDataChange if record index doesn't change", () => {
+            let dataSet =  DataSet({ DataField, fieldsDefs }),
+                onDataChange = jest.fn();
+            dataSet.loadData(initialData);
+
+            dataSet.onDataChange(onDataChange);
+            expect(dataSet.recordIndex()).toBe(0);
+            dataSet.prior();
+            expect(dataSet.recordIndex()).toBe(0);
+            expect(onDataChange).toHaveBeenCalledTimes(0);
+        });
+
+        it("moves to next row on next", () => {
+            let dataSet =  DataSet({ DataField, fieldsDefs }),
+                onDataChange = jest.fn(),
+                beforeScroll = jest.fn(),
+                afterScroll = jest.fn();
+            dataSet.loadData(initialData);
+
+            dataSet.onDataChange(onDataChange);
+            dataSet.beforeScroll(beforeScroll);
+            dataSet.afterScroll(afterScroll);
+
+            dataSet.next();
+            expect(dataSet.recordIndex()).toBe(1);
+            expect(dataSet.bof()).toBeFalsy();
+            expect(dataSet.eof()).toBeFalsy();
+
+            dataSet.next();
+            expect(dataSet.recordIndex()).toBe(2);
+            expect(dataSet.bof()).toBeFalsy();
+            expect(dataSet.eof()).toBeTruthy();
+
+            expect(onDataChange).toHaveBeenCalledTimes(2);
+            expect(beforeScroll).toHaveBeenCalledTimes(2);
+            expect(afterScroll).toHaveBeenCalledTimes(2);
+        });
+
+        it("moves to last row on last", () => {
+            let dataSet =  DataSet({ DataField, fieldsDefs }),
+                onDataChange = jest.fn(),
+                beforeScroll = jest.fn(),
+                afterScroll = jest.fn();
+            dataSet.loadData(initialData);
+
+            dataSet.onDataChange(onDataChange);
+            dataSet.beforeScroll(beforeScroll);
+            dataSet.afterScroll(afterScroll);
+
+            expect(dataSet.recordIndex()).toBe(0);
+            dataSet.last();
+            expect(dataSet.recordIndex()).toBe(2);
+            expect(dataSet.bof()).toBeFalsy();
+            expect(dataSet.eof()).toBeTruthy();
+
+            expect(onDataChange).toHaveBeenCalledTimes(1);
+            expect(beforeScroll).toHaveBeenCalledTimes(1);
+            expect(afterScroll).toHaveBeenCalledTimes(1);
+        });
+
+        it("moves to prior row on prior", () => {
+            let dataSet =  DataSet({ DataField, fieldsDefs }),
+                onDataChange = jest.fn(),
+                beforeScroll = jest.fn(),
+                afterScroll = jest.fn();
+            dataSet.loadData(initialData);
+            dataSet.last();
+
+            dataSet.onDataChange(onDataChange);
+            dataSet.beforeScroll(beforeScroll);
+            dataSet.afterScroll(afterScroll);
+
+            expect(dataSet.recordIndex()).toBe(2);
+            dataSet.prior();
+            expect(dataSet.recordIndex()).toBe(1);
+            expect(dataSet.bof()).toBeFalsy();
+            expect(dataSet.eof()).toBeFalsy();
+
+            dataSet.prior();
+            expect(dataSet.recordIndex()).toBe(0);
+            expect(dataSet.bof()).toBeTruthy();
+            expect(dataSet.eof()).toBeFalsy();
+
+            expect(onDataChange).toHaveBeenCalledTimes(2);
+            expect(beforeScroll).toHaveBeenCalledTimes(2);
+            expect(afterScroll).toHaveBeenCalledTimes(2);
+        });
+
+        it("moves to first row on first", () => {
+            let dataSet =  DataSet({ DataField, fieldsDefs }),
+                onDataChange = jest.fn(),
+                beforeScroll = jest.fn(),
+                afterScroll = jest.fn();
+            dataSet.loadData(initialData);
+            dataSet.last();
+
+            dataSet.onDataChange(onDataChange);
+            dataSet.beforeScroll(beforeScroll);
+            dataSet.afterScroll(afterScroll);
+
+            expect(dataSet.recordIndex()).toBe(2);
+            dataSet.first();
+            expect(dataSet.recordIndex()).toBe(0);
+            expect(dataSet.bof()).toBeTruthy();
+            expect(dataSet.eof()).toBeFalsy();
+
+            expect(onDataChange).toHaveBeenCalledTimes(1);
+            expect(beforeScroll).toHaveBeenCalledTimes(1);
+            expect(afterScroll).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe("edition", () => {
+        it("appends an empty row and moves ton new row on append", () => {
+            let dataSet =  DataSet({ DataField, fieldsDefs });
+            dataSet.loadData(initialData);
+            dataSet.append();
+            expect(dataSet.recordIndex()).toBe(3);
+            expect(dataSet.rows()[dataSet.recordIndex()]).toEqual({ a: null, b: null });
+        });
+
+        it("changes dataset state and triggers all expected events on append", () => {
+            let dataSet =  DataSet({ DataField, fieldsDefs }),
+                beforeInsert = jest.fn(),
+                afterInsert = jest.fn(),
+                onDataChange = jest.fn(),
+                onStateChange = jest.fn();
+
+            dataSet.loadData(initialData);
+            dataSet.beforeInsert(beforeInsert);
+            dataSet.afterInsert(afterInsert);
+            dataSet.onDataChange(onDataChange);
+            dataSet.onStateChange(onStateChange);
+
+            expect(dataSet.state()).toBe("browse");
+            dataSet.append();
+            expect(dataSet.state()).toBe("insert");
+            expect(beforeInsert).toHaveBeenCalledTimes(1);
+            expect(afterInsert).toHaveBeenCalledTimes(1);
+            expect(onStateChange).toHaveBeenCalledTimes(1);
+            expect(onDataChange).toHaveBeenCalledTimes(1);
+        });
+
+        it("changes dataset state and triggers events on edit existing record", () => {
+            let dataSet =  DataSet({ DataField, fieldsDefs }),
+                beforeEdit = jest.fn(),
+                afterEdit = jest.fn(),
+                onStateChange = jest.fn();
+            dataSet.loadData(initialData);
+            dataSet.beforeEdit(beforeEdit);
+            dataSet.afterEdit(afterEdit);
+            dataSet.onStateChange(onStateChange);
+
+            dataSet.edit();
+            expect(dataSet.state()).toBe("edit");
+            expect(beforeEdit).toHaveBeenCalledTimes(1);
+            expect(afterEdit).toHaveBeenCalledTimes(1);
+            expect(onStateChange).toHaveBeenCalledTimes(1);
+        });
+
+        it("appends a new record on edit if dataset is empty", () => {
+            let dataSet =  DataSet({ DataField, fieldsDefs }),
+                beforeEdit = jest.fn(),
+                afterEdit = jest.fn(),
+                beforeInsert = jest.fn(),
+                afterInsert = jest.fn(),
+                onDataChange = jest.fn(),
+                onStateChange = jest.fn();
+
+            dataSet.loadData([]);
+            dataSet.beforeEdit(beforeEdit);
+            dataSet.afterEdit(afterEdit);
+            dataSet.beforeInsert(beforeInsert);
+            dataSet.afterInsert(afterInsert);
+            dataSet.onStateChange(onStateChange);
+
+            expect(dataSet.isEmpty()).toBeTruthy();
+            dataSet.edit();
+            expect(dataSet.state()).toBe("insert");
+            expect(beforeEdit).toHaveBeenCalledTimes(0);
+            expect(afterEdit).toHaveBeenCalledTimes(0);
+            expect(beforeInsert).toHaveBeenCalledTimes(1);
+            expect(afterInsert).toHaveBeenCalledTimes(1);
+            expect(onStateChange).toHaveBeenCalledTimes(1);
+        });
+
+        it("changes state to browse and triggers events on post", () => {
+            let dataSet =  DataSet({ DataField, fieldsDefs }),
+                beforePost = jest.fn(),
+                afterPost = jest.fn(),
+                onStateChange = jest.fn();
+            dataSet.loadData(initialData);
+            dataSet.beforePost(beforePost);
+            dataSet.afterPost(afterPost);
+            dataSet.onStateChange(onStateChange);
+
+            dataSet.edit();
+            expect(dataSet.state()).toBe("edit");
+            dataSet.post();
+            expect(dataSet.state()).toBe("browse");
+            expect(beforePost).toHaveBeenCalledTimes(1);
+            expect(afterPost).toHaveBeenCalledTimes(1);
+            expect(onStateChange).toHaveBeenCalledTimes(2);
+        });
+
+        it("sets data pending flag on post", () => {
+            let dataSet =  DataSet({ DataField, fieldsDefs });
+            dataSet.loadData(initialData);
+            dataSet.edit();
+            expect(dataSet.state()).toBe("edit");
+            expect(dataSet.pending()).toBeFalsy();
+            dataSet.post();
+            expect(dataSet.pending()).toBeTruthy();
+        });
+
+        it("resets data pending flag on commit and triggers commit events", () => {
+            let dataSet =  DataSet({ DataField, fieldsDefs }),
+                beforeCommit = jest.fn(),
+                afterCommit = jest.fn();
+            dataSet.loadData(initialData);
+            dataSet.beforeCommit(beforeCommit);
+            dataSet.afterCommit(afterCommit);
+
+            dataSet.edit();
+            expect(dataSet.state()).toBe("edit");
+            expect(dataSet.pending()).toBeFalsy();
+
+            dataSet.post();
+            expect(dataSet.pending()).toBeTruthy();
+
+            dataSet.commit();
+            expect(dataSet.pending()).toBeFalsy();
+
+            expect(beforeCommit).toHaveBeenCalledTimes(1);
+            expect(afterCommit).toHaveBeenCalledTimes(1);
+        });
+
+        it("does nothing if there data is not pending", () => {
+            let dataSet =  DataSet({ DataField, fieldsDefs }),
+                beforeCommit = jest.fn(),
+                afterCommit = jest.fn();
+
+            dataSet.loadData(initialData);
+            dataSet.beforeCommit(beforeCommit);
+            dataSet.afterCommit(afterCommit);
+
+            expect(dataSet.pending()).toBeFalsy();
+            dataSet.commit();
+            expect(dataSet.pending()).toBeFalsy();
+
+            expect(beforeCommit).toHaveBeenCalledTimes(0);
+            expect(afterCommit).toHaveBeenCalledTimes(0);
+        });
+
+        it("posts before commit if state is not browse", () => {
+            let dataSet =  DataSet({ DataField, fieldsDefs }),
+                onStateChange = jest.fn(),
+                beforePost = jest.fn(),
+                afterPost = jest.fn(),
+                beforeCommit = jest.fn(),
+                afterCommit = jest.fn();
+
+            dataSet.loadData(initialData);
+            dataSet.onStateChange(onStateChange);
+            dataSet.beforePost(beforePost);
+            dataSet.afterPost(afterPost);
+            dataSet.beforeCommit(beforeCommit);
+            dataSet.afterCommit(afterCommit);
+
+            expect(dataSet.pending()).toBeFalsy();
+            dataSet.edit();
+            dataSet.commit();
+            expect(dataSet.pending()).toBeFalsy();
+
+            expect(onStateChange).toHaveBeenCalledTimes(2);
+            expect(beforePost).toHaveBeenCalledTimes(1);
+            expect(afterPost).toHaveBeenCalledTimes(1);
+            expect(beforeCommit).toHaveBeenCalledTimes(1);
+            expect(afterCommit).toHaveBeenCalledTimes(1);
+        });
+
+        it("deletes current record and triggers events on delete", () => {
+            let dataSet =  DataSet({ DataField, fieldsDefs }),
+                beforeDelete = jest.fn(),
+                afterDelete = jest.fn(),
+                onDataChange = jest.fn();
+
+            dataSet.loadData(initialData);
+            dataSet.beforeDelete(beforeDelete);
+            dataSet.afterDelete(afterDelete);
+            dataSet.onDataChange(onDataChange);
+
+            expect(dataSet.recordCount()).toBe(3);
+            dataSet.delete();
+            expect(dataSet.recordCount()).toBe(2);
+            expect(beforeDelete).toHaveBeenCalledTimes(1);
+            expect(afterDelete).toHaveBeenCalledTimes(1);
+            expect(onDataChange).toHaveBeenCalledTimes(1);
+        });
+
+        it("does nothing if dataset was already empty", () => {
+            let dataSet =  DataSet({ DataField, fieldsDefs }),
+                beforeDelete = jest.fn(),
+                afterDelete = jest.fn(),
+                onDataChange = jest.fn();
+
+            dataSet.loadData([]);
+            dataSet.beforeDelete(beforeDelete);
+            dataSet.afterDelete(afterDelete);
+            dataSet.onDataChange(onDataChange);
+
+            expect(dataSet.recordCount()).toBe(0);
+            dataSet.delete();
+            expect(dataSet.recordCount()).toBe(0);
+            expect(beforeDelete).toHaveBeenCalledTimes(1);
+            expect(afterDelete).toHaveBeenCalledTimes(0);
+            expect(onDataChange).toHaveBeenCalledTimes(0);
+        });
+
     });
 });

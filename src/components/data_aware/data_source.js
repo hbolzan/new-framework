@@ -1,4 +1,6 @@
-import { datasetStates, recordSates, dataFields, newRow, appendRow } from "../../logic/data_source.js";
+import {
+    datasetStates, recordSates, dataFields, newRow, appendRow, deleteRow
+} from "../../logic/data_source.js";
 import BaseComponent from "../common/base.js";
 
 const events = {
@@ -39,7 +41,7 @@ function resetData({ rows, recordIndex, state }) {
         rows: rows || [],
         recordIndex: recordIndex || -1,
         state: state || datasetStates.inactive,
-        modified: false,
+        pending: false,
     };
 }
 
@@ -64,9 +66,9 @@ function DataSet({ connection, DataField, fieldsDefs }) {
         let rows = _.map(newRows, rowData => newRow(fieldsDefs, rowData));
         data = resetData({
             rows,
-            recordIndex: navMethods["first"](data),
             state: datasetStates.browse
         });
+        data.recordIndex = navMethods["first"](data);
         self.events.run(events.onDataChange, [self]);
         self.events.run(events.onStateChange, [self, data.state]);
         self.events.run(events.afterScroll, [self]);
@@ -78,13 +80,14 @@ function DataSet({ connection, DataField, fieldsDefs }) {
         data = appendRow(data, fieldsDefs);
         self.events.run(events.afterInsert, [self]);
         self.events.run(events.onStateChange, [self, data.state]);
+        self.events.run(events.onDataChange, [self, data.state]);
         return data.rows[data.recordIndex];
     }
 
     function edit() {
         throwIfInactive(self, data);
         if (data.state == datasetStates.edit || data.state == datasetStates.insert) {
-            return data.records[data.recordIndex];
+            return data.rows[data.recordIndex];
         }
         if (data.recordIndex < 0) {
             return append();
@@ -93,30 +96,39 @@ function DataSet({ connection, DataField, fieldsDefs }) {
         data.state = datasetStates.edit;
         self.events.run(events.afterEdit, [self]);
         self.events.run(events.onStateChange, [self, data.state]);
-        return data.records[data.recordIndex];
+        return data.rows[data.recordIndex];
     }
 
     function post() {
         self.events.run(events.beforePost, [self]);
         data.state = datasetStates.browse;
+        data.pending = true;
         self.events.run(events.afterPost, [self]);
         self.events.run(events.onStateChange, [self, data.state]);
     }
 
     function commit() {
+        throwIfInactive(self, data);
+        if ( data.state != datasetStates.browse ) {
+            self.post();
+        }
+        if ( ! data.pending ) {
+            return;
+        }
         self.events.run(events.beforeCommit, [self]);
-        // TODO: implement commit to API action (modified must be reset to false)
-        data.state = datasetStates.browse;
+        // TODO: implement commit to API action (pending must be reset to false)
+        data.pending = false;
         self.events.run(events.afterCommit, [self]);
-        self.events.run(events.onStateChange, [self, data.state]);
     }
 
     function _delete() {
+        let recordCount = data.rows.length;
         self.events.run(events.beforeDelete, [self]);
-        // TODO: implement delete action (modified must be true)
-        data.state = datasetStates.browse;
-        self.events.run(events.afterDelete, [self]);
-        self.events.run(events.onStateChange, [self, data.state]);
+        data = deleteRow(data);
+        if (recordCount != data.rows.length) {
+            self.events.run(events.afterDelete, [self]);
+            self.events.run(events.onDataChange, [self]);
+        }
     }
 
     function navigate(direction) {
@@ -138,15 +150,17 @@ function DataSet({ connection, DataField, fieldsDefs }) {
             { [event]: handler => self.events.on(event, handler) }
         ), {}),
 
-        _.reduce(navMethods, (nav, _, d) => Object.assign({}, nav, { [d]: navigate(d) }), {}),
+        _.reduce(navMethods, (nav, _, d) => Object.assign({}, nav, { [d]: () => navigate(d) }), {}),
 
         {
             rows: () => data.rows,
             recordIndex: () => data.recordIndex,
+            recordCount: () => data.rows.length,
             state: () => data.state,
-            eof: () => data.recordIndex == data.records.length-1,
+            eof: () => data.recordIndex == data.rows.length-1,
             bof: () => data.recordIndex <= 0,
-            isEmpty: () => data.records.length == 0,
+            isEmpty: () => data.rows.length == 0,
+            pending: () => data.pending,
 
             loadData,
             append,
