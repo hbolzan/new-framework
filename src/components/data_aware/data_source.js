@@ -50,7 +50,7 @@ function fieldChangeHandler(self) {
 function DataSet({ connection, DataField, fieldsDefs }) {
     let self = BaseComponent(),
         fields = dataFields({
-            self,
+            dataSet: self,
             fieldsDefs,
             DataField,
             eventHandlers: [
@@ -58,7 +58,7 @@ function DataSet({ connection, DataField, fieldsDefs }) {
                 { onChange: dataField => self.edit() },
             ],
         }),
-        data = resetData();
+        data = resetData({});
 
     function loadData(newRows) {
         let rows = _.map(newRows, rowData => newRow(fieldsDefs, rowData));
@@ -138,7 +138,7 @@ function DataSet({ connection, DataField, fieldsDefs }) {
             { [event]: handler => self.events.on(event, handler) }
         ), {}),
 
-        _.reduce(navMethods, (nav, _, d) => Object.assign({}, nav, { [direction]: navigate(d) }), {}),
+        _.reduce(navMethods, (nav, _, d) => Object.assign({}, nav, { [d]: navigate(d) }), {}),
 
         {
             rows: () => data.rows,
@@ -167,4 +167,4 @@ function DataSource({ connection, fieldsDefs }) {
     });
 }
 
-export { DataSource };
+export { DataSet, DataSource };

@@ -1,12 +1,11 @@
 import BaseComponent from "../common/base.js";
 
 const events = {
-    onChange: "change",
+    onChange: "onChange",
 };
 
 const isDataSet = dataSet =>
       _.isObject(dataSet) &&
-      _.isFunction(dataSet.edit) &&
       _.isFunction(dataSet.afterPost);
 
 function DataField(fieldDef, dataSet, eventHandlers) {
@@ -24,9 +23,12 @@ function DataField(fieldDef, dataSet, eventHandlers) {
     }
 
     function init() {
-        _.each(eventHandlers, ({ event, handler }) => self.events.on(event, handler));
+        _.each(eventHandlers, (eventHandler) => self.events.on(
+            _.keys(eventHandler)[0], _.values(eventHandler)[0]
+        ));
         if (isDataSet(dataSet)) {
-            // TODO: listen to dataset onDataChange event
+            // TODO: change own value on dataset change
+            dataSet.onDataChange(dataset => self.events.run(events.onChange, [self, value]));
             dataSet.afterPost(() => oldValue = value);
         }
     }

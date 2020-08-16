@@ -1,9 +1,9 @@
 import DataField from "../../../src/components/data_aware/data_field.js";
+import BaseComponent from "../../../src/components/common/base.js";
 
 const mockedDataSet = {
-    edit: jest.fn(),
     afterPost: jest.fn(),
-    afterDelete: jest.fn(),
+    onDataChange: jest.fn(),
 };
 
 const fieldsDefs = [
@@ -13,11 +13,10 @@ const fieldsDefs = [
 ];
 
 describe("DataField", () => {
-
-    it("self registers in dataset afterPost and afterDelete events", () => {
+    it("self registers in dataset afterPost and onDataChange events", () => {
         DataField(fieldsDefs[0], mockedDataSet);
         expect(mockedDataSet.afterPost).toHaveBeenCalled();
-        expect(mockedDataSet.afterDelete).toHaveBeenCalled();
+        expect(mockedDataSet.onDataChange).toHaveBeenCalled();
     });
 
     it("is initialized with fieldDef default value", () => {
@@ -36,14 +35,56 @@ describe("DataField", () => {
         expect(dataField.label).toBe("Field A");
     });
 
-    it("changes valueChanged state when a new value is set " +
-       "and triggers onChange event which calls dataset edit method", () => {
-           let dataField = DataField(fieldsDefs[0], mockedDataSet);
-           expect(dataField.valueChanged()).toBe(false);
-           dataField.value("XYZ");
-           expect(dataField.value()).toBe("XYZ");
-           expect(dataField.valueChanged()).toBe(true);
+    it("changes valueChanged state and triggers onChange event when a new value is set ", () => {
+        let onChange = jest.fn();
+        let dataField = DataField(fieldsDefs[0], mockedDataSet, [{ onChange: onChange }]);
+        expect(dataField.valueChanged()).toBe(false);
+        dataField.value("XYZ");
+        expect(dataField.value()).toBe("XYZ");
+        expect(dataField.valueChanged()).toBe(true);
+        expect(onChange).toHaveBeenCalled();
+    });
 
-           expect(mockedDataSet.edit).toHaveBeenCalled();
-       });
+    it("resets valueChanged to false after dataset post", () => {
+        let dataField = DataField(fieldsDefs[0], mockedDataSetWithEvents);
+        expect(dataField.valueChanged()).toBe(false);
+        dataField.value("XYZ");
+        expect(dataField.value()).toBe("XYZ");
+        expect(dataField.valueChanged()).toBe(true);
+        mockedDataSetWithEvents.post();
+        expect(dataField.valueChanged()).toBe(false);
+    });
+
+});
+
+const base = BaseComponent();
+const mockedChangeHandler = jest.fn();
+const mockedDataSetWithEvents = Object.assign(
+    base,
+    {
+        afterPost: handler => base.events.on("afterPost", handler),
+        onDataChange: handler => base.events.on("onDataChange", mockedChangeHandler),
+        post: () => base.events.run("afterPost", []),
+        change: () => base.events.run("onDataChange", [base]),
+    },
+);
+
+describe("DataField and DataSet basic interaction", () => {
+    it("resets valueChanged to false after dataset post", () => {
+        let dataField = DataField(fieldsDefs[0], mockedDataSetWithEvents);
+        expect(dataField.valueChanged()).toBe(false);
+        dataField.value("XYZ");
+        expect(dataField.value()).toBe("XYZ");
+        expect(dataField.valueChanged()).toBe(true);
+        mockedDataSetWithEvents.post();
+        expect(dataField.valueChanged()).toBe(false);
+    });
+
+    it("listens to onDataChange dataset event", () => {
+        let dataField = DataField(fieldsDefs[0], mockedDataSetWithEvents);
+        expect(mockedChangeHandler).toHaveBeenCalledTimes(0);
+        mockedDataSetWithEvents.change();
+        expect(mockedChangeHandler).toHaveBeenCalled();
+    });
+
 });

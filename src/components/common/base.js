@@ -1,7 +1,6 @@
 import { registerEvent, unregisterEvent } from "../../logic/components.js";
 
 function runEvent(event, registeredEvents, args) {
-    console.log(registeredEvents);
     _.each(registeredEvents[event], handler => handler(...args));
 }
 
