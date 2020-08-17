@@ -398,5 +398,73 @@ describe("DataSet actions", () => {
             expect(onDataChange).toHaveBeenCalledTimes(0);
         });
 
+        it("cancels insertion on cancel", () => {
+            let dataSet =  DataSet({ DataField, fieldsDefs }),
+                beforeCancel = jest.fn(),
+                afterCancel = jest.fn();
+
+            dataSet.beforeCancel(beforeCancel);
+            dataSet.afterCancel(afterCancel);
+            dataSet.loadData([]);
+            dataSet.setData("a", 1000);
+            expect(dataSet.state()).toBe("insert");
+            dataSet.cancel();
+            expect(dataSet.isEmpty()).toBeTruthy();
+            expect(dataSet.state()).toBe("browse");
+            expect(beforeCancel).toHaveBeenCalledTimes(1);
+            expect(afterCancel).toHaveBeenCalledTimes(1);
+            expect(dataSet.isEmpty()).toBeTruthy();
+        });
+
+        it("cancels insertion restores original record index on cancel", () => {
+            let dataSet =  DataSet({ DataField, fieldsDefs });
+            dataSet.loadData(initialData);
+            dataSet.next();
+            expect(dataSet.recordIndex()).toEqual(1);
+            dataSet.append();
+            expect(dataSet.recordIndex()).toEqual(3);
+            expect(dataSet.recordCount()).toEqual(4);
+            dataSet.setData("a", 1000);
+            dataSet.setData("b", 2000);
+            dataSet.cancel();
+            expect(dataSet.state()).toBe("browse");
+            expect(dataSet.recordIndex()).toEqual(1);
+            expect(dataSet.recordCount()).toEqual(3);
+        });
+
+        it("restores only editing row original values on cancel", () => {
+            let dataSet =  DataSet({ DataField, fieldsDefs });
+            dataSet.loadData(initialData);
+            dataSet.setData("a", 30);
+            dataSet.setData("b", 60);
+            dataSet.post();
+            expect(dataSet.rows()[0]).toEqual({ a: 30, b: 60 });
+            dataSet.next();
+            expect(dataSet.rows()[dataSet.recordIndex()]).toEqual({ a: 10, b: 20 });
+            dataSet.setData("a", 1000);
+            dataSet.setData("b", 2000);
+            expect(dataSet.state()).toBe("edit");
+            expect(dataSet.rows()[dataSet.recordIndex()]).toEqual({ a: 1000, b: 2000 });
+            dataSet.cancel();
+            expect(dataSet.state()).toBe("browse");
+            expect(dataSet.rows()[dataSet.recordIndex()]).toEqual({ a: 10, b: 20 });
+            expect(dataSet.rows()[0]).toEqual({ a: 30, b: 60 });
+        });
+
+        it("rolls back all changed data on rollback", () => {
+            let dataSet =  DataSet({ DataField, fieldsDefs });
+            dataSet.loadData(initialData);
+            dataSet.setData("a", 30);
+            dataSet.setData("b", 60);
+            dataSet.post();
+            dataSet.next();
+            dataSet.setData("a", 1000);
+            dataSet.setData("b", 2000);
+            dataSet.post();
+            dataSet.rollback();
+            expect(dataSet.rows()[0]).toEqual({ a: 1, b: 2 });
+            expect(dataSet.rows()[1]).toEqual({ a: 10, b: 20 });
+        });
+
     });
 });

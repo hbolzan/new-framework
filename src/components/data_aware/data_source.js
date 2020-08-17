@@ -1,3 +1,7 @@
+if (window._ == undefined) {
+    window._ = require("lodash");
+}
+
 import {
     datasetStates, recordSates, dataFields, newRow, appendRow, deleteRow
 } from "../../logic/data_source.js";
@@ -18,6 +22,10 @@ const events = {
     onDataChange: "onDataChange",
     beforeScroll: "beforeScroll",
     afterScroll: "afterScroll",
+    beforeCancel: "beforeCancel",
+    afterCancel: "afterCancel",
+    beforeRollback: "beforeRollback",
+    afterRollback: "afterRollback",
 };
 
 const navMethods = {
@@ -46,8 +54,14 @@ function resetData({ rows, recordIndex, state }) {
 }
 
 function fieldChangeHandler(self) {
-    dataField => self.events.run(events.onDataChange, [self, dataField]);
+    dataField =>  {
+        self.edit();
+        data.rows[data.recordIndex][dataField.name] = dataField.value();
+        self.events.run(events.onDataChange, [self, dataField]);
+    };
 }
+
+const copyRows = rows => _.map(rows, row => Object.assign({}, row));
 
 function DataSet({ connection, DataField, fieldsDefs }) {
     let self = BaseComponent(),
@@ -57,10 +71,14 @@ function DataSet({ connection, DataField, fieldsDefs }) {
             DataField,
             eventHandlers: [
                 { onChange: fieldChangeHandler(self) },
-                { onChange: dataField => self.edit() },
             ],
         }),
-        data = resetData({});
+        data = resetData({}),
+        cancelInfo = {
+            recordIndex: -1,
+            row: {},
+        },
+        rollbackRows = [];
 
     function loadData(newRows) {
         let rows = _.map(newRows, rowData => newRow(fieldsDefs, rowData));
@@ -76,6 +94,7 @@ function DataSet({ connection, DataField, fieldsDefs }) {
 
     function append() {
         throwIfInactive(self, data);
+        cancelInfo = { recordIndex: data.recordIndex };
         self.events.run(events.beforeInsert, [self]);
         data = appendRow(data, fieldsDefs);
         self.events.run(events.afterInsert, [self]);
@@ -89,9 +108,13 @@ function DataSet({ connection, DataField, fieldsDefs }) {
         if (data.state == datasetStates.edit || data.state == datasetStates.insert) {
             return data.rows[data.recordIndex];
         }
+        if ( ! data.pending ) {
+            rollbackRows = copyRows(data.rows);
+        }
         if (data.recordIndex < 0) {
             return append();
         }
+        cancelInfo = { row: Object.assign({}, data.rows[data.recordIndex]) };
         self.events.run(events.beforeEdit, [self]);
         data.state = datasetStates.edit;
         self.events.run(events.afterEdit, [self]);
@@ -105,6 +128,35 @@ function DataSet({ connection, DataField, fieldsDefs }) {
         data.pending = true;
         self.events.run(events.afterPost, [self]);
         self.events.run(events.onStateChange, [self, data.state]);
+    }
+
+    function cancel() {
+        if ( ! [datasetStates.edit, datasetStates.insert].includes(data.state) ) {
+            return;
+        }
+        if (data.state == datasetStates.insert) {
+            data = deleteRow(data);
+            data.recordIndex = cancelInfo.recordIndex;
+        } else {
+            data.rows[data.recordIndex] = cancelInfo.row;
+        }
+        data.state = datasetStates.browse;
+        self.events.run(events.beforeCancel, [self]);
+        self.events.run(events.afterCancel, [self]);
+        self.events.run(events.onStateChange, [self, data.state]);
+        self.events.run(events.onDataChange, [self]);
+    }
+
+    function rollback() {
+        throwIfInactive(self, data);
+        if ( data.state != datasetStates.browse || ! data.pending ) {
+            return;
+        }
+        self.events.run(events.beforeRollback, [self]);
+        data.rows = rollbackRows;
+        data.pending = false;
+        self.events.run(events.afterRollback, [self]);
+        self.events.run(events.onDataChange, [self]);
     }
 
     function commit() {
@@ -141,6 +193,13 @@ function DataSet({ connection, DataField, fieldsDefs }) {
         };
     }
 
+    function setData(fieldName, value) {
+        throwIfInactive(self, data);
+        self.edit();
+        data.rows[data.recordIndex][fieldName] = value;
+        self.events.run(events.onDataChange, [self, { name: fieldName, value: () => value }]);
+    }
+
     return Object.assign(
         self,
 
@@ -163,9 +222,12 @@ function DataSet({ connection, DataField, fieldsDefs }) {
             pending: () => data.pending,
 
             loadData,
+            setData,
             append,
             edit,
+            cancel,
             post,
+            rollback,
             commit,
             delete: _delete,
         });
