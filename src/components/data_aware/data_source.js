@@ -33,6 +33,7 @@ const navMethods = {
     prior: (data) => data.recordIndex > 0 ? data.recordIndex - 1 : data.recordIndex,
     next: (data) => data.recordIndex < data.rows.length - 1 ? data.recordIndex + 1 : data.recordIndex,
     last: (data) => data.rows.length - 1,
+    goto: (data, gotoIndex) => gotoIndex >= 0 && gotoIndex < data.rows.length ? gotoIndex : data.recordIndex,
 };
 
 function throwIfInactive(self, data) {
@@ -183,10 +184,10 @@ function DataSet({ connection, DataField, fieldsDefs }) {
         }
     }
 
-    function navigate(direction) {
+    function navigate(direction, gotoIndex) {
         let recordIndex = data.recordIndex;
         self.events.run(events.beforeScroll, [self]);
-        data.recordIndex = navMethods[direction](data);
+        data.recordIndex = navMethods[direction](data, gotoIndex);
         self.events.run(events.afterScroll, [self]);
         if (data.recordIndex != recordIndex) {
             self.events.run(events.onDataChange, [self]);
@@ -200,6 +201,10 @@ function DataSet({ connection, DataField, fieldsDefs }) {
         self.events.run(events.onDataChange, [self, { name: fieldName, value: () => value }]);
     }
 
+    function find(pred) {
+        return _.reduce(data.rows, (matches, row, key) => pred(row) ? matches.concat(key) : matches, []);
+    };
+
     return Object.assign(
         self,
 
@@ -209,7 +214,11 @@ function DataSet({ connection, DataField, fieldsDefs }) {
             { [event]: handler => self.events.on(event, handler) }
         ), {}),
 
-        _.reduce(navMethods, (nav, _, d) => Object.assign({}, nav, { [d]: () => navigate(d) }), {}),
+        _.reduce(navMethods, (nav, _, d) => Object.assign(
+            {},
+            nav,
+            { [d]: gotoIndex => navigate(d, gotoIndex) }
+        ), {}),
 
         {
             rows: () => data.rows,
@@ -230,6 +239,7 @@ function DataSet({ connection, DataField, fieldsDefs }) {
             rollback,
             commit,
             delete: _delete,
+            find,
         });
 }
 

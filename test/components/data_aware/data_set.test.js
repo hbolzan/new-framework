@@ -189,6 +189,22 @@ describe("DataSet actions", () => {
             expect(beforeScroll).toHaveBeenCalledTimes(1);
             expect(afterScroll).toHaveBeenCalledTimes(1);
         });
+
+        it("sets recordIndex to specified value", () => {
+            let dataSet =  DataSet({ DataField, fieldsDefs }),
+                onDataChange = jest.fn(),
+                beforeScroll = jest.fn(),
+                afterScroll = jest.fn();
+            dataSet.loadData(initialData);
+            dataSet.onDataChange(onDataChange);
+            dataSet.beforeScroll(beforeScroll);
+            dataSet.afterScroll(afterScroll);
+            dataSet.goto(2);
+            expect(dataSet.recordIndex()).toBe(2);
+            expect(onDataChange).toHaveBeenCalledTimes(1);
+            expect(beforeScroll).toHaveBeenCalledTimes(1);
+            expect(afterScroll).toHaveBeenCalledTimes(1);
+        });
     });
 
     describe("edition", () => {
@@ -466,5 +482,18 @@ describe("DataSet actions", () => {
             expect(dataSet.rows()[1]).toEqual({ a: 10, b: 20 });
         });
 
+    });
+});
+
+describe("DataSet search", () => {
+    const DataField = jest.fn(),
+          fieldsDefs = [{ name: "a" }, { name: "b" }],
+          initialData = [{ a: 1, b: 2 }, { a: 10, b: 20 }, { a: 100, b: 200 }, { a: 1000, b: 2000 }, ];
+
+    it("returns record indexes of matching records", () => {
+        let dataSet =  DataSet({ DataField, fieldsDefs });
+        dataSet.loadData(initialData);
+        expect(dataSet.find(row => row.a >= 100))
+            .toEqual([2, 3]);
     });
 });
