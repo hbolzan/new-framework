@@ -2,32 +2,36 @@ import { Dom } from "../dom/dom.js";
 import { smartFields } from "../../views/forms/smart_fields.js";
 import { complexForm } from "../../views/forms/complex.js";
 
-const load = (provider, complexId) => provider.getOne(complexId),
-      refresh = (provider, complexId) => build(load(provider, complexId));
+const refresh = (provider, complexId) => build(load(provider, complexId));
 
 function ComplexForm(components, complexId, parentNodeId) {
     const provider = components.ComplexFormProvider(components),
           formDom = components.ComplexFormDom(components, parentNodeId),
-          build = loaded => loaded.then(builder);
+          refresh = () => build(load());
 
-    let loaded, built, definition;
+    let loaded, built;
 
-    function builder(data) {
-        definition = data;
-        return complexForm(data["title"], smartFields(data["fields-defs"]));
+    function load() {
+        loaded = provider.getOne(complexId);
+        return loaded;
     }
 
-    function refresh() {
-        loaded = load(provider, complexId);
-        built = build(loaded);
+    function build(loaded) {
+        built = loaded.then(data => complexForm(data["title"], smartFields(data["fields-defs"])));
+        return built;
     }
-    refresh();
+
+    function render() {
+        if ( _.isUndefined(built) ) {
+            refresh();
+        }
+        formDom.render(built);
+    }
 
     return {
-        definition,
+        definition: callback => loaded.then(data => callback(data)),
         refresh,
-        build: () => build(loaded),
-        render: () => formDom.render(built),
+        render,
     };
 }
 

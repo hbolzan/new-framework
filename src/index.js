@@ -6,7 +6,9 @@ import "./css/dashboard.css";
 import components from "./components/components.js";
 
 components.PageDom(components, "insertion-point").render("app-body");
-components.ComplexForm(components, "CAD_FORNECEDORES", "insertion-point").render();
+const cadFornecedores = components.ComplexForm(components, "CAD_FORNECEDORES", "insertion-point");
+cadFornecedores.render();
+cadFornecedores.definition(console.log);
 
 // let idField = dom.findFirst("attrs.name", "id");
 // idField.value(12345.67);
