@@ -47,8 +47,7 @@ function leftBar(logo, content) {
              ["img", { src: "", class: ["uk-border-circle", "profile-img"] }],
              ["h4", { class: ["uk-text-center", "uk-margin-remove-vertical", "text-light"] }, "WebMRP"]],
             ["div", { class: ["left-nav-wrap"] }],
-            ["div", { class: ["bar-bottom"] }]
-           ];
+            ["div", { class: ["bar-bottom"] }]];
 }
 
 function mainContent(content = [], containerId) {

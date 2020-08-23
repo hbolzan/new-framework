@@ -1,4 +1,4 @@
-import { DataSet } from "../../../src/components/data_aware/data_source.js";
+import DataSet from "../../../src/components/data_aware/data_set.js";
 
 describe("DataSet constructor", () => {
     const DataField = jest.fn(),

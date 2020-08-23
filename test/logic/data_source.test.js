@@ -1,4 +1,4 @@
-import { deleteRow } from "../../src/logic/data_source.js";
+import { deleteRow } from "../../src/logic/data_set.js";
 
 describe("deleteRow", () => {
     it("deletes current data row", () => {

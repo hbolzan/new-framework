@@ -2,20 +2,21 @@ import { Dom } from "./dom.js";
 import { smartFields } from "../../views/forms/smart_fields.js";
 import { complexForm } from "../../views/forms/complex.js";
 
-function buildComplexForm({ formsConnection }, complexId) {
-    return formsConnection
-        .get(complexId)
-        .then(resp => complexForm(resp.data[0].title, smartFields(resp.data[0]["fields-defs"])));
+function buildComplexForm(provider, complexId) {
+    return provider
+        .getOne(complexId)
+        .then(data => complexForm(data["title"], smartFields(data["fields-defs"])));
 }
 
-function formDom(components, complexId) {
-    return buildComplexForm(components, complexId)
+function formDom(components, provider, complexId) {
+    return buildComplexForm(provider, complexId)
         .then(form => Dom(components, form));
 }
 
 function ComplexFormDom(components, complexId, parentNodeId) {
+    const provider = components.DataProvider(components, "complexForm");
     return {
-        render: () => formDom(components, complexId).then(dom => dom.render(parentNodeId))
+        render: () => formDom(components, provider, complexId).then(dom => dom.render(parentNodeId))
     };
 }
 

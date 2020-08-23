@@ -4,7 +4,7 @@ if (window._ == undefined) {
 
 import {
     datasetStates, recordSates, dataFields, newRow, appendRow, deleteRow
-} from "../../logic/data_source.js";
+} from "../../logic/data_set.js";
 import BaseComponent from "../common/base.js";
 
 const events = {
@@ -15,6 +15,7 @@ const events = {
     beforePost: "beforePost",
     afterPost: "afterPost",
     beforeCommit: "beforeCommit",
+    onCommit: "onCommit",
     afterCommit: "afterCommit",
     beforeDelete: "beforeDelete",
     afterDelete: "afterDelete",
@@ -64,7 +65,7 @@ function fieldChangeHandler(self) {
 
 const copyRows = rows => _.map(rows, row => Object.assign({}, row));
 
-function DataSet({ connection, DataField, fieldsDefs }) {
+function DataSet({ DataField, fieldsDefs }) {
     let self = BaseComponent(),
         fields = dataFields({
             dataSet: self,
@@ -91,11 +92,19 @@ function DataSet({ connection, DataField, fieldsDefs }) {
         self.events.run(events.onDataChange, [self]);
         self.events.run(events.onStateChange, [self, data.state]);
         self.events.run(events.afterScroll, [self]);
+        return self;
+    }
+
+    function setRollbackData() {
+        if ( ! data.pending ) {
+            rollbackRows = copyRows(data.rows);
+        }
     }
 
     function append() {
         throwIfInactive(self, data);
         cancelInfo = { recordIndex: data.recordIndex };
+        setRollbackData();
         self.events.run(events.beforeInsert, [self]);
         data = appendRow(data, fieldsDefs);
         self.events.run(events.afterInsert, [self]);
@@ -109,12 +118,10 @@ function DataSet({ connection, DataField, fieldsDefs }) {
         if (data.state == datasetStates.edit || data.state == datasetStates.insert) {
             return data.rows[data.recordIndex];
         }
-        if ( ! data.pending ) {
-            rollbackRows = copyRows(data.rows);
-        }
         if (data.recordIndex < 0) {
             return append();
         }
+        setRollbackData();
         cancelInfo = { row: Object.assign({}, data.rows[data.recordIndex]) };
         self.events.run(events.beforeEdit, [self]);
         data.state = datasetStates.edit;
@@ -169,7 +176,7 @@ function DataSet({ connection, DataField, fieldsDefs }) {
             return;
         }
         self.events.run(events.beforeCommit, [self]);
-        // TODO: implement commit to API action (pending must be reset to false)
+        self.events.run(events.onCommit, [self, rollbackRows, data.rows]);
         data.pending = false;
         self.events.run(events.afterCommit, [self]);
     }
@@ -243,14 +250,4 @@ function DataSet({ connection, DataField, fieldsDefs }) {
         });
 }
 
-function DataSource({ connection, fieldsDefs }) {
-    let self = BaseComponent();
-    const dataset = DataSet({ connection, fieldsDefs });
-
-    return Object.assign(self, {
-        fieldsDefs, // schema
-        dataset,
-    });
-}
-
-export { DataSet, DataSource };
+export default DataSet;
