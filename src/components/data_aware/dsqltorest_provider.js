@@ -70,3 +70,4 @@ function DSqlToRestProvider(components, type, params={}) {
 }
 
 export default DSqlToRestProvider;
+export { providerTypes };

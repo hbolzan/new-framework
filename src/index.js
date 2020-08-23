@@ -5,8 +5,8 @@ import "js-datepicker/dist/datepicker.min.css";
 import "./css/dashboard.css";
 import components from "./components/components.js";
 
-components.pageDom("insertion-point").render("app-body");
-components.ComplexForm("CAD_FORNECEDORES", "insertion-point").render();
+components.PageDom(components, "insertion-point").render("app-body");
+components.ComplexForm(components, "CAD_FORNECEDORES", "insertion-point").render();
 
 // let idField = dom.findFirst("attrs.name", "id");
 // idField.value(12345.67);
