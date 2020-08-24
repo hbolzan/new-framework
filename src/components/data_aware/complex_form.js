@@ -7,9 +7,16 @@ const refresh = (provider, complexId) => build(load(provider, complexId));
 function ComplexForm(components, complexId, parentNodeId) {
     const provider = components.ComplexFormProvider(components),
           formDom = components.ComplexFormDom(components, parentNodeId),
-          refresh = () => build(load());
+          refresh = () => build(load()),
+          modalSearch = components.Modal(components, "Teste", ["p", "Este é o modal de busca!"]);
 
     let loaded, built;
+
+    function toolbarEventHandler(e, action) {
+        if (action.action == "search") {
+            modalSearch.show();
+        }
+    }
 
     function load() {
         loaded = provider.getOne(complexId);
@@ -17,7 +24,12 @@ function ComplexForm(components, complexId, parentNodeId) {
     }
 
     function build(loaded) {
-        built = loaded.then(data => complexForm(data["title"], smartFields(data["fields-defs"])));
+        built = loaded.then(data => complexForm(
+            data["title"],
+            smartFields(data["fields-defs"]),
+            null,
+            toolbarEventHandler
+        ));
         return built;
     }
 

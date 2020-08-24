@@ -21,12 +21,16 @@ function Dom({ document, uuidGen, i18n }, hiccup) {
                null);
     }
 
-    function render(parentNodeId) {
-        document.getElementById(parentNodeId).innerHTML = asHtml;
+    function renderOnDomNode(node) {
+        node.innerHTML = asHtml;
         _.each(hiccupHashMap, (node, id) => {
             setEventListeners(node);
             initNode(node);
         });
+    }
+
+    function render(parentNodeId) {
+        renderOnDomNode(document.getElementById(parentNodeId));
     }
 
     function findFirst(attrName, value) {
@@ -37,6 +41,7 @@ function Dom({ document, uuidGen, i18n }, hiccup) {
         hiccup,
         asObj,
         asHtml,
+        renderOnDomNode,
         render,
         findFirst,
     };

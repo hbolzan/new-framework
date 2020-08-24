@@ -65,9 +65,9 @@ function formToolBar(onToolbarEvent) {
     );
 }
 
-function complexForm(formTitle, masterContents, detailContents) {
+function complexForm(formTitle, masterContents, detailContents, toolbarEventHandler) {
     return formContainer(
-        containerHeader(formTitle, formToolBar((e, action) => console.log(action.action))),
+        containerHeader(formTitle, formToolBar(toolbarEventHandler)),
         containerBody(...masterContents),
     );
 }

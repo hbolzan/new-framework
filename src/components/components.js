@@ -1,6 +1,8 @@
 import Icons from "uikit/dist/js/uikit-icons";
 import UIkit from "uikit";
+import { Dom } from "./dom/dom.js";
 import pageDom from "./dom/main_page.js";
+import Modal from "./common/modal.js";
 import ComplexFormDom from "./dom/complex_form.js";
 import ComplexForm from "./data_aware/complex_form.js";
 import DataField from "./data_aware/data_field.js";
@@ -26,6 +28,8 @@ const components = {
     uuidGen: uuidv4,
 
     UIkit,
+    Modal,
+    Dom,
     HttpConnection,
     DataField,
     DataProvider,
