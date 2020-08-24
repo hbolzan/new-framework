@@ -9,6 +9,7 @@ import DataField from "./data_aware/data_field.js";
 import I18n from "./i18n/i18n.js";
 import HttpConnection from "./data_aware/http_connection.js";
 import DSqlToRestProvider from "./data_aware/dsqltorest_provider.js";
+import { Grid } from 'ag-grid-community';
 import { providerTypes } from "./data_aware/dsqltorest_provider.js";
 import { v4 as uuidv4 } from "uuid";
 
@@ -30,6 +31,7 @@ const components = {
     UIkit,
     Modal,
     Dom,
+    Grid,
     HttpConnection,
     DataField,
     DataProvider,

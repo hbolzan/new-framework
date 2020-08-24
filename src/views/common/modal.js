@@ -1,4 +1,4 @@
-function containerModal(title, content) {
+function modalContainer(title, content) {
     return ["div", { class: ["uk-modal-container"], ukModal: "uk-modal" },
             ["div", { class: ["uk-modal-dialog", "uk-modal-body", "uk-margin-auto-vertical"] },
              ["button", { class: ["uk-modal-close-default"], type: "close", ukClose:"uk-close" }],
@@ -6,4 +6,4 @@ function containerModal(title, content) {
             content]];
 }
 
-export { containerModal };
+export { modalContainer };

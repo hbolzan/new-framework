@@ -5,6 +5,7 @@ const translations = {
         inputMaskGroupSeparator: ".",
         inputMaskDecimalSeparetor: ",",
         "Submit": "Confirmar",
+        "Search": "Pesquisar",
         "4-digit-year": "Ano no formato AAAA",
         abbreviatedWeekDays: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
         abbreviatedMonthsNames: [
