@@ -21,16 +21,22 @@ function Dom({ document, uuidGen, i18n }, hiccup) {
     }
 
     function initNode(node) {
-        _.each(node.private, (value, name) => _.isFunction(value) ?
-               value({ id: node.attrs.id, self: node },
-                     { i18n, document }) :
-               null);
+        let newNode = node;
+        _.each(node.private, (value, name) => {
+            if ( _.isFunction(value) ) {
+                newNode = value(
+                    { id: node.attrs.id, self: node },
+                    { i18n, document }
+                ) || newNode;
+            }
+        });
+        return newNode;
     }
 
     function setupNodes() {
         _.each(hiccupHashMap, (node, id) => {
             setEventListeners(node);
-            initNode(node);
+            hiccupHashMap[id] = initNode(node);
         });
     }
 
@@ -59,6 +65,7 @@ function Dom({ document, uuidGen, i18n }, hiccup) {
 
     return {
         hiccup,
+        hiccupHashMap,
         asObj,
         asHtml,
         appendTo,

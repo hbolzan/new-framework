@@ -1,14 +1,25 @@
 import { Dom } from "../dom/dom.js";
 import { smartFields } from "../../views/forms/smart_fields.js";
 import { complexForm } from "../../views/forms/complex.js";
+import searchContainer from "../../views/forms/search.js";
 
 const refresh = (provider, complexId) => build(load(provider, complexId));
 
 function ComplexForm(components, complexId, parentNodeId) {
-    const provider = components.ComplexFormProvider(components),
+    const translate = components.i18n.translate,
+          provider = components.ComplexFormProvider(components),
           formDom = components.ComplexFormDom(components, parentNodeId),
           refresh = () => build(load()),
-          modalSearch = components.Modal(components, "Teste", ["p", "Este é o modal de busca!"]);
+          modalSearch = components.Modal(
+              components,
+              translate("Search"),
+              searchContainer(
+                  components,
+                  translate("Search by all available fields in any part of the text"),
+                  [],
+                  { onSearch: (searchValue) => console.log("onSearch handler", searchValue) }
+              )
+          );
 
     let loaded, built;
 

@@ -9,15 +9,19 @@ function initValueGetterSetter({ id, self }, { document }) {
         document.getElementById(id).value = newValue;
         return newValue;
     };
+    return self;
 }
 
 const basicInputAttrs = (field, type) => {
-    return {
-        class: ["uk-input"],
-        type: type,
-        name: field.name,
-        private: { field, initValueGetterSetter },
-    };
+    return Object.assign(
+        {
+            class: ["uk-input"],
+            type: type,
+            name: field.name,
+            private: { field, initValueGetterSetter },
+        },
+        field.id ? { id: field.id } : {},
+    );
 };
 
 const inputAttrs = (field, attrs = {}, type = "text") => mergeAttrs(basicInputAttrs(field, type), attrs);
