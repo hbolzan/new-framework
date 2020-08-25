@@ -5,6 +5,12 @@ function Dom({ document, uuidGen, i18n }, hiccup) {
           hiccupHashMap = indexNodes(asObj),
           asHtml = objToHtml(asObj);
 
+    function asDomNode() {
+        const el = document.createElement("template");
+        el.innerHTML = asHtml;
+        return el.content.firstChild;
+    }
+
     function setEventListeners(hiccupObj) {
         _.each(
             hiccupObj.events,
@@ -21,16 +27,30 @@ function Dom({ document, uuidGen, i18n }, hiccup) {
                null);
     }
 
-    function renderOnDomNode(node) {
-        node.innerHTML = asHtml;
+    function setupNodes() {
         _.each(hiccupHashMap, (node, id) => {
             setEventListeners(node);
             initNode(node);
         });
     }
 
+    function renderIntoDomNode(domNode) {
+        domNode.innerHTML = asHtml;
+        setupNodes();
+    }
+
+    function appendToDomNode(domNode) {
+        const child = domNode.appendChild(asDomNode());
+        setupNodes();
+        return child;
+    }
+
+    function appendTo(seletorId) {
+        appendToDomNode(document.getElementById(`#${ selectorId }`));
+    }
+
     function render(parentNodeId) {
-        renderOnDomNode(document.getElementById(parentNodeId));
+        renderIntoDomNode(document.getElementById(parentNodeId));
     }
 
     function findFirst(attrName, value) {
@@ -41,7 +61,9 @@ function Dom({ document, uuidGen, i18n }, hiccup) {
         hiccup,
         asObj,
         asHtml,
-        renderOnDomNode,
+        appendTo,
+        appendToDomNode,
+        renderIntoDomNode,
         render,
         findFirst,
     };

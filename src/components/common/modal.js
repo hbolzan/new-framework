@@ -3,15 +3,15 @@ import { modalContainer } from "../../views/common/modal.js";
 import { toHtml } from "../../logic/hiccup.js";
 
 function Modal(components, title, content) {
-    // let self = BaseComponent();
     const { document, Dom, UIkit, uuidGen } = components,
-          modal = UIkit.modal(toHtml(modalContainer(title, ["div"]), uuidGen));
-
-    Dom(components, content)
-        .renderOnDomNode(modal.$el.firstChild.lastChild);
+          modal = UIkit.modal(
+              Dom(components, modalContainer(title, content))
+                  .appendToDomNode(document.getElementsByTagName("body")[0])
+          );
 
     return {
-        show: () => modal.show(),
+        show: modal.show,
+        hide: modal.hide,
     };
 };
 
