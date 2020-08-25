@@ -20,7 +20,7 @@ const basicInputAttrs = (field, type) => {
             name: field.name,
             private: { field, initValueGetterSetter },
         },
-        field.id ? { id: field.id } : {},
+        field.attrs ? field.attrs : {},
     );
 };
 

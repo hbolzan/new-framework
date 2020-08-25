@@ -65,7 +65,6 @@ function Dom({ document, uuidGen, i18n }, hiccup) {
 
     return {
         hiccup,
-        hiccupHashMap,
         asObj,
         asHtml,
         appendTo,

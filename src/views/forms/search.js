@@ -1,17 +1,17 @@
 import input from "../input/input.js";
 import { singleButton } from "../button/button.js";
 
-function containerHeader({ uuidGen, document }, searchTitle, eventHandlers={}) {
-    const inputId = uuidGen(),
-          searchHandler = onSearch => e => onSearch(document.getElementById(inputId).value);
+function containerHeader({ document }, inputId, searchTitle, eventHandlers={}) {
+    const onSearch = eventHandlers.onSearch,
+          value = () => document.getElementById(inputId).value,
+          clickHandler = e => onSearch(value()),
+          keyPressHandler = e => e.code == "Enter" ? onSearch(value()) : null;
 
-
-    function withSearchEvent(attrs, { onSearch }) {
+    function withSearchEvent(attrs, event, handler) {
         return Object.assign(
             {},
             attrs,
-
-            onSearch ? { attrs: { onclick: searchHandler(onSearch) } } : {}
+            onSearch ? { [event]: handler } : {}
         );
     }
 
@@ -21,9 +21,17 @@ function containerHeader({ uuidGen, document }, searchTitle, eventHandlers={}) {
               ["label", { class: ["uk-form-label"]  }, searchTitle]],
              ["div", { ukGrid: "uk-grid" },
               ["div", { class: ["uk-width-expand@m"]},
-               input({ id: inputId, name: "search", label: searchTitle, "visible": true })],
+               input({
+                   attrs: withSearchEvent({ id: inputId }, "onkeypress", keyPressHandler),
+                   name: "search", label: searchTitle,
+                   "visible": true
+               })],
               ["div", { class: ["uk-width-auto@m"]},
-               singleButton(withSearchEvent({ label: "Search", type: "primary" }, eventHandlers))]]]];
+               singleButton({
+                   label: "Search",
+                   type: "primary",
+                   attrs: withSearchEvent({}, "onclick", clickHandler)
+               })]]]];
 }
 
 function containerBody(content=[]) {
@@ -31,9 +39,15 @@ function containerBody(content=[]) {
 }
 
 function searchContainer(components, searchTitle, content, eventHandlers) {
-    return ["div", { class: ["uk-card-default", "uk-width-1", "uk-card-hover"] },
-            containerHeader(components, searchTitle, eventHandlers),
-            containerBody(content)];
+    const inputId = components.uuidGen(),
+          focus = () => document.getElementById(inputId).select();
+
+    return {
+        hiccup: ["div", { class: ["uk-card-default", "uk-width-1", "uk-card-hover"] },
+                 containerHeader(components, inputId, searchTitle, eventHandlers),
+                 containerBody(content)],
+        focus,
+    };
 }
 
 export default searchContainer;

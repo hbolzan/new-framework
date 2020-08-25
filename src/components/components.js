@@ -3,6 +3,7 @@ import UIkit from "uikit";
 import { Dom } from "./dom/dom.js";
 import pageDom from "./dom/main_page.js";
 import Modal from "./common/modal.js";
+import ModalSearch from "./data_aware/modal_search.js";
 import ComplexFormDom from "./dom/complex_form.js";
 import ComplexForm from "./data_aware/complex_form.js";
 import DataField from "./data_aware/data_field.js";
@@ -30,6 +31,7 @@ const components = {
 
     UIkit,
     Modal,
+    ModalSearch,
     Dom,
     Grid,
     HttpConnection,
