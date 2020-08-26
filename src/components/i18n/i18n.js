@@ -7,8 +7,8 @@ function I18n(locale = "pt-BR") {
 
     const formatDate = d => d.toLocaleDateString(locale);
 
-    function translate(key) {
-        return localeTranslations[key] || fallbackTranslations[key] || key;
+    function translate(key, namespace="general") {
+        return localeTranslations[namespace][key] || fallbackTranslations[namespace][key] || key;
     }
 
     return {

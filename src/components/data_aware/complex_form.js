@@ -4,12 +4,19 @@ import { complexForm } from "../../views/forms/complex.js";
 const refresh = (provider, complexId) => build(load(provider, complexId));
 
 function ComplexForm(components, complexId, parentNodeId) {
-    const provider = components.ComplexFormProvider(components),
-          formDom = components.ComplexFormDom(components, parentNodeId),
-          refresh = () => build(load()),
-          search = components.ModalSearch(components, searchValue => console.log(searchValue));
+    const { ComplexFormProvider, PersistentQueryProvider, ComplexFormDom, ModalSearch } = components,
+          provider = ComplexFormProvider(components),
+          formDom = ComplexFormDom(components, parentNodeId),
+          refresh = () => build(load());
 
-    let loaded, built;
+    let loaded, built, dataProvider, search;
+
+    function buildSearch(dataProvider) {
+        return ModalSearch(
+            { dataProvider, ...components },
+            searchValue => console.log(searchValue)
+        );
+    }
 
     function toolbarEventHandler(e, action) {
         if (action.action == "search") {
@@ -17,8 +24,20 @@ function ComplexForm(components, complexId, parentNodeId) {
         }
     }
 
+    function init(loaded) {
+        if ( ! _.isUndefined(dataProvider) ) {
+            return;
+        }
+        loaded.then(data => {
+            console.log(data);
+            dataProvider = PersistentQueryProvider(components, { fieldsDefs: data["fields-defs"] });
+            search = buildSearch(dataProvider);
+        });
+    }
+
     function load() {
         loaded = provider.getOne(complexId);
+        init(loaded);
         return loaded;
     }
 

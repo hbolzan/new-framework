@@ -58,6 +58,7 @@ function DSqlToRestProvider(components, type, params={}) {
     let self = BaseComponent();
     const connection = connectionByType(components, type),
           fieldsDefs = selectedFieldsDefs(type, params.fieldsDefs),
+          queryId = params.queryId,
           dataset = DataSet({ fieldsDefs, ...components });
 
     // TODO: write onCommit handler that posts changes through connection
@@ -65,6 +66,7 @@ function DSqlToRestProvider(components, type, params={}) {
 
     return Object.assign(self, {
         getOne: key => getOne(connection, dataset, key),
+        fieldsDefs,
         dataset,
     });
 }
