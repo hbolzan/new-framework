@@ -1,27 +1,24 @@
 import { smartFields } from "../../views/forms/smart_fields.js";
-import { complexForm } from "../../views/forms/complex.js";
+import { complexForm, toolbarActions } from "../../views/forms/complex.js";
 
 const refresh = (provider, complexId) => build(load(provider, complexId));
 
 function ComplexForm(components, complexId, parentNodeId) {
+    let loaded, built, dataProvider, search;
     const { ComplexFormProvider, PersistentQueryProvider, ComplexFormDom, ModalSearch } = components,
           provider = ComplexFormProvider(components),
           formDom = ComplexFormDom(components, parentNodeId),
-          refresh = () => build(load());
+          refresh = () => build(load()),
+          actions = {
+              [toolbarActions.search.action]: () => search.show(),
+          },
+          toolbarEventHandler = (e, action) => actions[action] ? actions[action]() : null;
 
-    let loaded, built, dataProvider, search;
-
-    function buildSearch(dataProvider) {
+    function initSearch(dataProvider) {
         return ModalSearch(
             { dataProvider, ...components },
-            searchValue => console.log(searchValue)
+            { onSearch: searchValue => dataProvider.search(searchValue) }
         );
-    }
-
-    function toolbarEventHandler(e, action) {
-        if (action.action == "search") {
-            search.show();
-        }
     }
 
     function init(loaded) {
@@ -29,9 +26,14 @@ function ComplexForm(components, complexId, parentNodeId) {
             return;
         }
         loaded.then(data => {
-            console.log(data);
-            dataProvider = PersistentQueryProvider(components, { fieldsDefs: data["fields-defs"] });
-            search = buildSearch(dataProvider);
+            dataProvider = PersistentQueryProvider(
+                components,
+                {
+                    fieldsDefs: data["fields-defs"],
+                    queryId: data["dataset-name"],
+                }
+            );
+            search = initSearch(dataProvider);
         });
     }
 

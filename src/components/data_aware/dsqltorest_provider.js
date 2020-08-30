@@ -54,6 +54,13 @@ function getOne(connection, dataset, key) {
         .then(ds => ds.rows()[0]);
 }
 
+function get(connection, dataset, params) {
+    return connection
+        .get(params)
+        .then(resp => dataset.loadData(resp.data))
+        .then(ds => ds.rows());
+}
+
 function DSqlToRestProvider(components, type, params={}) {
     let self = BaseComponent();
     const connection = connectionByType(components, type),
@@ -66,6 +73,8 @@ function DSqlToRestProvider(components, type, params={}) {
 
     return Object.assign(self, {
         getOne: key => getOne(connection, dataset, key),
+        get: () => get(connection, params),
+        search: searchValue => get(connection, dataset, { queryId, queryParams: `?_search_=${ searchValue }`}),
         fieldsDefs,
         dataset,
     });

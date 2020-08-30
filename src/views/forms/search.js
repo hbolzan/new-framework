@@ -35,7 +35,6 @@ function containerHeader({ document }, inputId, searchTitle, eventHandlers={}) {
 }
 
 function containerBody(content=[]) {
-    // return content;
     return ["div", { class: ["uk-card-body"], style: { padding: "10px"} }, content];
 }
 

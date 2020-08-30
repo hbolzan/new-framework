@@ -1,5 +1,10 @@
 import searchContainer from "../../views/forms/search.js";
 
+const events = {
+    onSearch: "onSearch",
+    onSelectRow: "onSelectRow",
+};
+
 function gridContainer(containerId) {
     return ["div", {
         id: containerId,
@@ -8,7 +13,7 @@ function gridContainer(containerId) {
     }];
 }
 
-function ModalSearch(components, onSearch) {
+function ModalSearch(components, { onSearch }) {
     const { i18n, uuidGen, document, DataGrid } = components,
           translate = i18n.translate,
           gridContainerId = uuidGen(),

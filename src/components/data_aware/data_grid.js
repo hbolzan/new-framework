@@ -26,8 +26,7 @@ function DataGrid(insertionNode, components) {
               insertionNode,
               gridOptions(fieldsDefsToColumnDefs(fieldsDefs), dataset.rows(), i18n.translate)
           );
-
-    dataset.onDataChange(ds => grid.api.setRowData(ds.rows()));
+    dataset.onDataChange(ds => grid.gridOptions.api.setRowData(ds.rows()));
 
     return Object.assign(
         self,

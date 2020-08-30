@@ -25,7 +25,7 @@ function newToolButton(action, onToolbarEvent, attrs = {}) {
                 style: { padding: "0", width: "55px", backgroundColor: "#fdfdfd" }
             },
             attrs,
-            onToolbarEvent ? { onclick: e => onToolbarEvent(e, action)} : {}
+            onToolbarEvent ? { onclick: e => onToolbarEvent(e, action.action)} : {}
         )
     });
 }
@@ -72,4 +72,4 @@ function complexForm(formTitle, masterContents, detailContents, toolbarEventHand
     );
 }
 
-export { complexForm };
+export { complexForm, toolbarActions };
