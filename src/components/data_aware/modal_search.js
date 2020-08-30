@@ -13,7 +13,7 @@ function gridContainer(containerId) {
     }];
 }
 
-function ModalSearch(components, { onSearch }) {
+function ModalSearch(components, eventHandlers={}) {
     const { i18n, uuidGen, document, DataGrid } = components,
           translate = i18n.translate,
           gridContainerId = uuidGen(),
@@ -21,25 +21,46 @@ function ModalSearch(components, { onSearch }) {
               components,
               translate("Search by all available fields in any part of the text"),
               gridContainer(gridContainerId),
-              { onSearch }
+              { onSearch: searchHandler }
           ),
           modal = components.Modal(
               components,
               translate("Search"),
               searchView.hiccup
           );
-
     let grid;
 
-    function showHandler() {
+    function searchHandler(searchValue) {
+        modal.events.run(events.onSearch, [searchValue]);
+    }
+
+    function initGrid() {
         if ( _.isUndefined(grid) ) {
             grid = DataGrid(document.getElementById(gridContainerId), components);
         }
+    }
+
+    function showHandler() {
+        initGrid();
         searchView.focus();
     }
 
-    modal.onShow(showHandler);
-    return modal;
+    function init() {
+        modal.onShow(showHandler);
+        _.each(eventHandlers, (handler, event) => modal.events.on(event, handler));
+    }
+    init();
+
+    return Object.assign(
+        modal,
+
+        _.reduce(events, (handlers, event) => Object.assign(
+            {},
+            handlers,
+            { [event]: handler => modal.events.on(event, handler) }
+        ), {}),
+
+    );
 }
 
 export default ModalSearch;

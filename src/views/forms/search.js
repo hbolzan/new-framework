@@ -1,7 +1,7 @@
 import input from "../input/input.js";
 import { singleButton } from "../button/button.js";
 
-function containerHeader({ document }, inputId, searchTitle, eventHandlers={}) {
+function containerHeader({ document, i18n }, inputId, searchTitle, eventHandlers={}) {
     const onSearch = eventHandlers.onSearch,
           value = () => document.getElementById(inputId).value,
           clickHandler = e => onSearch(value()),
@@ -28,7 +28,7 @@ function containerHeader({ document }, inputId, searchTitle, eventHandlers={}) {
                })],
               ["div", { class: ["uk-width-auto@m"]},
                singleButton({
-                   label: "Search",
+                   label: i18n.translate("Search"),
                    type: "primary",
                    attrs: withSearchEvent({}, "onclick", clickHandler)
                })]]]];
