@@ -63,6 +63,10 @@ function fieldChangeHandler(self) {
     };
 }
 
+function indexInsideRange(rows, index) {
+    return index >= 0 && index < rows.length;
+}
+
 const copyRows = rows => _.map(rows, row => Object.assign({}, row));
 
 function DataSet({ DataField, fieldsDefs }) {
@@ -212,6 +216,16 @@ function DataSet({ DataField, fieldsDefs }) {
         return _.reduce(data.rows, (matches, row, key) => pred(row) ? matches.concat(key) : matches, []);
     };
 
+    function seek(rowIndex) {
+        if ( ! indexInsideRange(data.rows, rowIndex) ) {
+            return null;
+        }
+        self.events.run(events.beforeScroll, [self]);
+        data.recordIndex = rowIndex;
+        self.events.run(events.afterScroll, [self]);
+        return data.rows[rowIndex];
+    }
+
     return Object.assign(
         self,
 
@@ -247,6 +261,7 @@ function DataSet({ DataField, fieldsDefs }) {
             commit,
             delete: _delete,
             find,
+            seek,
         });
 }
 

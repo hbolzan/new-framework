@@ -497,3 +497,48 @@ describe("DataSet search", () => {
             .toEqual([2, 3]);
     });
 });
+
+describe("DataSet seek", () => {
+    const DataField = jest.fn(),
+          fieldsDefs = [{ name: "a" }, { name: "b" }],
+          initialData = [{ a: 1, b: 2 }, { a: 10, b: 20 }, { a: 100, b: 200 }, { a: 1000, b: 2000 }, ];
+
+    it("changes dataset record index", () => {
+        let dataSet =  DataSet({ DataField, fieldsDefs });
+        dataSet.loadData(initialData);
+        expect(dataSet.recordIndex()).toBe(0);
+        expect(dataSet.seek(2)).toEqual({ a: 100, b: 200 });
+        expect(dataSet.recordIndex()).toBe(2);
+    });
+
+    it("triggers scroll events", () => {
+        const beforeScroll = jest.fn(),
+              afterScroll = jest.fn();
+        let dataSet =  DataSet({ DataField, fieldsDefs });
+        dataSet.loadData(initialData);
+        dataSet.beforeScroll(beforeScroll);
+        dataSet.afterScroll(afterScroll);
+        expect(dataSet.seek(2)).toEqual({ a: 100, b: 200 });
+        expect(beforeScroll).toHaveBeenCalledTimes(1);
+        expect(afterScroll).toHaveBeenCalledTimes(1);
+    });
+
+    it("ignores invalid row index requests", () => {
+        const beforeScroll = jest.fn(),
+              afterScroll = jest.fn();
+        let dataSet =  DataSet({ DataField, fieldsDefs });
+        dataSet.loadData(initialData);
+        dataSet.beforeScroll(beforeScroll);
+        dataSet.afterScroll(afterScroll);
+        expect(dataSet.recordIndex()).toBe(0);
+        expect(dataSet.seek(5)).toBe(null);
+        expect(dataSet.recordIndex()).toBe(0);
+        expect(beforeScroll).toHaveBeenCalledTimes(0);
+        expect(afterScroll).toHaveBeenCalledTimes(0);
+
+        expect(dataSet.seek(-1)).toBe(null);
+        expect(dataSet.recordIndex()).toBe(0);
+        expect(beforeScroll).toHaveBeenCalledTimes(0);
+        expect(afterScroll).toHaveBeenCalledTimes(0);
+    });
+});
