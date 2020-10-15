@@ -37,6 +37,7 @@ function ModalSearch(components, eventHandlers={}) {
     function initGrid() {
         if ( _.isUndefined(grid) ) {
             grid = DataGrid(document.getElementById(gridContainerId), components);
+            grid.onRowDoubleClicked((e, g) => console.log("ROW DOUBLE CLICKED", e));
         }
     }
 
