@@ -1,6 +1,3 @@
-import BaseComponent from "../common/base.js";
-import DataSet from "./data_set.js";
-
 const persistentQueryBaseURL = "/api/query/persistent";
 const providerTypes = {
     complexForm: "complexForm",
@@ -34,9 +31,9 @@ const urlBuilders = {
     [providerTypes.persistentQuery]: persistentQueryURL,
 };
 
-function connectionByType({ host, HttpConnection }, providerType) {
-    return HttpConnection({
-        host,
+function connectionByType(context, providerType) {
+    return context.HttpConnection({
+        ...context,
         buildUrl: urlBuilders[providerType],
     });
 }
@@ -62,11 +59,11 @@ function get(connection, dataset, params) {
 }
 
 function DSqlToRestProvider(context, type, params={}) {
-    let self = BaseComponent();
+    let self = context.BaseComponent();
     const connection = connectionByType(context, type),
           fieldsDefs = selectedFieldsDefs(type, params.fieldsDefs),
           queryId = params.queryId,
-          dataset = DataSet({ fieldsDefs, ...context });
+          dataset = context.DataSet({ fieldsDefs, ...context });
 
     // TODO: write onCommit handler that posts changes through connection
     // context.dataset.onCommit((_, beforeRows, afterRows) => null);
