@@ -1,5 +1,5 @@
-import DataField from "../../../src/components/data_aware/data_field.js";
 import BaseComponent from "../../../src/components/common/base.js";
+import DataField from "../../../src/components/data_aware/data_field.js";
 
 const mockedDataSet = {
     afterPost: jest.fn(),
@@ -14,22 +14,22 @@ const fieldsDefs = [
 
 describe("DataField", () => {
     it("self registers in dataset afterPost and onDataChange events", () => {
-        DataField(fieldsDefs[0], mockedDataSet);
+        DataField({ BaseComponent }, fieldsDefs[0], mockedDataSet);
         expect(mockedDataSet.afterPost).toHaveBeenCalled();
         expect(mockedDataSet.onDataChange).toHaveBeenCalled();
     });
 
     it("is initialized with fieldDef default value", () => {
-        expect(DataField(fieldsDefs[0], mockedDataSet).value()).toBe("ABC");
-        expect(DataField(fieldsDefs[1], mockedDataSet).value()).toBe(123);
+        expect(DataField({ BaseComponent }, fieldsDefs[0], mockedDataSet).value()).toBe("ABC");
+        expect(DataField({ BaseComponent }, fieldsDefs[1], mockedDataSet).value()).toBe(123);
     });
 
     it("is initialized with null if there is no default value", () => {
-        expect(DataField(fieldsDefs[2], mockedDataSet).value()).toBeNull();
+        expect(DataField({ BaseComponent }, fieldsDefs[2], mockedDataSet).value()).toBeNull();
     });
 
     it("has all fieldDef attributes", () => {
-        let dataField = DataField(fieldsDefs[0], mockedDataSet);
+        let dataField = DataField({ BaseComponent }, fieldsDefs[0], mockedDataSet);
         expect(dataField.name).toBe("a");
         expect(dataField.default).toBe("ABC");
         expect(dataField.label).toBe("Field A");
@@ -37,7 +37,7 @@ describe("DataField", () => {
 
     it("changes valueChanged state and triggers onChange event when a new value is set ", () => {
         let onChange = jest.fn();
-        let dataField = DataField(fieldsDefs[0], mockedDataSet, [{ onChange: onChange }]);
+        let dataField = DataField({ BaseComponent }, fieldsDefs[0], mockedDataSet, [{ onChange: onChange }]);
         expect(dataField.valueChanged()).toBe(false);
         dataField.value("XYZ");
         expect(dataField.value()).toBe("XYZ");
@@ -46,7 +46,7 @@ describe("DataField", () => {
     });
 
     it("resets valueChanged to false after dataset post", () => {
-        let dataField = DataField(fieldsDefs[0], mockedDataSetWithEvents);
+        let dataField = DataField({ BaseComponent }, fieldsDefs[0], mockedDataSetWithEvents);
         expect(dataField.valueChanged()).toBe(false);
         dataField.value("XYZ");
         expect(dataField.value()).toBe("XYZ");
@@ -71,7 +71,7 @@ const mockedDataSetWithEvents = Object.assign(
 
 describe("DataField and DataSet basic interaction", () => {
     it("resets valueChanged to false after dataset post", () => {
-        let dataField = DataField(fieldsDefs[0], mockedDataSetWithEvents);
+        let dataField = DataField({ BaseComponent }, fieldsDefs[0], mockedDataSetWithEvents);
         expect(dataField.valueChanged()).toBe(false);
         dataField.value("XYZ");
         expect(dataField.value()).toBe("XYZ");
@@ -81,7 +81,7 @@ describe("DataField and DataSet basic interaction", () => {
     });
 
     it("listens to onDataChange dataset event", () => {
-        let dataField = DataField(fieldsDefs[0], mockedDataSetWithEvents);
+        let dataField = DataField({ BaseComponent }, fieldsDefs[0], mockedDataSetWithEvents);
         expect(mockedChangeHandler).toHaveBeenCalledTimes(0);
         mockedDataSetWithEvents.change();
         expect(mockedChangeHandler).toHaveBeenCalled();

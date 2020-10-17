@@ -15,11 +15,11 @@ const recordSates = {
     edit: "edit",
 };
 
-function dataFields({ dataSet, fieldsDefs, DataField, eventHandlers }) {
+function dataFields({ BaseComponent, dataSet, fieldsDefs, DataField, eventHandlers }) {
     return _.reduce(
         fieldsDefs,
         (fields, fieldDef) => Object.assign({
-            [fieldDef.name]: DataField(fieldDef, dataSet, eventHandlers || [])
+            [fieldDef.name]: DataField({ BaseComponent }, fieldDef, dataSet, eventHandlers || [])
         }, fields),
         {}
     );
