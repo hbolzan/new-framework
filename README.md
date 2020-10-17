@@ -150,6 +150,9 @@ So far, it takes a JSON definition like
 And renders a CRUD form like this
 ![js-biz-framework CRUD](docs/crud-1.png)
 
+This is the modal search window
+![js-biz-framework CRUD search](docs/crud-search.png)
+
 ## Features
 
 * Basic hiccup lib - for me, it makes much more sense than writing HTML templates.
