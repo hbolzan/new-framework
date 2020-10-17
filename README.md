@@ -12,6 +12,7 @@ In 2007 I started writing a desktop application aimed at small industries. In 20
 So far, it takes a definition like this
 <details>
 <summary>Click to see definition JSON data</summary>
+
 ```
 {
   "status":"OK",
