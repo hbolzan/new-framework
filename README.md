@@ -6,7 +6,7 @@ A business applications oriented JS framework.
 JS Biz Framework was created to meet a very specific need: developing business web applications.
 
 ## Motivation
-In 2007 I started writing a desktop application aimed at small industries. In 2013 I began to feel the need of a web version, but there was a lot of code to migrate. Fortunately, a large portion of the application was built over a framework that renders CRUD forms, formsets, menus, and reports. So, if I wrote a web client that was able to parse the definitions for the existing desktop framework, I could magically migrate lots of forms and reports. Early in 2018 I started a project called [reagent-metaforms](https://github.com/hbolzan/reagent-metaforms) written in ClojureScript. After a year of hard work, it ended up being a huge failure. In 2019 I decided to start it all over, writing in JS this time.
+In 2007 I started writing a desktop application aimed at small industries. In 2013 I began to feel the need of a web version, but there was a lot of code to migrate. Fortunately, a large portion of the application was built over a framework that renders CRUD forms, formsets, menus, and reports. So, if I wrote a web client that was able to parse the definitions for the existing desktop framework, I could magically migrate lots of forms and reports. Early in 2018 I started a project called [reagent-metaforms](https://github.com/hbolzan/reagent-metaforms) written in ClojureScript. After a year of hard work, it ended up being a huge failure. In 2019 I decided to start it all over, writing it in JS this time.
 
 ## But, after all, what does it do?
 So far, it takes a JSON definition like 
@@ -250,7 +250,36 @@ toHtml(todoList(["First", "Second", "Third"]), uuidv4)
 This approach allows to write components that are easily composable and extensible, and easier to reason about.
 
 ## Views
-Views are building blocks that are used for components or direct calls to create any html fragment. They are simple functions that return hiccup arrays with html fragments like buttons, inputs and forms.
+Views are pure functions that return hiccup arrays with html fragments. They are the building blocks that are used by components or direct calls to create htmls fragments.
+
+Currently available views are:
+* Button views
+  * singleButton
+  * buttonGroup
+  * toolBar
+
+* Input - an *input* view returns a specialized input element according to the field object it receives. Specialized input views are
+  * text
+  * integer
+  * float
+  * dateInput
+  * textArea
+  * select
+  * hidden
+  
+* Forms
+  * form
+  * formContainer
+  * formField - a formField is a container with an input view inside
+  * smartFields - a set of fields automatically distributed along the form width
+  * complexForm - the generic CRUD form with a toolBar in the header and a placehoder for fields and grid in the body
+  * searchContainer - the container for the modal search component
+
+* Page - views that return page fragments
+  * pageHeader
+  * leftBar
+  * mainContent
+
 
 ## Components
 All components receive the context as the first argument of their contructures. This way, a mocked context can be injected when testing a component.
