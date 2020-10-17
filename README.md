@@ -153,6 +153,25 @@ And renders a CRUD form like this
 It comes with a modal search window
 ![js-biz-framework CRUD search](docs/crud-search.png)
 
+## Contributing
+### Install
+```
+$ git clone https://github.com/hbolzan/js-biz-framework.git
+$ cd js-biz-framework
+$ yarn install
+```
+
+### Run
+```
+$ yarn dev
+```
+
+### Tests
+Tests are made with Jest. There are some tests missing yet. 
+```
+$ yarn test
+```
+
 ## HTML Templating
 At the beginning of this project I searched for existing template engines like [Handlebars ](https://handlebarsjs.com/) or [Mustache](https://mustache.github.io/), but since I was introduced to the [hiccup](https://github.com/weavejester/hiccup/wiki) library, it makes much more sense to me to declare html as data structures rather than the traditional html templating approach. Since the markup is declared as data, it's not necessary to make string interpolations or use some specific template language. The only language you need is JS. So I wrote a simple hiccup like library that allows me to write views in the hiccup way.
 
@@ -185,49 +204,53 @@ Note that camel case key names will be automatically converted to kebab case.
 
 Here are some more examples
 ```
-import { toHtml } from "src/logic/hiccup.js"
+["div", "This is a div"] 
+<div>This is a div</div>
 
-toHtml(["div", "This is a div"]) 
-  => <div>This is a div</div>
-
-toHtml(["div", { class: ["some-class", "other-class"] }, "This is a div"]) 
-  => <div class="some-class other-class">This is a div</div>
+["div", { class: ["some-class", "other-class"] }, "This is a div"] 
+<div class="some-class other-class">This is a div</div>
 ```
 
 With nested children
 ```
-import { toHtml } from "src/logic/hiccup.js"
-
-toHtml(["div", { class: ["list-class"] },
-        ["ul",
-         ["li", "First item"],
-         ["li", "Second item"],
-         ["li", "Third item"]]]) => <div class="list-class">
-                                      <ul>
-                                        <li>First item</li>
-                                        <li>Second item</li>
-                                        <li>Third item</li>
-                                      </ul>
-                                    </div>
+["div", { class: ["list-class"] },
+ ["ul",
+  ["li", "First item"],
+  ["li", "Second item"],
+  ["li", "Third item"]]] 
+         
+<div class="list-class">
+  <ul>
+    <li>First item</li>
+    <li>Second item</li>
+    <li>Third item</li>
+  </ul>
+</div>
 ```
 
 Since it's just data, it can be built by a function
 ```
+import { v4 as uuidv4 } from "uuid";
 import { toHtml } from "src/logic/hiccup.js"
 
 function todoList(items) {
-    return ["ul"].concat(items.map( i => ["li", i])]);
+    return ["ul", { id: "my-own-id" }].concat(items.map(i => ["li", i])]);
 }
 
-toHtml(todoList(["First", "Second", "Third"])) => <ul>
-                                                    <li>First</li>
-                                                    <li>Second</li>
-                                                    <li>Third</li>
-                                                  </ul>
+// toHtml function converts hiccup into an html string
+// the second argument is a function that generates random uuid's
+// so random id's can be assigned to any elements that don't have an id
+toHtml(todoList(["First", "Second", "Third"]), uuidv4) 
+=> <ul id="my-own-id">
+    <li id="c2756d01-28f4-4e7d-81a8-6c32b5333547">First</li>
+    <li id="a248dc42-1604-482d-b76e-cbf3e19a6669">Second</li>
+    <li id="74b2c1ea-dab7-48ca-a4fd-d7547f10d0a8">Third</li>
+  </ul>
 ```
 This approach allows to write components that are easily composable and extensible, and easier to reason about.
 
-## Features
+## Views
+Views are building blocks that are used for components or direct calls to create any html fragment. They are simple functions that return hiccup arrays with html fragments like buttons, inputs and forms.
 
-* Crud generator.
-* Reports generator.
+## Components
+All components receive the context as the first argument of their contructures. This way, a mocked context can be injected when testing a component.
