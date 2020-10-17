@@ -1,4 +1,3 @@
-import BaseComponent from "./base.js";
 import { modalContainer } from "../../views/common/modal.js";
 
 const events = {
@@ -6,7 +5,7 @@ const events = {
 };
 
 function Modal(context, title, content, onModalShow) {
-    let self = BaseComponent();
+    let self = context.BaseComponent();
     const { document, Dom, UIkit, uuidGen } = context,
           dom = Dom(context, modalContainer(title, content)),
           modal = UIkit.modal(dom.appendToDomNode(document.getElementsByTagName("body")[0]));

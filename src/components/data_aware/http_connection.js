@@ -1,5 +1,3 @@
-import DataConnection from "./data_connection.js";
-
 const stdBuildUrl = ({ host }, resource) => `${ host }${ resource }`;
 
 function _get(params, resource) {
@@ -26,13 +24,13 @@ function _send(method, params, resource, payload) {
     ).then(r => r.json());
 }
 
-function HttpConnection(params) {
-    const buildUrl = params.buildUrl || stdBuildUrl;
-    return DataConnection(params, {
-        get: (params, resource) => _get({ buildUrl, ...params }, resource),
-        delete: (params, resource) => _delete({ buildUrl, ...params }, resource),
-        post: (params, resource, payload) => _send("POST", { buildUrl, ...params }, resource, payload),
-        put: (params, resource, payload) => _send("PUT", { buildUrl, ...params }, resource, payload),
+function HttpConnection(context) {
+    const buildUrl = context.buildUrl || stdBuildUrl;
+    return context.DataConnection(context, {
+        get: (context, resource) => _get({ buildUrl, ...context }, resource),
+        delete: (context, resource) => _delete({ buildUrl, ...context }, resource),
+        post: (context, resource, payload) => _send("POST", { buildUrl, ...context }, resource, payload),
+        put: (context, resource, payload) => _send("PUT", { buildUrl, ...context }, resource, payload),
     });
 }
 
