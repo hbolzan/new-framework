@@ -10,7 +10,7 @@ In 2007 I started writing a desktop application aimed at small industries. In 20
 
 ## But, after all, what does it do?
 So far, it takes a JSON definition like 
-<details><summary><strong>THIS</strong> (Click to see definition)</summary>
+<details><summary><strong>THIS</strong> (Click to see JSON definition)</summary>
 
 ```
 {
@@ -156,16 +156,34 @@ It comes with a modal search window
 ## HTML Templating
 At the beginning of this project I searched for existing template engines like [Handlebars ](https://handlebarsjs.com/) or [Mustache](https://mustache.github.io/), but since I was introduced to the [hiccup](https://github.com/weavejester/hiccup/wiki) library, it makes much more sense to me to declare html as data structures rather than the traditional html templating approach. Since the markup is declared as data, it's not necessary to make string interpolations or use some specific template language. The only language you need is JS. So I wrote a simple hiccup like library that allows me to write views in the hiccup way.
 
-The "hiccup like" syntax is like the following
+The "hiccup like" syntax is
 ```
-["tag", "content (optional)"]
+["tag", attributes, "content", [child, child-2, ...]]
+```
+Attributes, content and children are all optional, so any list where the first element is a valid html tag, is a valid hiccup structure.
 
-["tag", attributes, "content (optional)"]
-
-["tag", attributes, "content (optional)", [child, child-2, ...]]
+Attributes is an object containing keys values that will be rendered as html attributes
+```
+["div", { id: "unique-element-id"}]
 ```
 
-Here are some examples of how it works
+If an attribute value is an array, its elements will be rendered as string of values separeted by spaces. This is useful to declare multiple classes in an html element.
+```
+["p" { class: ["class-a", "class-b", "class-c"]} "Paragraph content"]
+
+<p class="class-a class-b class-c">Paragraph content</p>
+```
+
+When the attribute value is an object, it will be rendered as key/value pairs separated by semicolons. It is useful to declare style attributes.
+```
+["div" { style: { color: "blue", maxHeight: "300px" }} "Some content"]
+
+<div style="color: blue; max-height: 300px">Some content</p>
+```
+Note that camel case key names will be automatically converted to kebab case.
+
+
+Here are some more examples
 ```
 import { toHtml } from "src/logic/hiccup.js"
 
