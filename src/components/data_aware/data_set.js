@@ -5,7 +5,6 @@ if (window._ == undefined) {
 import {
     datasetStates, recordSates, dataFields, newRow, appendRow, deleteRow
 } from "../../logic/data_set.js";
-import BaseComponent from "../common/base.js";
 
 const events = {
     beforeEdit: "beforeEdit",
@@ -69,12 +68,12 @@ function indexInsideRange(rows, index) {
 
 const copyRows = rows => _.map(rows, row => Object.assign({}, row));
 
-function DataSet({ DataField, fieldsDefs }) {
+function DataSet(context) {
+    const { BaseComponent, DataField, fieldsDefs } = context;
     let self = BaseComponent(),
         fields = dataFields({
+            ...context,
             dataSet: self,
-            fieldsDefs,
-            DataField,
             eventHandlers: [
                 { onChange: fieldChangeHandler(self) },
             ],

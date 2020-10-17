@@ -1,5 +1,3 @@
-import BaseComponent from "../common/base.js";
-
 const events = {
     onChange: "onChange",
 };
@@ -8,7 +6,7 @@ const isDataSet = dataSet =>
       _.isObject(dataSet) &&
       _.isFunction(dataSet.afterPost);
 
-function DataField(fieldDef, dataSet, eventHandlers) {
+function DataField({ BaseComponent }, fieldDef, dataSet, eventHandlers) {
     let self = BaseComponent(),
         value = fieldDef.default || null,
         oldValue = value;

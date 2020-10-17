@@ -4,6 +4,7 @@ import { Dom } from "./dom/dom.js";
 import pageDom from "./dom/main_page.js";
 import BaseComponent from "./common/base.js";
 import Modal from "./common/modal.js";
+import DataSet from "./data_aware/data_set.js";
 import ModalSearch from "./data_aware/modal_search.js";
 import ComplexFormDom from "./dom/complex_form.js";
 import ComplexForm from "./data_aware/complex_form.js";
@@ -46,6 +47,7 @@ const context = {
     Dom,
     Grid,
     HttpConnection,
+    DataSet,
     DataField,
     DataGrid,
     DataProvider,

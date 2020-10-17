@@ -1,9 +1,10 @@
+import BaseComponent from "../../../src/components/common/base.js";
 import DataSet from "../../../src/components/data_aware/data_set.js";
 
 describe("DataSet constructor", () => {
     const DataField = jest.fn(),
           fieldsDefs = [{ name: "a" }, { name: "b" }],
-          dataSet = DataSet({ DataField, fieldsDefs });
+          dataSet = DataSet({ BaseComponent, DataField, fieldsDefs });
 
     it("initializes data fields", () => {
         expect(DataField).toHaveBeenCalledTimes(2);
@@ -22,7 +23,7 @@ describe("DataSet load data", () => {
     const DataField = jest.fn(),
           fieldsDefs = [{ name: "a" }, { name: "b" }],
           initialData = [{ a: 1, b: 2 }, { a: 10, b: 20 }],
-          dataSet =  DataSet({ DataField, fieldsDefs }),
+          dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs }),
           onDataChange = jest.fn(),
           onDataChangeB = jest.fn(),
           onStateChange = jest.fn(),
@@ -80,7 +81,7 @@ describe("DataSet actions", () => {
 
     describe("navigation", () => {
         it("doesn't trigger onDataChange if record index doesn't change", () => {
-            let dataSet =  DataSet({ DataField, fieldsDefs }),
+            let dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs }),
                 onDataChange = jest.fn();
             dataSet.loadData(initialData);
 
@@ -92,7 +93,7 @@ describe("DataSet actions", () => {
         });
 
         it("moves to next row on next", () => {
-            let dataSet =  DataSet({ DataField, fieldsDefs }),
+            let dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs }),
                 onDataChange = jest.fn(),
                 beforeScroll = jest.fn(),
                 afterScroll = jest.fn();
@@ -118,7 +119,7 @@ describe("DataSet actions", () => {
         });
 
         it("moves to last row on last", () => {
-            let dataSet =  DataSet({ DataField, fieldsDefs }),
+            let dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs }),
                 onDataChange = jest.fn(),
                 beforeScroll = jest.fn(),
                 afterScroll = jest.fn();
@@ -140,7 +141,7 @@ describe("DataSet actions", () => {
         });
 
         it("moves to prior row on prior", () => {
-            let dataSet =  DataSet({ DataField, fieldsDefs }),
+            let dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs }),
                 onDataChange = jest.fn(),
                 beforeScroll = jest.fn(),
                 afterScroll = jest.fn();
@@ -168,7 +169,7 @@ describe("DataSet actions", () => {
         });
 
         it("moves to first row on first", () => {
-            let dataSet =  DataSet({ DataField, fieldsDefs }),
+            let dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs }),
                 onDataChange = jest.fn(),
                 beforeScroll = jest.fn(),
                 afterScroll = jest.fn();
@@ -191,7 +192,7 @@ describe("DataSet actions", () => {
         });
 
         it("sets recordIndex to specified value", () => {
-            let dataSet =  DataSet({ DataField, fieldsDefs }),
+            let dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs }),
                 onDataChange = jest.fn(),
                 beforeScroll = jest.fn(),
                 afterScroll = jest.fn();
@@ -209,7 +210,7 @@ describe("DataSet actions", () => {
 
     describe("edition", () => {
         it("appends an empty row and moves ton new row on append", () => {
-            let dataSet =  DataSet({ DataField, fieldsDefs });
+            let dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs });
             dataSet.loadData(initialData);
             dataSet.append();
             expect(dataSet.recordIndex()).toBe(3);
@@ -217,7 +218,7 @@ describe("DataSet actions", () => {
         });
 
         it("changes dataset state and triggers all expected events on append", () => {
-            let dataSet =  DataSet({ DataField, fieldsDefs }),
+            let dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs }),
                 beforeInsert = jest.fn(),
                 afterInsert = jest.fn(),
                 onDataChange = jest.fn(),
@@ -239,7 +240,7 @@ describe("DataSet actions", () => {
         });
 
         it("changes dataset state and triggers events on edit existing record", () => {
-            let dataSet =  DataSet({ DataField, fieldsDefs }),
+            let dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs }),
                 beforeEdit = jest.fn(),
                 afterEdit = jest.fn(),
                 onStateChange = jest.fn();
@@ -256,7 +257,7 @@ describe("DataSet actions", () => {
         });
 
         it("appends a new record on edit if dataset is empty", () => {
-            let dataSet =  DataSet({ DataField, fieldsDefs }),
+            let dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs }),
                 beforeEdit = jest.fn(),
                 afterEdit = jest.fn(),
                 beforeInsert = jest.fn(),
@@ -282,7 +283,7 @@ describe("DataSet actions", () => {
         });
 
         it("changes state to browse and triggers events on post", () => {
-            let dataSet =  DataSet({ DataField, fieldsDefs }),
+            let dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs }),
                 beforePost = jest.fn(),
                 afterPost = jest.fn(),
                 onStateChange = jest.fn();
@@ -301,7 +302,7 @@ describe("DataSet actions", () => {
         });
 
         it("sets data pending flag on post", () => {
-            let dataSet =  DataSet({ DataField, fieldsDefs });
+            let dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs });
             dataSet.loadData(initialData);
             dataSet.edit();
             expect(dataSet.state()).toBe("edit");
@@ -311,7 +312,7 @@ describe("DataSet actions", () => {
         });
 
         it("resets data pending flag on commit and triggers commit events", () => {
-            let dataSet =  DataSet({ DataField, fieldsDefs }),
+            let dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs }),
                 beforeCommit = jest.fn(),
                 afterCommit = jest.fn();
             dataSet.loadData(initialData);
@@ -333,7 +334,7 @@ describe("DataSet actions", () => {
         });
 
         it("does nothing if there data is not pending", () => {
-            let dataSet =  DataSet({ DataField, fieldsDefs }),
+            let dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs }),
                 beforeCommit = jest.fn(),
                 afterCommit = jest.fn();
 
@@ -350,7 +351,7 @@ describe("DataSet actions", () => {
         });
 
         it("posts before commit if state is not browse", () => {
-            let dataSet =  DataSet({ DataField, fieldsDefs }),
+            let dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs }),
                 onStateChange = jest.fn(),
                 beforePost = jest.fn(),
                 afterPost = jest.fn(),
@@ -377,7 +378,7 @@ describe("DataSet actions", () => {
         });
 
         it("deletes current record and triggers events on delete", () => {
-            let dataSet =  DataSet({ DataField, fieldsDefs }),
+            let dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs }),
                 beforeDelete = jest.fn(),
                 afterDelete = jest.fn(),
                 onDataChange = jest.fn();
@@ -396,7 +397,7 @@ describe("DataSet actions", () => {
         });
 
         it("does nothing if dataset was already empty", () => {
-            let dataSet =  DataSet({ DataField, fieldsDefs }),
+            let dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs }),
                 beforeDelete = jest.fn(),
                 afterDelete = jest.fn(),
                 onDataChange = jest.fn();
@@ -415,7 +416,7 @@ describe("DataSet actions", () => {
         });
 
         it("cancels insertion on cancel", () => {
-            let dataSet =  DataSet({ DataField, fieldsDefs }),
+            let dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs }),
                 beforeCancel = jest.fn(),
                 afterCancel = jest.fn();
 
@@ -433,7 +434,7 @@ describe("DataSet actions", () => {
         });
 
         it("cancels insertion restores original record index on cancel", () => {
-            let dataSet =  DataSet({ DataField, fieldsDefs });
+            let dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs });
             dataSet.loadData(initialData);
             dataSet.next();
             expect(dataSet.recordIndex()).toEqual(1);
@@ -449,7 +450,7 @@ describe("DataSet actions", () => {
         });
 
         it("restores only editing row original values on cancel", () => {
-            let dataSet =  DataSet({ DataField, fieldsDefs });
+            let dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs });
             dataSet.loadData(initialData);
             dataSet.setData("a", 30);
             dataSet.setData("b", 60);
@@ -468,7 +469,7 @@ describe("DataSet actions", () => {
         });
 
         it("rolls back all changed data on rollback", () => {
-            let dataSet =  DataSet({ DataField, fieldsDefs });
+            let dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs });
             dataSet.loadData(initialData);
             dataSet.setData("a", 30);
             dataSet.setData("b", 60);
@@ -491,7 +492,7 @@ describe("DataSet search", () => {
           initialData = [{ a: 1, b: 2 }, { a: 10, b: 20 }, { a: 100, b: 200 }, { a: 1000, b: 2000 }, ];
 
     it("returns record indexes of matching records", () => {
-        let dataSet =  DataSet({ DataField, fieldsDefs });
+        let dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs });
         dataSet.loadData(initialData);
         expect(dataSet.find(row => row.a >= 100))
             .toEqual([2, 3]);
@@ -504,7 +505,7 @@ describe("DataSet seek", () => {
           initialData = [{ a: 1, b: 2 }, { a: 10, b: 20 }, { a: 100, b: 200 }, { a: 1000, b: 2000 }, ];
 
     it("changes dataset record index", () => {
-        let dataSet =  DataSet({ DataField, fieldsDefs });
+        let dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs });
         dataSet.loadData(initialData);
         expect(dataSet.recordIndex()).toBe(0);
         expect(dataSet.seek(2)).toEqual({ a: 100, b: 200 });
@@ -514,7 +515,7 @@ describe("DataSet seek", () => {
     it("triggers scroll events", () => {
         const beforeScroll = jest.fn(),
               afterScroll = jest.fn();
-        let dataSet =  DataSet({ DataField, fieldsDefs });
+        let dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs });
         dataSet.loadData(initialData);
         dataSet.beforeScroll(beforeScroll);
         dataSet.afterScroll(afterScroll);
@@ -526,7 +527,7 @@ describe("DataSet seek", () => {
     it("ignores invalid row index requests", () => {
         const beforeScroll = jest.fn(),
               afterScroll = jest.fn();
-        let dataSet =  DataSet({ DataField, fieldsDefs });
+        let dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs });
         dataSet.loadData(initialData);
         dataSet.beforeScroll(beforeScroll);
         dataSet.afterScroll(afterScroll);
