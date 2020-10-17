@@ -26,9 +26,9 @@ function gridOptions(columnDefs, rowData, eventHandlers, translate) {
     );
 }
 
-function DataGrid(insertionNode, components) {
-    let self = components.BaseComponent();
-    const { i18n, Grid, dataProvider } = components,
+function DataGrid(insertionNode, context) {
+    let self = context.BaseComponent();
+    const { i18n, Grid, dataProvider } = context,
           { fieldsDefs, dataset } = dataProvider,
           eventHandlers = _.reduce(events, (handlers, event) => Object.assign(
               {},

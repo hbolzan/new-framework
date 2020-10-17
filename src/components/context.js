@@ -22,19 +22,19 @@ const host = "http://127.0.0.1:8000";
 
 // TODO: add provider as a plugin so code doesn't need to change to set a different provider
 const DataProvider = DSqlToRestProvider,
-      ComplexFormProvider = (components, params={}) => DataProvider(
-          components,
+      ComplexFormProvider = (context, params={}) => DataProvider(
+          context,
           providerTypes.complexForm,
           params
       ),
-      PersistentQueryProvider = (components, params={}) => DataProvider(
-          components,
+      PersistentQueryProvider = (context, params={}) => DataProvider(
+          context,
           providerTypes.persistentQuery,
           params
       );
 
-const components = {
-    document,
+const context = {
+    document: window.document,
     host,
     i18n: I18n("pt-BR"),
     uuidGen: uuidv4,
@@ -52,9 +52,9 @@ const components = {
     ComplexFormProvider,
     PersistentQueryProvider,
 
-    PageDom: (components, mainContainerId) => pageDom(components, mainContainerId),
-    ComplexFormDom: (components, ...params) => ComplexFormDom(components, ...params),
-    ComplexForm: (components, complexId, parentNodeId) => ComplexForm(components, complexId, parentNodeId),
+    PageDom: (context, mainContainerId) => pageDom(context, mainContainerId),
+    ComplexFormDom: (context, ...params) => ComplexFormDom(context, ...params),
+    ComplexForm: (context, complexId, parentNodeId) => ComplexForm(context, complexId, parentNodeId),
 };
 
-export default components;
+export default context;
