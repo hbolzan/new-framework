@@ -10,6 +10,8 @@ In 2007 I started writing a desktop application aimed at small industries. In 20
 
 ## But, after all, what does it do?
 So far, it takes a definition like this
+<details>
+<summary>Click to see definition JSON data</summary>
 ```
 {
   "status":"OK",
@@ -136,13 +138,15 @@ So far, it takes a definition like this
           }
         },
 
-        ...
+        ... lots of fields definitions
 
       ]
     }
   ]
 }
 ```
+</details>
+
 And renders a CRUD form like this
 ![js-biz-framework CRUD](docs/crud-1.png)
 
