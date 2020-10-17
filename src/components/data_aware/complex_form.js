@@ -3,11 +3,11 @@ import { complexForm, toolbarActions } from "../../views/forms/complex.js";
 
 const refresh = (provider, complexId) => build(load(provider, complexId));
 
-function ComplexForm(components, complexId, parentNodeId) {
+function ComplexForm(context, complexId, parentNodeId) {
     let loaded, built, dataProvider, search;
-    const { ComplexFormProvider, PersistentQueryProvider, ComplexFormDom, ModalSearch } = components,
-          provider = ComplexFormProvider(components),
-          formDom = ComplexFormDom(components, parentNodeId),
+    const { ComplexFormProvider, PersistentQueryProvider, ComplexFormDom, ModalSearch } = context,
+          provider = ComplexFormProvider(context),
+          formDom = ComplexFormDom(context, parentNodeId),
           refresh = () => build(load()),
           actions = {
               [toolbarActions.search.action]: () => search.show(),
@@ -16,7 +16,7 @@ function ComplexForm(components, complexId, parentNodeId) {
 
     function initSearch(dataProvider) {
         return ModalSearch(
-            { dataProvider, ...components },
+            { dataProvider, ...context },
             { onSearch: searchValue => dataProvider.search(searchValue) }
         );
     }
@@ -27,7 +27,7 @@ function ComplexForm(components, complexId, parentNodeId) {
         }
         loaded.then(data => {
             dataProvider = PersistentQueryProvider(
-                components,
+                context,
                 {
                     fieldsDefs: data["fields-defs"],
                     queryId: data["dataset-name"],

@@ -6,10 +6,10 @@ const events = {
     onShow: "onShow",
 };
 
-function Modal(components, title, content, onModalShow) {
+function Modal(context, title, content, onModalShow) {
     let self = BaseComponent();
-    const { document, Dom, UIkit, uuidGen } = components,
-          dom = Dom(components, modalContainer(title, content)),
+    const { document, Dom, UIkit, uuidGen } = context,
+          dom = Dom(context, modalContainer(title, content)),
           modal = UIkit.modal(dom.appendToDomNode(document.getElementsByTagName("body")[0]));
 
     function show(self) {

@@ -3,10 +3,10 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 import "js-datepicker/dist/datepicker.min.css";
 import "./css/dashboard.css";
-import components from "./components/components.js";
+import context from "./components/context.js";
 
-components.PageDom(components, "insertion-point").render("app-body");
-const cadFornecedores = components.ComplexForm(components, "CAD_FORNECEDORES", "insertion-point");
+context.PageDom(context, "insertion-point").render("app-body");
+const cadFornecedores = context.ComplexForm(context, "CAD_FORNECEDORES", "insertion-point");
 cadFornecedores.render();
 cadFornecedores.definition(console.log);
 

@@ -13,18 +13,18 @@ function gridContainer(containerId) {
     }];
 }
 
-function ModalSearch(components, eventHandlers={}) {
-    const { i18n, uuidGen, document, DataGrid } = components,
+function ModalSearch(context, eventHandlers={}) {
+    const { i18n, uuidGen, document, DataGrid } = context,
           translate = i18n.translate,
           gridContainerId = uuidGen(),
           searchView = searchContainer(
-              components,
+              context,
               translate("Search by all available fields in any part of the text"),
               gridContainer(gridContainerId),
               { onSearch: searchHandler }
           ),
-          modal = components.Modal(
-              components,
+          modal = context.Modal(
+              context,
               translate("Search"),
               searchView.hiccup
           );
@@ -36,7 +36,7 @@ function ModalSearch(components, eventHandlers={}) {
 
     function initGrid() {
         if ( _.isUndefined(grid) ) {
-            grid = DataGrid(document.getElementById(gridContainerId), components);
+            grid = DataGrid(document.getElementById(gridContainerId), context);
             grid.onRowDoubleClicked((e, g) => console.log("ROW DOUBLE CLICKED", e));
         }
     }
