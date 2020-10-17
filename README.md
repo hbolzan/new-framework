@@ -6,7 +6,7 @@ A business applications oriented JS framework.
 JS Biz Framework was created to meet a very specific need: developing business web applications.
 
 ## Motivation
-In 2007 I started writing a desktop application aimed at small industries. In 2013 I began to feel the need of a web version, but there was a lot to migrate. Fortunately, most part of the application was built over a framework that renders CRUD forms, formsets, menus, and reports. So, if I wrote a web client that was able to parse the definitions for the existing desktop framework, I could magically migrate a wide portion of the system. Early in 2018 I began a project called [reagent-metaforms](https://github.com/hbolzan/reagent-metaforms) written in ClojureScript and, after a year of hard work, it proved to be a great failure. In 2019 I decided to start it all over, writing in JS this time.
+In 2007 I started writing a desktop application aimed at small industries. In 2013 I began to feel the need of a web version, but there was a lot of code to migrate. Fortunately, a large portion of the application was built over a framework that renders CRUD forms, formsets, menus, and reports. So, if I wrote a web client that was able to parse the definitions for the existing desktop framework, I could magically migrate lots of forms and reports. Early in 2018 I started a project called [reagent-metaforms](https://github.com/hbolzan/reagent-metaforms) written in ClojureScript. After a year of hard work, it ended up being a huge failure. In 2019 I decided to start it all over, writing in JS this time.
 
 ## But, after all, what does it do?
 So far, it takes a JSON definition like 
@@ -150,7 +150,7 @@ So far, it takes a JSON definition like
 And renders a CRUD form like this
 ![js-biz-framework CRUD](docs/crud-1.png)
 
-This is the modal search window
+It comes with a modal search window
 ![js-biz-framework CRUD search](docs/crud-search.png)
 
 ## Features
