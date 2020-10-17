@@ -38,13 +38,13 @@ function containerBody(content=[]) {
     return ["div", { class: ["uk-card-body"], style: { padding: "10px"} }, content];
 }
 
-function searchContainer(components, searchTitle, content, eventHandlers) {
-    const inputId = components.uuidGen(),
+function searchContainer(context, searchTitle, content, eventHandlers) {
+    const inputId = context.uuidGen(),
           focus = () => document.getElementById(inputId).select();
 
     return {
         hiccup: ["div", { class: ["uk-card-default", "uk-width-1", "uk-card-hover"] },
-                 containerHeader(components, inputId, searchTitle, eventHandlers),
+                 containerHeader(context, inputId, searchTitle, eventHandlers),
                  containerBody(content)],
         focus,
     };
