@@ -1,7 +1,7 @@
 import Icons from "uikit/dist/js/uikit-icons";
 import UIkit from "uikit";
-import { Dom } from "./dom/dom.js";
-import pageDom from "./dom/main_page.js";
+import Dom from "./dom/dom.js";
+import PageDom from "./dom/main_page.js";
 import BaseComponent from "./common/base.js";
 import Modal from "./common/modal.js";
 import DataSet from "./data_aware/data_set.js";
@@ -53,10 +53,9 @@ const context = {
     DataProvider,
     ComplexFormProvider,
     PersistentQueryProvider,
-
-    PageDom: (context, mainContainerId) => pageDom(context, mainContainerId),
-    ComplexFormDom: (context, ...params) => ComplexFormDom(context, ...params),
-    ComplexForm: (context, complexId, parentNodeId) => ComplexForm(context, complexId, parentNodeId),
+    ComplexFormDom,
+    PageDom,
+    ComplexForm,
 };
 
 export default context;

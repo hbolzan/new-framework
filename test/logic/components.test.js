@@ -1,4 +1,4 @@
-import { registerEvent, unregisterEvent } from "../../src/logic/context.js";
+import { registerEvent, unregisterEvent } from "../../src/logic/components.js";
 
 const dummyHandler = (x) => x,
       otherHandler = (y) => y,

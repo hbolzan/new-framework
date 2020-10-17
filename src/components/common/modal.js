@@ -1,6 +1,5 @@
 import BaseComponent from "./base.js";
 import { modalContainer } from "../../views/common/modal.js";
-import { toHtml } from "../../logic/hiccup.js";
 
 const events = {
     onShow: "onShow",

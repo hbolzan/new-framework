@@ -1,9 +1,7 @@
-import { Dom } from "./dom.js";
-
 function ComplexFormDom(context, parentNodeId) {
 
     return {
-        render: built => built.then(form => Dom(context, form)).then(dom => dom.render(parentNodeId)),
+        render: built => built.then(form => context.Dom(context, form)).then(dom => dom.render(parentNodeId)),
     };
 }
 

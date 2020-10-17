@@ -75,4 +75,4 @@ function Dom({ document, uuidGen, i18n }, hiccup) {
     };
 }
 
-export { Dom };
+export default Dom;

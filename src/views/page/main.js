@@ -39,13 +39,13 @@ function leftBarLogo({ src, url }) {
             ["img", { class: "custom-logo", src: src }]];
 }
 
-function leftBar(logo, content) {
+function leftBar(logo, content, appTitle="JS Biz Framework") {
     return ["aside", { id: "left-col", class: ["uk-light", "uk-visible@m"]},
             leftBarLogo(logo),
             ["div", { class: ["left-content-box", "content-box-dark"]},
 
              ["img", { src: "", class: ["uk-border-circle", "profile-img"] }],
-             ["h4", { class: ["uk-text-center", "uk-margin-remove-vertical", "text-light"] }, "WebMRP"]],
+             ["h4", { class: ["uk-text-center", "uk-margin-remove-vertical", "text-light"] }, appTitle]],
             ["div", { class: ["left-nav-wrap"] }],
             ["div", { class: ["bar-bottom"] }]];
 }

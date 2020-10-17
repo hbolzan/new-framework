@@ -6,6 +6,10 @@ import "./css/dashboard.css";
 import context from "./components/context.js";
 
 context.PageDom(context, "insertion-point").render("app-body");
+console.log(context.uuidGen());
+console.log(context.uuidGen());
+console.log(context.uuidGen());
+console.log(context.uuidGen());
 const cadFornecedores = context.ComplexForm(context, "CAD_FORNECEDORES", "insertion-point");
 cadFornecedores.render();
 cadFornecedores.definition(console.log);
