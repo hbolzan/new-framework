@@ -8,7 +8,7 @@ JS Biz Framework was created to meet a very specific need: developing business w
 ## Motivation
 In 2007 I started writing a desktop application aimed at small industries. In 2013 I began to feel the need of a web version, but there was a lot of code to migrate. Fortunately, a large portion of the application was built over a framework that renders CRUD forms, formsets, menus, and reports. So, if I wrote a web client that was able to parse the definitions for the existing desktop framework, I could magically migrate lots of forms and reports. Early in 2018 I started a project called [reagent-metaforms](https://github.com/hbolzan/reagent-metaforms) written in ClojureScript. After a year of hard work, it ended up being a huge failure. In 2019 I decided to start it all over, writing it in JS this time.
 
-## But, after all, what does it do?
+## But, after all, what is it?
 So far, it takes a JSON definition like 
 <details><summary><strong>THIS</strong> (Click to see JSON definition)</summary>
 
@@ -173,7 +173,7 @@ $ yarn test
 ```
 
 ## HTML Templating
-At the beginning of this project I searched for existing template engines like [Handlebars ](https://handlebarsjs.com/) or [Mustache](https://mustache.github.io/), but since I was introduced to the [hiccup](https://github.com/weavejester/hiccup/wiki) library, it makes much more sense to me to declare html as data structures rather than the traditional html templating approach. Since the markup is declared as data, it's not necessary to make string interpolations or use some specific template language. The only language you need is JS. So I wrote a simple hiccup like library that allows me to write views in the hiccup way.
+At the beginning of this project I searched for existing template engines like [Handlebars ](https://handlebarsjs.com/) or [Mustache](https://mustache.github.io/), but since I was introduced to the [hiccup](https://github.com/weavejester/hiccup/wiki) library, it makes much more sense to me to declare html as data structures rather than the traditional html templating approach. Since the markup is declared as data, it's not necessary to make string interpolations or use some specific template language. The only language you need is JS. So I wrote a simple hiccup like library that allows to write views in the hiccup way.
 
 The "hiccup like" syntax is
 ```
@@ -250,7 +250,7 @@ toHtml(todoList(["First", "Second", "Third"]), uuidv4)
 This approach allows to write components that are easily composable and extensible, and easier to reason about.
 
 ## Views
-Views are pure functions that return hiccup arrays with html fragments. They are the building blocks that are used by components or direct calls to create htmls fragments.
+Views are pure functions that return hiccup arrays with html fragments. They are the building blocks that are used by components or direct calls to create html fragments.
 
 Currently available views are:
 * Button views
@@ -282,4 +282,4 @@ Currently available views are:
 
 
 ## Components
-All components receive the context as the first argument of their contructures. This way, a mocked context can be injected when testing a component.
+All components receive the context as the first argument of their contructures. This way, a mocked context can easily be injected when testing a component.
