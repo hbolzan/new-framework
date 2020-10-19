@@ -17,7 +17,10 @@ function ComplexForm(context, complexId, parentNodeId) {
     function initSearch(dataProvider) {
         return ModalSearch(
             { dataProvider, ...context },
-            { onSearch: searchValue => dataProvider.search(searchValue) }
+            {
+                onSearch: searchValue => dataProvider.search(searchValue),
+                // onSelectRow: e => console.log(e),
+            }
         );
     }
 

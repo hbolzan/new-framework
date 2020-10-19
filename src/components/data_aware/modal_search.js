@@ -34,10 +34,16 @@ function ModalSearch(context, eventHandlers={}) {
         modal.events.run(events.onSearch, [searchValue]);
     }
 
+    function selectRowHandler(event) {
+        event.node.setSelected(true, true);
+        modal.events.run(events.onSelectRow, [event]);
+        modal.hide();
+    }
+
     function initGrid() {
         if ( _.isUndefined(grid) ) {
             grid = DataGrid(document.getElementById(gridContainerId), context);
-            grid.onRowDoubleClicked((e, g) => console.log("ROW DOUBLE CLICKED", e));
+            grid.onRowDoubleClicked(selectRowHandler);
         }
     }
 
