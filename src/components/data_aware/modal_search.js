@@ -14,11 +14,14 @@ function gridContainer(containerId) {
 }
 
 function ModalSearch(context, eventHandlers={}) {
+
+    let grid;
+
     const { i18n, uuidGen, document, DataGrid } = context,
           translate = i18n.translate,
           gridContainerId = uuidGen(),
           searchView = searchContainer(
-              context,
+              { onDismiss: dismissHandler, onSelect: selectHandler, ...context },
               translate("Search by all available fields in any part of the text"),
               gridContainer(gridContainerId),
               { onSearch: searchHandler }
@@ -28,16 +31,35 @@ function ModalSearch(context, eventHandlers={}) {
               translate("Search"),
               searchView.hiccup
           );
-    let grid;
 
     function searchHandler(searchValue) {
         modal.events.run(events.onSearch, [searchValue]);
     }
 
+    function dismissHandler() {
+        modal.hide();
+    }
+
+    function selectHandler() {
+        const selectedNode = grid.gridOptions.api.getSelectedNodes()[0];
+        if (selectedNode) {
+            modal.events.run(events.onSelectRow, [selectedNode]);
+            modal.hide();
+        }
+    }
+
+    function selectRowHandler(event) {
+        event.node.setSelected(true, true);
+        modal.events.run(events.onSelectRow, [event.node]);
+        modal.hide();
+    }
+
     function initGrid() {
         if ( _.isUndefined(grid) ) {
             grid = DataGrid(document.getElementById(gridContainerId), context);
-            grid.onRowDoubleClicked((e, g) => console.log("ROW DOUBLE CLICKED", e));
+            grid.onRowDoubleClicked(selectRowHandler);
+            grid.onRowClicked(e => e.node.setSelected(true, true));
+            console.log(grid);
         }
     }
 

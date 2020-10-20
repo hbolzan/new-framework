@@ -20,7 +20,7 @@ function buttonAttrs(attrs, params = {}) {
 }
 
 function singleButton(_params, ...children) {
-    let params = _params || {};
+    const params = _params || {};
     return ["button", buttonAttrs({ class: buttonClasses(params) }, params)]
         .concat(params.label ? params.label : [])
         .concat(children);

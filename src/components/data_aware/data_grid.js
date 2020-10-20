@@ -1,5 +1,6 @@
 const events = {
     onRowDoubleClicked: "onRowDoubleClicked",
+    onRowClicked: "onRowClicked",
 };
 
 function fieldsDefsToColumnDefs(fieldsDefs) {
@@ -12,7 +13,6 @@ function fieldsDefsToColumnDefs(fieldsDefs) {
 }
 
 function gridOptions(columnDefs, rowData, eventHandlers, translate) {
-    console.log(eventHandlers);
     return Object.assign(
         {
             columnDefs,
