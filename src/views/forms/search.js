@@ -38,6 +38,24 @@ function containerBody(content=[]) {
     return ["div", { class: ["uk-card-body"], style: { padding: "10px"} }, content];
 }
 
+function containerFooter({ i18n, onDismiss, onSelect }) {
+    console.log(onSelect);
+    return ["div", { class: ["uk-card-footer"]},
+            ["div", { class: ["uk-align-right"] },
+             singleButton({
+                 label: i18n.translate("Select"),
+                 type: "primary",
+                 attrs: {
+                     class: ["uk-margin-small-right"],
+                     onclick: onSelect
+                 }
+             }),
+             singleButton({
+                 label: i18n.translate("Dismiss"),
+                 attrs: { onclick: onDismiss }
+             })]];
+}
+
 function searchContainer(context, searchTitle, content, eventHandlers) {
     const inputId = context.uuidGen(),
           focus = () => document.getElementById(inputId).select();
@@ -45,7 +63,8 @@ function searchContainer(context, searchTitle, content, eventHandlers) {
     return {
         hiccup: ["div", { class: ["uk-card-default", "uk-width-1", "uk-card-hover"] },
                  containerHeader(context, inputId, searchTitle, eventHandlers),
-                 containerBody(content)],
+                 containerBody(content),
+                 containerFooter(context)],
         focus,
     };
 }

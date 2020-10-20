@@ -19,7 +19,7 @@ function ComplexForm(context, complexId, parentNodeId) {
             { dataProvider, ...context },
             {
                 onSearch: searchValue => dataProvider.search(searchValue),
-                // onSelectRow: e => console.log(e),
+                // onSelectRow: node => console.log(node),
             }
         );
     }
