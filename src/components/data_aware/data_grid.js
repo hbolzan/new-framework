@@ -1,6 +1,9 @@
 const events = {
     onRowDoubleClicked: "onRowDoubleClicked",
     onRowClicked: "onRowClicked",
+    onCellFocused: "onCellFocused",
+    onCellKeyPress: "onCellKeyPress",
+    onCellKeyDown: "onCellKeyDown",
 };
 
 function fieldsDefsToColumnDefs(fieldsDefs) {
