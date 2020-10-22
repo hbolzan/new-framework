@@ -151,7 +151,7 @@ And renders a CRUD form like this
 ![js-biz-framework CRUD](docs/crud-1.png)
 
 It comes with a modal search window
-![js-biz-framework CRUD search](docs/crud-search.png)
+![js-biz-framework CRUD search](docs/js-biz-framework-02.webm)
 
 ## Contributing
 ### Install
