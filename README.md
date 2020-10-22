@@ -148,10 +148,10 @@ So far, it takes a JSON definition like
 </details>
 
 And renders a CRUD form like this
-![js-biz-framework CRUD](docs/crud-1.png)
-
-It comes with a modal search window
-![js-biz-framework CRUD search](docs/js-biz-framework-02.webm)
+<video controls width="250">
+    <source src="docs/js-biz-framework-02.webm" type="video/webm">
+    Sorry, your browser doesn't support embedded videos.
+</video>
 
 ## Contributing
 ### Install
