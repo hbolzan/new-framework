@@ -15,13 +15,13 @@ function gridContainer(containerId) {
 
 function ModalSearch(context, eventHandlers={}) {
 
-    let grid;
+    let grid, selected, dismissed, previousSelectedNode;
 
     const { i18n, uuidGen, document, DataGrid } = context,
           translate = i18n.translate,
           gridContainerId = uuidGen(),
           searchView = searchContainer(
-              { onDismiss: dismissHandler, onSelect: selectHandler, ...context },
+              { onDismiss: dismissHandler, onSelect: select, ...context },
               translate("Search by all available fields in any part of the text"),
               gridContainer(gridContainerId),
               { onSearch: searchHandler }
@@ -36,13 +36,22 @@ function ModalSearch(context, eventHandlers={}) {
         modal.events.run(events.onSearch, [searchValue]);
     }
 
+    function dismiss() {
+        if (previousSelectedNode && ! dismissed) {
+            previousSelectedNode.setSelected(true, true);
+            dismissed = true;
+        }
+    }
+
     function dismissHandler() {
+        dismiss();
         modal.hide();
     }
 
-    function selectHandler() {
+    function select() {
         const selectedNode = grid.gridOptions.api.getSelectedNodes()[0];
         if (selectedNode) {
+            selected = true;
             modal.events.run(events.onSelectRow, [selectedNode]);
             modal.hide();
         }
@@ -50,26 +59,46 @@ function ModalSearch(context, eventHandlers={}) {
 
     function selectRowHandler(event) {
         event.node.setSelected(true, true);
-        modal.events.run(events.onSelectRow, [event.node]);
-        modal.hide();
+        select();
+    }
+
+    function cellFocusedHandler(e) {
+        e.api.getDisplayedRowAtIndex(e.rowIndex).setSelected(true, true);
+    }
+
+    function cellKeyDownHandler(e) {
+        if ("Enter" == e.event.key) {
+            modal.events.run(events.onSelectRow, [e.node]);
+            modal.hide();
+        }
     }
 
     function initGrid() {
         if ( _.isUndefined(grid) ) {
             grid = DataGrid(document.getElementById(gridContainerId), context);
             grid.onRowDoubleClicked(selectRowHandler);
-            grid.onRowClicked(e => e.node.setSelected(true, true));
-            console.log(grid);
+            grid.onCellFocused(cellFocusedHandler);
+            grid.onCellKeyDown(cellKeyDownHandler);
         }
     }
 
     function showHandler() {
+        selected = false;
+        dismissed = false;
         initGrid();
+        previousSelectedNode = grid.gridOptions.api.getSelectedNodes()[0];
         searchView.focus();
+    }
+
+    function hideHandler() {
+        if ( ! selected ) {
+            dismiss();
+        }
     }
 
     function init() {
         modal.onShow(showHandler);
+        modal.onHide(hideHandler);
         _.each(eventHandlers, (handler, event) => modal.events.on(event, handler));
     }
     init();
