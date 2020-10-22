@@ -148,10 +148,7 @@ So far, it takes a JSON definition like
 </details>
 
 And renders a CRUD form like this
-<video controls width="250">
-    <source src="docs/js-biz-framework-02.webm" type="video/webm">
-    Sorry, your browser doesn't support embedded videos.
-</video>
+![js-biz-framework CRUD](docs/js-biz-framework-02.gif)
 
 ## Contributing
 ### Install
