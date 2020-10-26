@@ -36,10 +36,12 @@ function DataField({ BaseComponent }, fieldDef, dataSet, eventHandlers) {
         self,
         {
             ...fieldDef,
+            fieldDef,
             value: (newValue) => _.isUndefined(newValue) ? value : setValue(newValue),
             valueChanged: () => value != oldValue,
             onChange: handler => self.events.on(events.onChange, handler),
-        });
+        }
+    );
 }
 
 export default DataField;

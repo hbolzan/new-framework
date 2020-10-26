@@ -1,10 +1,11 @@
 import { basicInputAttrs } from "../input/base.js";
 import input from "../input/input.js";
 
-function formField(field) {
-    return ["div", { class: field.class || "uk-width-1-1" },
-            ["label", { class: ["uk-form-label"], for: "" }, field.label],
-            input(field)];
+function formField(context) {
+    const { fieldDef, DataInput } = context;
+    return ["div", { class: fieldDef.class || "uk-width-1-1" },
+            ["label", { class: ["uk-form-label"], for: "" }, fieldDef.label],
+            DataInput(context).hiccup()];
 }
 
 function form(...children) {

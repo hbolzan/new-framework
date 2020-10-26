@@ -1,4 +1,4 @@
-import { smartFields } from "../../views/forms/smart_fields.js";
+import smartFields from "../../views/forms/smart_fields.js";
 import { complexForm, toolbarActions } from "../../views/forms/complex.js";
 
 const refresh = (provider, complexId) => build(load(provider, complexId));
@@ -49,7 +49,11 @@ function ComplexForm(context, complexId, parentNodeId) {
     function build(loaded) {
         built = loaded.then(data => complexForm(
             data["title"],
-            smartFields(data["fields-defs"]),
+            smartFields({
+                ...context,
+                fieldsDefs: data["fields-defs"],
+                dataFields: dataProvider.dataset.fields,
+            }),
             null,
             toolbarEventHandler
         ));

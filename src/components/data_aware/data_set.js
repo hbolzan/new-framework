@@ -69,7 +69,7 @@ function indexInsideRange(rows, index) {
 const copyRows = rows => _.map(rows, row => Object.assign({}, row));
 
 function DataSet(context) {
-    const { BaseComponent, DataField, fieldsDefs } = context;
+    const { BaseComponent, fieldsDefs } = context;
     let self = BaseComponent(),
         fields = dataFields({
             ...context,
@@ -241,6 +241,7 @@ function DataSet(context) {
         ), {}),
 
         {
+            fields,
             rows: () => data.rows,
             recordIndex: () => data.recordIndex,
             recordCount: () => data.rows.length,

@@ -39,7 +39,6 @@ function containerBody(content=[]) {
 }
 
 function containerFooter({ i18n, onDismiss, onSelect }) {
-    console.log(onSelect);
     return ["div", { class: ["uk-card-footer"]},
             ["div", { class: ["uk-align-right"] },
              singleButton({
