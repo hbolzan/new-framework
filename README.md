@@ -249,14 +249,15 @@ This approach allows to write components that are easily composable and extensib
 ## Components
 
 ### Dom
-The Dom component constructor receives a hiccup structure and converts it to a tree of objects that acts much like a virtual dom. The `render` method receives an HTML element id where the tree will be rendered. It's responsible for setting the events listeners of each node.
+The Dom component constructor receives a hiccup structure and converts it to a tree of objects that acts much like a virtual dom. The `render` method receives an HTML element id where the tree will be rendered. It's responsible for setting the event listeners for each node.
 
-### Architecture overview
+### Data aware components architecture overview
+The data aware components are oriented to CRUD forms building, which we call "Complex Forms".
 ![Architecture overview](docs/components-architecture.png)
 
 ### Features
 * All components receive the context as the first argument of their contructures. This way, a mocked context can easily be injected when testing a component.
-* Visual components are rendered through views, making it easy to change the look of the components without impacting on functionality.
+* Visual components are rendered with views, making it easy to change the look of any component without impacting functionality.
 
 ## Views
 Views are pure functions that return hiccup arrays with html fragments. They are the building blocks used by visual components to create html fragments. Views can also be called directly and have its result passed do the dom renderer.
