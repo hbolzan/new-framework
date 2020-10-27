@@ -58,7 +58,7 @@ function fieldChangeHandler(self) {
     dataField =>  {
         self.edit();
         data.rows[data.recordIndex][dataField.name] = dataField.value();
-        self.events.run(events.onDataChange, [self, dataField]);
+        self.events.run(events.onDataChange, [self]);
     };
 }
 
@@ -69,8 +69,8 @@ function indexInsideRange(rows, index) {
 const copyRows = rows => _.map(rows, row => Object.assign({}, row));
 
 function DataSet(context) {
-    const { BaseComponent, DataField, fieldsDefs } = context;
-    let self = BaseComponent(),
+    const { BaseComponent, fieldsDefs } = context;
+    let self = BaseComponent(events),
         fields = dataFields({
             ...context,
             dataSet: self,
@@ -92,7 +92,7 @@ function DataSet(context) {
             state: datasetStates.browse
         });
         data.recordIndex = navMethods["first"](data);
-        self.events.run(events.onDataChange, [self]);
+        self.events.run(events.onDataChange, [self, data.rows[data.recordIndex]]);
         self.events.run(events.onStateChange, [self, data.state]);
         self.events.run(events.afterScroll, [self]);
         return self;
@@ -112,7 +112,7 @@ function DataSet(context) {
         data = appendRow(data, fieldsDefs);
         self.events.run(events.afterInsert, [self]);
         self.events.run(events.onStateChange, [self, data.state]);
-        self.events.run(events.onDataChange, [self, data.state]);
+        self.events.run(events.onDataChange, [self, data.rows[data.recordIndex]]);
         return data.rows[data.recordIndex];
     }
 
@@ -155,7 +155,7 @@ function DataSet(context) {
         self.events.run(events.beforeCancel, [self]);
         self.events.run(events.afterCancel, [self]);
         self.events.run(events.onStateChange, [self, data.state]);
-        self.events.run(events.onDataChange, [self]);
+        self.events.run(events.onDataChange, [self, data.rows[data.recordIndex]]);
     }
 
     function rollback() {
@@ -167,7 +167,7 @@ function DataSet(context) {
         data.rows = rollbackRows;
         data.pending = false;
         self.events.run(events.afterRollback, [self]);
-        self.events.run(events.onDataChange, [self]);
+        self.events.run(events.onDataChange, [self, data.rows[data.recordIndex]]);
     }
 
     function commit() {
@@ -190,7 +190,7 @@ function DataSet(context) {
         data = deleteRow(data);
         if (recordCount != data.rows.length) {
             self.events.run(events.afterDelete, [self]);
-            self.events.run(events.onDataChange, [self]);
+            self.events.run(events.onDataChange, [self, data.rows[data.recordIndex]]);
         }
     }
 
@@ -200,7 +200,7 @@ function DataSet(context) {
         data.recordIndex = navMethods[direction](data, gotoIndex);
         self.events.run(events.afterScroll, [self]);
         if (data.recordIndex != recordIndex) {
-            self.events.run(events.onDataChange, [self]);
+            self.events.run(events.onDataChange, [self, data.rows[data.recordIndex]]);
         };
     }
 
@@ -208,7 +208,8 @@ function DataSet(context) {
         throwIfInactive(self, data);
         self.edit();
         data.rows[data.recordIndex][fieldName] = value;
-        self.events.run(events.onDataChange, [self, { name: fieldName, value: () => value }]);
+        // self.events.run(events.onDataChange, [self, { name: fieldName, value: () => value }]);
+        self.events.run(events.onDataChange, [self, data.rows[data.recordIndex]]);
     }
 
     function find(pred) {
@@ -222,17 +223,12 @@ function DataSet(context) {
         self.events.run(events.beforeScroll, [self]);
         data.recordIndex = rowIndex;
         self.events.run(events.afterScroll, [self]);
+        self.events.run(events.onDataChange, [self, data.rows[data.recordIndex]]);
         return data.rows[rowIndex];
     }
 
     return Object.assign(
         self,
-
-        _.reduce(events, (handlers, event) => Object.assign(
-            {},
-            handlers,
-            { [event]: handler => self.events.on(event, handler) }
-        ), {}),
 
         _.reduce(navMethods, (nav, _, d) => Object.assign(
             {},
@@ -241,6 +237,7 @@ function DataSet(context) {
         ), {}),
 
         {
+            fields: () => fields,
             rows: () => data.rows,
             recordIndex: () => data.recordIndex,
             recordCount: () => data.rows.length,

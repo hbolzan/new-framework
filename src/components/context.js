@@ -10,6 +10,7 @@ import ComplexFormDom from "./dom/complex_form.js";
 import ComplexForm from "./data_aware/complex_form.js";
 import DataField from "./data_aware/data_field.js";
 import DataGrid from "./data_aware/data_grid.js";
+import DataInput from "./data_aware/data_input.js";
 import I18n from "./i18n/i18n.js";
 import DataConnection from "./data_aware/data_connection.js";
 import HttpConnection from "./data_aware/http_connection.js";
@@ -51,6 +52,7 @@ const context = {
     HttpConnection,
     DataSet,
     DataField,
+    DataInput,
     DataGrid,
     DataProvider,
     ComplexFormProvider,

@@ -8,7 +8,7 @@ import context from "./components/context.js";
 context.PageDom(context, "insertion-point").render("app-body");
 const cadFornecedores = context.ComplexForm(context, "CAD_FORNECEDORES", "insertion-point");
 cadFornecedores.render();
-cadFornecedores.definition(console.log);
+// cadFornecedores.definition(console.log);
 
 // let idField = dom.findFirst("attrs.name", "id");
 // idField.value(12345.67);

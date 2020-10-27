@@ -4,10 +4,10 @@ const events = {
 
 const isDataSet = dataSet =>
       _.isObject(dataSet) &&
-      _.isFunction(dataSet.afterPost);
+      _.isFunction(dataSet.onDataChange);
 
 function DataField({ BaseComponent }, fieldDef, dataSet, eventHandlers) {
-    let self = BaseComponent(),
+    let self = BaseComponent(events),
         value = fieldDef.default || null,
         oldValue = value;
 
@@ -25,8 +25,11 @@ function DataField({ BaseComponent }, fieldDef, dataSet, eventHandlers) {
             _.keys(eventHandler)[0], _.values(eventHandler)[0]
         ));
         if (isDataSet(dataSet)) {
-            // TODO: change own value on dataset change
-            dataSet.onDataChange(dataset => self.events.run(events.onChange, [self, value]));
+            dataSet.onDataChange(function (ds, row) {
+                if (! _.isUndefined(row)) {
+                    setValue(row[self.name]);
+                }
+            });
             dataSet.afterPost(() => oldValue = value);
         }
     }
@@ -36,10 +39,12 @@ function DataField({ BaseComponent }, fieldDef, dataSet, eventHandlers) {
         self,
         {
             ...fieldDef,
+            fieldDef,
             value: (newValue) => _.isUndefined(newValue) ? value : setValue(newValue),
             valueChanged: () => value != oldValue,
             onChange: handler => self.events.on(events.onChange, handler),
-        });
+        }
+    );
 }
 
 export default DataField;
