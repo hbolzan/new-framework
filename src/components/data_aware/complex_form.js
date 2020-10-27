@@ -11,6 +11,10 @@ function ComplexForm(context, complexId, parentNodeId) {
           refresh = () => build(load()),
           actions = {
               [toolbarActions.search.action]: () => search.show(),
+              [toolbarActions.first.action]: () => dataProvider.dataset.first(),
+              [toolbarActions.prior.action]: () => dataProvider.dataset.prior(),
+              [toolbarActions.next.action]: () => dataProvider.dataset.next(),
+              [toolbarActions.last.action]: () => dataProvider.dataset.last(),
           },
           toolbarEventHandler = (e, action) => actions[action] ? actions[action]() : null;
 
@@ -19,7 +23,7 @@ function ComplexForm(context, complexId, parentNodeId) {
             { dataProvider, ...context },
             {
                 onSearch: searchValue => dataProvider.search(searchValue),
-                // onSelectRow: node => console.log(node),
+                onSelectRow: node => dataProvider.dataset.seek(node.rowIndex),
             }
         );
     }

@@ -5,8 +5,9 @@ function initValueGetterSetter({ id, self }, { document }) {
         if (_.isUndefined(newValue)) {
             return _.get(self, "attrs.value");
         }
+
         _.set(self, "attrs.value", newValue);
-        document.getElementById(id).value = newValue;
+        document.getElementById(id).value = newValue || "";
         return newValue;
     };
     return self;
