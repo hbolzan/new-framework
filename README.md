@@ -246,8 +246,20 @@ toHtml(todoList(["First", "Second", "Third"]), uuidv4)
 ```
 This approach allows to write components that are easily composable and extensible, and easier to reason about.
 
+## Components
+
+### Dom
+The Dom component constructor receives a hiccup structure and converts it to a tree of objects that acts much like a virtual dom. The `render` method receives an HTML element id where the tree will be rendered. It's responsible for setting the events listeners of each node.
+
+### Architecture overview
+![Architecture overview](docs/components-architecture.png)
+
+### Features
+* All components receive the context as the first argument of their contructures. This way, a mocked context can easily be injected when testing a component.
+* Visual components are rendered through views, making it easy to change the look of the components without impacting on functionality.
+
 ## Views
-Views are pure functions that return hiccup arrays with html fragments. They are the building blocks that are used by components or direct calls to create html fragments.
+Views are pure functions that return hiccup arrays with html fragments. They are the building blocks used by visual components to create html fragments. Views can also be called directly and have its result passed do the dom renderer.
 
 Currently available views are:
 * Button views
@@ -276,7 +288,3 @@ Currently available views are:
   * pageHeader
   * leftBar
   * mainContent
-
-
-## Components
-All components receive the context as the first argument of their contructures. This way, a mocked context can easily be injected when testing a component.
