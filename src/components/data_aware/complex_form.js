@@ -56,7 +56,7 @@ function ComplexForm(context, complexId, parentNodeId) {
             smartFields({
                 ...context,
                 fieldsDefs: data["fields-defs"],
-                dataFields: dataProvider.dataset.fields,
+                dataFields: dataProvider.dataset.fields(),
             }),
             null,
             toolbarEventHandler
