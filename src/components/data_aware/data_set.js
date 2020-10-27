@@ -237,7 +237,7 @@ function DataSet(context) {
         ), {}),
 
         {
-            fields,
+            fields: () => fields,
             rows: () => data.rows,
             recordIndex: () => data.recordIndex,
             recordCount: () => data.rows.length,
