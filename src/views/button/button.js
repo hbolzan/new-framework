@@ -1,4 +1,5 @@
 import _ from "lodash";
+import { ALIGN_LEFT, ALIGN_RIGHT } from "../common/consts.js";
 
 const buttonTypes = {
     default: "uk-button-default",
@@ -27,7 +28,7 @@ function singleButton(_params, ...children) {
 }
 
 function buttonGroup(align, ...children) {
-    const validAlignment = (a) => ["left", "right"].includes(a) ? a : "left";
+    const validAlignment = (a) => [ALIGN_LEFT, ALIGN_RIGHT].includes(a) ? a : ALIGN_LEFT;
     return [
         "div",
         {
@@ -38,8 +39,4 @@ function buttonGroup(align, ...children) {
         .concat(children);
 }
 
-function toolBar(...children) {
-    return ["div", { style: { height: "67px" } }, ...children];
-}
-
-export { buttonClasses, buttonAttrs, singleButton, buttonGroup, toolBar };
+export { buttonClasses, buttonAttrs, singleButton, buttonGroup };
