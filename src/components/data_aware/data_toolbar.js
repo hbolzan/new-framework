@@ -1,4 +1,4 @@
-import { toolbarActions, actionGroups, formToolBar } from "../../views/button/toolbar.js";
+import { toolbarActions, actionGroups, FormToolbar } from "../../views/button/toolbar.js";
 
 function groupedActions({ dataProvider, search }) {
     return {
@@ -34,7 +34,14 @@ function DataToolbar(context, groups) {
     const self = context.BaseComponent(),
           actions = selectedActions(groups, groupedActions(context)),
           toolbarEventHandler = (e, action) => actions[action] ? actions[action]() : null,
-          hiccup = formToolBar(toolbarEventHandler, groups);
+          toolbars = FormToolbar(context, toolbarEventHandler, groups),
+          hiccup = toolbars.hiccupGroups;
+
+    // function disableRefresh() {
+    //     toolbars.buttonGroups.additional.refresh.setEnabled(false);
+    // }
+
+    // context.dataProvider.dataset.onStateChange(disableRefresh);
 
     return Object.assign(
         self,

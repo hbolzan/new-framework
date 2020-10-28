@@ -1,5 +1,6 @@
 import { singleButton, buttonGroup } from "./button.js";
 import { ALIGN_LEFT, ALIGN_RIGHT } from "../common/consts.js";
+import { trace } from "../../common/misc.js";
 
 const toolbarActions = {
     first: { action: "first", icon: "chevron-double-left" },
@@ -22,63 +23,105 @@ function toolBar(...children) {
     return ["div", { style: { height: "67px" } }, ...children];
 }
 
-function toolButton(action, onToolbarEvent, attrs = {}) {
-    return singleButton({
-        attrs: Object.assign(
-            {
-                class: ["uk-button-large"],
-                ukIcon: action.icon,
-                style: { padding: "0", width: "55px", backgroundColor: "#fdfdfd" }
-            },
-            attrs,
-            onToolbarEvent ? { onclick: e => onToolbarEvent(e, action.action)} : {}
-        )
-    });
+function NavGroup(context, onToolbarEvent) {
+    const newButton = action => context.ToolButton(context, toolbarActions[action], onToolbarEvent);
+    return {
+        _group: "nav",
+        _alignment: ALIGN_LEFT,
+        first: newButton("first"),
+        prior: newButton("prior"),
+        next: newButton("next"),
+        last: newButton("last"),
+    };
 }
 
-function navGroup(onToolbarEvent) {
+function CrudGroup(context, onToolbarEvent) {
+    const newButton = action => context.ToolButton(context, toolbarActions[action], onToolbarEvent);
+    return {
+        _group: "crud",
+        _alignment: ALIGN_LEFT,
+        append: newButton("append"),
+        delete: newButton("delete"),
+        edit: newButton("edit"),
+        confirm: newButton("confirm"),
+        dismiss: newButton("dismiss"),
+    };
+}
+
+function FormAdditionalGroup(context, onToolbarEvent) {
+    const newButton = action => context.ToolButton(context, toolbarActions[action], onToolbarEvent);
+    return {
+        _group: "additional",
+        _alignment: ALIGN_RIGHT,
+        search: newButton("search"),
+        refresh: newButton("refresh"),
+        close: newButton("close"),
+    };
+}
+
+function navGroupHiccup(alignment, group) {
     return buttonGroup(
-        ALIGN_LEFT,
-        toolButton(toolbarActions.first, onToolbarEvent),
-        toolButton(toolbarActions.prior, onToolbarEvent),
-        toolButton(toolbarActions.next, onToolbarEvent),
-        toolButton(toolbarActions.last, onToolbarEvent),
+        alignment,
+        group.first.hiccup(),
+        group.prior.hiccup(),
+        group.next.hiccup(),
+        group.last.hiccup(),
     );
 }
 
-function crudGroup(onToolbarEvent) {
+function crudGroupHiccup(alignment, group) {
     return buttonGroup(
-        ALIGN_LEFT,
-        toolButton(toolbarActions.append, onToolbarEvent),
-        toolButton(toolbarActions.delete, onToolbarEvent),
-        toolButton(toolbarActions.edit, onToolbarEvent),
-        toolButton(toolbarActions.confirm, onToolbarEvent),
-        toolButton(toolbarActions.dismiss, onToolbarEvent),
+        alignment,
+        group.append.hiccup(),
+        group.delete.hiccup(),
+        group.edit.hiccup(),
+        group.confirm.hiccup(),
+        group.dismiss.hiccup(),
     );
 }
 
-function formAdditionalGroup(onToolbarEvent) {
+function additionalGroupHiccup(alignment, group) {
     return buttonGroup(
-        ALIGN_RIGHT,
-        toolButton(toolbarActions.search, onToolbarEvent),
-        toolButton(toolbarActions.refresh, onToolbarEvent),
-        toolButton(toolbarActions.close, onToolbarEvent),
+        alignment,
+        group.search.hiccup(),
+        group.refresh.hiccup(),
+        group.close.hiccup(),
     );
 }
 
 const groupsBuilders = {
-    [actionGroups.nav]: navGroup,
-    [actionGroups.crud]: crudGroup,
-    [actionGroups.additional]: formAdditionalGroup,
+    [actionGroups.nav]: navGroupHiccup,
+    [actionGroups.crud]: crudGroupHiccup,
+    [actionGroups.additional]: additionalGroupHiccup,
 };
 
-function formToolBar(onToolbarEvent, selectedGroups) {
-    const groups = _.reduce(
+const buttonGroupsBuilders = {
+    [actionGroups.nav]: NavGroup,
+    [actionGroups.crud]: CrudGroup,
+    [actionGroups.additional]: FormAdditionalGroup,
+};
+
+function FormToolbar(context, onToolbarEvent, selectedGroups) {
+    const buttonGroups = _.reduce(
         selectedGroups,
-        (groups, group) => groups.concat([groupsBuilders[group](onToolbarEvent)]),
+        (groups, group) => groups.concat(buttonGroupsBuilders[group](context, onToolbarEvent)),
         []
     );
-    return toolBar(...groups);
+    const hiccupGroups = _.reduce(
+        buttonGroups,
+        (groups, group) => groups.concat([groupsBuilders[group._group](group._alignment, group)]),
+        []
+    );
+
+    return {
+        buttonGroups: _.reduce(
+            buttonGroups, (groups, group) => {
+                return { ...groups, [group._group]: group };
+            },
+            {}
+        ),
+        hiccupGroups: toolBar(...hiccupGroups),
+    };
 }
 
-export { toolbarActions, actionGroups, formToolBar };
+export { toolbarActions, actionGroups, FormToolbar };

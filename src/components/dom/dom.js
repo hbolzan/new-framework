@@ -52,7 +52,7 @@ function Dom({ document, uuidGen, i18n }, hiccup) {
     }
 
     function appendTo(seletorId) {
-        appendToDomNode(document.getElementById(`#${ selectorId }`));
+        appendToDomNode(document.getElementById($selectorId));
     }
 
     function render(parentNodeId) {
