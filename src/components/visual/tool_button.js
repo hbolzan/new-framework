@@ -4,8 +4,9 @@ import { renderAttrValue } from "../../logic/hiccup.js";
 function ToolButton({ document, uuidGen }, action, onToolbarEvent, attrs = {}) {
     const id = uuidGen(),
           baseStyle = { padding: "0", width: "55px", backgroundColor: "#fdfdfd" },
-          setAttr = (name, value) => document.getElementById(id).setAttribute(name, value),
-          removeAttr = (name) => document.getElementById(id).removeAttribute(name);
+          element = () => document.getElementById(id),
+          setAttr = (name, value) => element().setAttribute(name, value),
+          removeAttr = (name) => element().removeAttribute(name);
 
     let style = baseStyle;
 
