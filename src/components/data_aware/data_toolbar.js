@@ -1,5 +1,7 @@
+import { withPrivate } from "../../logic/hiccup.js";
 import { toolbarActions, actionGroups, FormToolbar } from "../../views/button/toolbar.js";
 import { datasetStates } from "../../logic/data_set.js";
+import { navStates, crudStates, additionalStates } from "../../logic/data_toolbar.js";
 
 function groupedActions({ dataProvider, search }) {
     return {
@@ -31,49 +33,6 @@ function selectedActions(selectedGroups, allActions) {
     );
 }
 
-function navStates(dataset) {
-    const isEmpty = dataset.isEmpty(),
-          bof = dataset.bof(),
-          eof = dataset.eof(),
-          browse = dataset.state() == datasetStates.browse;
-
-    return {
-        first: browse && ! isEmpty && ! bof,
-        prior: browse && ! isEmpty && ! bof,
-        next: browse && ! isEmpty && ! eof,
-        last: browse && ! isEmpty && ! eof,
-    };
-}
-
-function crudStates(dataset) {
-    const isEmpty = dataset.isEmpty(),
-          state = dataset.state(),
-          edit = state == datasetStates.edit,
-          insert = state == datasetStates.insert,
-          browse = state == datasetStates.browse;
-
-    return {
-        append: browse,
-        delete: browse && ! isEmpty,
-        edit: browse && ! isEmpty,
-        confirm: edit || insert,
-        dismiss: edit || insert,
-    };
-}
-
-function additionalStates(dataset) {
-    const state = dataset.state(),
-          edit = state == datasetStates.edit,
-          insert = state == datasetStates.insert,
-          browse = dataset.state() == datasetStates.browse;
-
-    return {
-        search: ! edit && ! insert,
-        refresh: browse,
-        close: true,
-    };
-}
-
 function setGroupStates(buttonGroup, states) {
     _.each(buttonGroup, (button, action) => button.setEnabled ? button.setEnabled(states[action]) : null);
 }
@@ -83,7 +42,7 @@ function DataToolbar(context, groups) {
           actions = selectedActions(groups, groupedActions(context)),
           toolbarEventHandler = (e, action) => actions[action] ? actions[action]() : null,
           toolbars = FormToolbar(context, toolbarEventHandler, groups),
-          hiccup = toolbars.hiccupGroups;
+          hiccup = withPrivate(toolbars.hiccupGroups, "notifyWhenReady", () => handleDatasetEvents());
 
     function handleDatasetEvents(ds) {
         setGroupStates(toolbars.buttonGroups.nav, navStates(ds));

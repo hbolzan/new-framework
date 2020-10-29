@@ -1,4 +1,4 @@
-import { buttonClasses, buttonAttrs, singleButton, buttonGroup, toolBar } from "../../src/views/button/button.js";
+import { buttonClasses, buttonAttrs, singleButton, buttonGroup } from "../../src/views/button/button.js";
 
 describe("buttonClasses", () => {
     test("mandatory classes", () => {
@@ -102,15 +102,5 @@ describe("buttonGroup", () => {
     test("with children", () => {
         expect(buttonGroup("left", ["button"], ["button"]).slice(2))
             .toEqual([["button"], ["button"]]);
-    });
-});
-
-describe("toolBar", () => {
-    test("basic", () => {
-        expect(toolBar()).toEqual(["div", { style: { height: "67px" } }]);
-    });
-
-    test("with child", () => {
-        expect(toolBar(["div"])).toEqual(["div", { style: { height: "67px" } }, ["div"]]);
     });
 });

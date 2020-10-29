@@ -17,6 +17,12 @@ const filterAttrs = attrs => _.reduce(
 const events = attrs => _.reduce(attrs, (e, v, k) => _.isFunction(v) ? Object.assign(e, { [k]: v }) : e, {});
 const withEvents = (hiccupObj, events) => _.isEmpty(events) ? hiccupObj : Object.assign({}, hiccupObj, { events: events });
 
+function withPrivate(hiccup, name, attr) {
+    const priv = { ...(hiccup[1]?.private), [name]: attr },
+          attrs = { ...hiccup[1], private: priv };
+    return hiccup.slice(0, 1).concat(attrs).concat(hiccup.slice(2));
+}
+
 function hiccupToObj(hiccup, idGenFn) {
     const allAttrs = hiccupAttrs(hiccup) || {},
           attrs = { attrs: withId(filterAttrs(allAttrs.attrs), idGenFn) },
@@ -79,4 +85,4 @@ function indexNodes(node, index = {}) {
 
 const mergeAttrs = (base, local) => _.defaultsDeep(base, local);
 
-export { toHtml, renderAttrValue, camelToKebab, hiccupToObj, objToHtml, indexNodes, mergeAttrs };
+export { withPrivate, toHtml, renderAttrValue, camelToKebab, hiccupToObj, objToHtml, indexNodes, mergeAttrs };
