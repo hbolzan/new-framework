@@ -1,4 +1,13 @@
-import { toHtml, renderAttrValue, camelToKebab, hiccupToObj, objToHtml, indexNodes, mergeAttrs }
+import {
+    withPrivate,
+    toHtml,
+    renderAttrValue,
+    camelToKebab,
+    hiccupToObj,
+    objToHtml,
+    indexNodes,
+    mergeAttrs,
+}
 from "../../src/logic/hiccup.js";
 
 /** hiccup notation
@@ -240,5 +249,20 @@ describe("mergeAttrs", () => {
     test("merge hiccup attrs object", () => {
         expect(mergeAttrs({ class: "x", private: { x: 1 }}, { style: "y", private: { y: 2 } }))
             .toEqual({ class: "x", style: "y", private: { x: 1, y: 2 } });
+    });
+});
+
+describe("withPrivate", () => {
+    test("adds private attr to hiccup array", () => {
+        expect(withPrivate(["div"], "x", "y"))
+            .toEqual(["div", { private: { x: "y" } }]);
+    });
+
+    test("adds attribute to existing private object", () => {
+        expect(withPrivate(["div", { id: "abc", private: { a: "1" } }], "x", "y"))
+            .toEqual(["div", { id: "abc", private: { a: "1", x: "y" } }]);
+
+        expect(withPrivate(["div", { id: "abc", private: { a: "1" } }, ["div", { z: "z" }]], "x", "y"))
+            .toEqual(["div", { id: "abc", private: { a: "1", x: "y" } }, ["div", { z: "z" }]]);
     });
 });

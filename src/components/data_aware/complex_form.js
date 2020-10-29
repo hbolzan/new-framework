@@ -1,22 +1,15 @@
 import smartFields from "../../views/forms/smart_fields.js";
-import { complexForm, toolbarActions } from "../../views/forms/complex.js";
+import { complexForm } from "../../views/forms/complex.js";
+import { actionGroups } from "../../views/button/toolbar.js";
 
 const refresh = (provider, complexId) => build(load(provider, complexId));
 
 function ComplexForm(context, complexId, parentNodeId) {
     let loaded, built, dataProvider, search;
-    const { ComplexFormProvider, PersistentQueryProvider, ComplexFormDom, ModalSearch } = context,
+    const { ComplexFormProvider, PersistentQueryProvider, ComplexFormDom, DataToolbar, ModalSearch } = context,
           provider = ComplexFormProvider(context),
           formDom = ComplexFormDom(context, parentNodeId),
-          refresh = () => build(load()),
-          actions = {
-              [toolbarActions.search.action]: () => search.show(),
-              [toolbarActions.first.action]: () => dataProvider.dataset.first(),
-              [toolbarActions.prior.action]: () => dataProvider.dataset.prior(),
-              [toolbarActions.next.action]: () => dataProvider.dataset.next(),
-              [toolbarActions.last.action]: () => dataProvider.dataset.last(),
-          },
-          toolbarEventHandler = (e, action) => actions[action] ? actions[action]() : null;
+          refresh = () => build(load());
 
     function initSearch(dataProvider) {
         return ModalSearch(
@@ -51,16 +44,23 @@ function ComplexForm(context, complexId, parentNodeId) {
     }
 
     function build(loaded) {
-        built = loaded.then(data => complexForm(
-            data["title"],
-            smartFields({
-                ...context,
-                fieldsDefs: data["fields-defs"],
-                dataFields: dataProvider.dataset.fields,
-            }),
-            null,
-            toolbarEventHandler
-        ));
+        built = loaded.then(
+            data => complexForm(
+                data["title"],
+                smartFields(
+                    {
+                        ...context,
+                        fieldsDefs: data["fields-defs"],
+                        dataFields: dataProvider.dataset.fields(),
+                    }
+                ),
+                null,
+                DataToolbar(
+                    { ...context, dataProvider, search },
+                    [actionGroups.nav, actionGroups.crud, actionGroups.additional],
+                ).hiccup(),
+            )
+        );
         return built;
     }
 

@@ -51,8 +51,8 @@ function Dom({ document, uuidGen, i18n }, hiccup) {
         return child;
     }
 
-    function appendTo(seletorId) {
-        appendToDomNode(document.getElementById(`#${ selectorId }`));
+    function appendTo(selectorId) {
+        appendToDomNode(document.getElementById(selectorId));
     }
 
     function render(parentNodeId) {
