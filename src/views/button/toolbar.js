@@ -9,7 +9,7 @@ const toolbarActions = {
     last: { action: "last", icon: "chevron-double-right" },
     append: { action: "append", icon: "plus-circle", style: { color: "#117de9" } },
     delete: { action: "delete", icon: "trash", style: { color: "red" } },
-    edit: { action: "edit", icon: "file-edit" },
+    edit: { action: "edit", icon: "file-edit", style: { color: "#117de9" } },
     confirm: { action: "confirm", icon: "check", style: { color: "#3cc03c" } },
     dismiss: { action: "dismiss", icon: "ban", style: { color: "red" } },
     search: { action: "search", icon: "search" },

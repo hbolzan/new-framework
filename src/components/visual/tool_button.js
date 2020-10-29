@@ -3,18 +3,23 @@ import { renderAttrValue } from "../../logic/hiccup.js";
 
 function ToolButton({ document, uuidGen }, action, onToolbarEvent, attrs = {}) {
     const id = uuidGen(),
-          baseStyle = { padding: "0", width: "55px", backgroundColor: "#fdfdfd", ...attrs.style },
+          baseStyle = { padding: "0", width: "55px", backgroundColor: "#fdfdfd" },
+          style = { ...baseStyle, ...attrs.style },
+          disabledStyle = { ...baseStyle, cursor: "not-allowed" },
+          renderedBaseStyle = renderAttrValue(baseStyle),
+          renderedDisabledStyle = renderAttrValue(disabledStyle),
+          renderedStyle = renderAttrValue(style),
           element = () => document.getElementById(id),
           setAttr = (name, value) => element().setAttribute(name, value),
           removeAttr = (name) => element().removeAttribute(name);
 
-    let style = baseStyle;
-
     function setEnabled(enabled) {
         if (enabled) {
             removeAttr("disabled");
+            setAttr("style", renderedStyle);
         } else {
             setAttr("disabled", "disabled");
+            setAttr("style", renderedDisabledStyle);
         }
     }
 
