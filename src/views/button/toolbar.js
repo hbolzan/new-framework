@@ -28,10 +28,10 @@ function NavGroup(context, onToolbarEvent) {
     return {
         _group: "nav",
         _alignment: ALIGN_LEFT,
-        first: newButton("first"),
-        prior: newButton("prior"),
-        next: newButton("next"),
-        last: newButton("last"),
+        first: newButton(toolbarActions.first.action),
+        prior: newButton(toolbarActions.prior.action),
+        next: newButton(toolbarActions.next.action),
+        last: newButton(toolbarActions.last.action),
     };
 }
 
@@ -40,11 +40,11 @@ function CrudGroup(context, onToolbarEvent) {
     return {
         _group: "crud",
         _alignment: ALIGN_LEFT,
-        append: newButton("append"),
-        delete: newButton("delete"),
-        edit: newButton("edit"),
-        confirm: newButton("confirm"),
-        dismiss: newButton("dismiss"),
+        append: newButton(toolbarActions.append.action),
+        delete: newButton(toolbarActions.delete.action),
+        edit: newButton(toolbarActions.edit.action),
+        confirm: newButton(toolbarActions.confirm.action),
+        dismiss: newButton(toolbarActions.dismiss.action),
     };
 }
 
@@ -53,9 +53,9 @@ function FormAdditionalGroup(context, onToolbarEvent) {
     return {
         _group: "additional",
         _alignment: ALIGN_RIGHT,
-        search: newButton("search"),
-        refresh: newButton("refresh"),
-        close: newButton("close"),
+        search: newButton(toolbarActions.search.action),
+        refresh: newButton(toolbarActions.refresh.action),
+        close: newButton(toolbarActions.close.action),
     };
 }
 

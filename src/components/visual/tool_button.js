@@ -27,7 +27,7 @@ function ToolButton({ document, uuidGen }, action, onToolbarEvent, attrs = {}) {
                     style,
                 },
                 { ...attrs, id },
-                onToolbarEvent ? { onclick: e => onToolbarEvent(e, action.action)} : {}
+                onToolbarEvent ? { onclick: e => onToolbarEvent(e, action.action) } : {}
             )
         });
     }
