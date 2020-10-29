@@ -7,11 +7,11 @@ const toolbarActions = {
     prior: { action: "prior", icon: "triangle-left" },
     next: { action: "next", icon: "triangle-right" },
     last: { action: "last", icon: "chevron-double-right" },
-    append: { action: "append", icon: "plus-circle" },
-    delete: { action: "delete", icon: "trash" },
+    append: { action: "append", icon: "plus-circle", style: { color: "#117de9" } },
+    delete: { action: "delete", icon: "trash", style: { color: "red" } },
     edit: { action: "edit", icon: "file-edit" },
-    confirm: { action: "confirm", icon: "check" },
-    dismiss: { action: "dismiss", icon: "ban" },
+    confirm: { action: "confirm", icon: "check", style: { color: "#3cc03c" } },
+    dismiss: { action: "dismiss", icon: "ban", style: { color: "red" } },
     search: { action: "search", icon: "search" },
     refresh: { action: "refresh", icon: "refresh" },
     close: { action: "close", icon: "close" },
@@ -23,8 +23,19 @@ function toolBar(...children) {
     return ["div", { style: { height: "67px" } }, ...children];
 }
 
+function _newButton(context, onToolbarEvent) {
+    return (action) => {
+        return context.ToolButton(
+            context,
+            toolbarActions[action],
+            onToolbarEvent,
+            toolbarActions[action].style ? { style: toolbarActions[action].style } : {}
+        );
+    };
+}
+
 function NavGroup(context, onToolbarEvent) {
-    const newButton = action => context.ToolButton(context, toolbarActions[action], onToolbarEvent);
+    const newButton = _newButton(context, onToolbarEvent);
     return {
         _group: "nav",
         _alignment: ALIGN_LEFT,
@@ -36,7 +47,7 @@ function NavGroup(context, onToolbarEvent) {
 }
 
 function CrudGroup(context, onToolbarEvent) {
-    const newButton = action => context.ToolButton(context, toolbarActions[action], onToolbarEvent);
+    const newButton = _newButton(context, onToolbarEvent);
     return {
         _group: "crud",
         _alignment: ALIGN_LEFT,
@@ -49,7 +60,7 @@ function CrudGroup(context, onToolbarEvent) {
 }
 
 function FormAdditionalGroup(context, onToolbarEvent) {
-    const newButton = action => context.ToolButton(context, toolbarActions[action], onToolbarEvent);
+    const newButton = _newButton(context, onToolbarEvent);
     return {
         _group: "additional",
         _alignment: ALIGN_RIGHT,

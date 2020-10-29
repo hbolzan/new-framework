@@ -3,7 +3,7 @@ import { renderAttrValue } from "../../logic/hiccup.js";
 
 function ToolButton({ document, uuidGen }, action, onToolbarEvent, attrs = {}) {
     const id = uuidGen(),
-          baseStyle = { padding: "0", width: "55px", backgroundColor: "#fdfdfd" },
+          baseStyle = { padding: "0", width: "55px", backgroundColor: "#fdfdfd", ...attrs.style },
           element = () => document.getElementById(id),
           setAttr = (name, value) => element().setAttribute(name, value),
           removeAttr = (name) => element().removeAttribute(name);
@@ -22,11 +22,12 @@ function ToolButton({ document, uuidGen }, action, onToolbarEvent, attrs = {}) {
         return singleButton({
             attrs: Object.assign(
                 {
+                    ...attrs,
+                    id,
                     class: ["uk-button-large"],
                     ukIcon: action.icon,
                     style,
                 },
-                { ...attrs, id },
                 onToolbarEvent ? { onclick: e => onToolbarEvent(e, action.action) } : {}
             )
         });
