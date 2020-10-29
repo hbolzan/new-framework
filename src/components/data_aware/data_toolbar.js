@@ -3,6 +3,12 @@ import { toolbarActions, actionGroups, FormToolbar } from "../../views/button/to
 import { datasetStates } from "../../logic/data_set.js";
 import { navStates, crudStates, additionalStates } from "../../logic/data_toolbar.js";
 
+const groupStates = {
+    [actionGroups.nav]: navStates,
+    [actionGroups.crud]: crudStates,
+    [actionGroups.additional]: additionalStates,
+};
+
 function groupedActions({ dataProvider, search }) {
     return {
         [actionGroups.nav]: {
@@ -45,13 +51,19 @@ function DataToolbar(context, groups) {
           hiccup = withPrivate(toolbars.hiccupGroups, "notifyWhenReady", () => handleDatasetEvents());
 
     function handleDatasetEvents(ds) {
-        setGroupStates(toolbars.buttonGroups.nav, navStates(ds));
-        setGroupStates(toolbars.buttonGroups.crud, crudStates(ds));
-        setGroupStates(toolbars.buttonGroups.additional, additionalStates(ds));
+        _.each(groupStates, (states, group) => setGroupStates(toolbars.buttonGroups[group], states(ds)));
     }
 
-    context.dataProvider.dataset.onStateChange(handleDatasetEvents);
-    context.dataProvider.dataset.onDataChange(handleDatasetEvents);
+    function setListeners() {
+        context.dataProvider.dataset.onStateChange(handleDatasetEvents);
+        context.dataProvider.dataset.onDataChange(handleDatasetEvents);
+    }
+
+    function init() {
+        setListeners();
+    }
+
+    init();
 
     return Object.assign(
         self,
