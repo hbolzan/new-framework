@@ -11,16 +11,17 @@ function ToolButton({ document, uuidGen }, action, onToolbarEvent, attrs = {}) {
           renderedStyle = renderAttrValue(style),
           element = () => document.getElementById(id),
           setAttr = (name, value) => element().setAttribute(name, value),
-          removeAttr = (name) => element().removeAttribute(name);
+          removeAttr = (name) => element().removeAttribute(name),
+          setEnabled = (enabled) => enabled ? enable() : disable();
 
-    function setEnabled(enabled) {
-        if (enabled) {
-            removeAttr("disabled");
-            setAttr("style", renderedStyle);
-        } else {
-            setAttr("disabled", "disabled");
-            setAttr("style", renderedDisabledStyle);
-        }
+    function enable() {
+        removeAttr("disabled");
+        setAttr("style", renderedStyle);
+    }
+
+    function disable() {
+        setAttr("disabled", "disabled");
+        setAttr("style", renderedDisabledStyle);
     }
 
     function hiccup() {
@@ -41,6 +42,8 @@ function ToolButton({ document, uuidGen }, action, onToolbarEvent, attrs = {}) {
     return {
         hiccup,
         setEnabled,
+        enable,
+        disable,
     };
 
 }
