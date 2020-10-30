@@ -14,7 +14,7 @@ const toolbarActions = {
     dismiss: { action: "dismiss", icon: "ban", style: { color: "red" } },
     search: { action: "search", icon: "search" },
     refresh: { action: "refresh", icon: "refresh" },
-    close: { action: "close", icon: "close" },
+    close: { action: "close", icon: "close", style: { color: "red" } },
 };
 
 const actionGroups = { nav: "nav", crud: "crud", additional: "additional" };
