@@ -59,7 +59,9 @@ function get(connection, dataset, params) {
 }
 
 function DSqlToRestProvider(context, type, params={}) {
-    let self = context.BaseComponent();
+    let self = context.BaseComponent(),
+        lastSearchValue;
+
     const connection = connectionByType(context, type),
           fieldsDefs = selectedFieldsDefs(type, params.fieldsDefs),
           queryId = params.queryId,
@@ -68,10 +70,23 @@ function DSqlToRestProvider(context, type, params={}) {
     // TODO: write onCommit handler that posts changes through connection
     // context.dataset.onCommit((_, beforeRows, afterRows) => null);
 
+    function search(searchValue) {
+        lastSearchValue = searchValue;
+        return get(connection, dataset, { queryId, queryParams: `?_search_=${ searchValue }`});
+    }
+
+    function refresh() {
+        if (_.isUndefined(lastSearchValue)) {
+            return;
+        }
+        search(lastSearchValue);
+    }
+
     return Object.assign(self, {
         getOne: key => getOne(connection, dataset, key),
         get: () => get(connection, params),
-        search: searchValue => get(connection, dataset, { queryId, queryParams: `?_search_=${ searchValue }`}),
+        search,
+        refresh,
         fieldsDefs,
         dataset,
     });
