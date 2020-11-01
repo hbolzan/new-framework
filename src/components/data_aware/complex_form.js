@@ -84,10 +84,6 @@ function ComplexForm(context, complexId, parentNodeId) {
         formDom.render(built);
     }
 
-    async function handleBeforeDelete() {
-        return UIkit.modal.confirm("Tem certeza????");
-    }
-
     function setDatasetEventHandlers() {
         dataProvider.dataset.beforeDelete((args) => {
             return UIkit.modal.confirm(
