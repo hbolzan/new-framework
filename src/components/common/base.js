@@ -1,3 +1,4 @@
+import { first, isPromise } from "../../common/misc.js";
 import { registerEvent, unregisterEvent } from "../../logic/components.js";
 
 function handleEvent(event, args, handler) {
@@ -7,7 +8,41 @@ function handleEvent(event, args, handler) {
 }
 
 function runEvent(event, registeredEvents, args) {
-    _.each(registeredEvents[event], handler => handleEvent(event, args, handler));
+    const handlers = _.filter(registeredEvents[event], e => ! _.isUndefined(e));
+    _.each(handlers, handler => handleEvent(event, args, handler));
+}
+
+function runConfirmationEvent(event, registeredEvents, args, callback) {
+
+    function handlePromise(p, handlers) {
+        p.then(() => runHandlers(handlers.slice(1)), () => null);
+    }
+
+    function handleFunctionResult(handled, handlers) {
+        if (isPromise(handled)) {
+            return handlePromise(handled, handlers);
+        }
+        if ( handled ) {
+            return runHandlers(handlers.slice(1));
+        }
+        return null;
+    }
+
+    function runHandler(handler, handlers) {
+        if ( _.isNil(handler) ) {
+            return callback(args);
+        }
+
+        if ( _.isFunction(handler) ) {
+            return handleFunctionResult(handler(args), handlers);
+        }
+        return runHandlers(handlers.slice(1));
+    }
+
+    function runHandlers(handlers) {
+        runHandler(first(handlers), handlers);
+    }
+    runHandlers(_.filter(registeredEvents[event], e => ! _.isUndefined(e)));
 }
 
 function BaseComponent(events) {
@@ -29,6 +64,12 @@ function BaseComponent(events) {
             on: (event, handler) => onEvent(event, handler),
             off: (eventKey) => registeredEvents = unregisterEvent(eventKey, registeredEvents),
             run: (event, args) => runEvent(event, registeredEvents, args),
+            runConfirmation: (event, args, callback) => runConfirmationEvent(
+                event,
+                registeredEvents,
+                args,
+                callback
+            ),
         },
     };
 

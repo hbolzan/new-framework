@@ -6,7 +6,16 @@ const refresh = (provider, complexId) => build(load(provider, complexId));
 
 function ComplexForm(context, complexId, parentNodeId) {
     let loaded, built, dataProvider, search;
-    const { ComplexFormProvider, PersistentQueryProvider, ComplexFormDom, DataToolbar, ModalSearch } = context,
+    const {
+        ComplexFormProvider,
+        PersistentQueryProvider,
+        ComplexFormDom,
+        DataToolbar,
+        ModalSearch,
+        UIkit,
+    } = context,
+          self = {},
+          translate = context.i18n.translate,
           provider = ComplexFormProvider(context),
           formDom = ComplexFormDom(context, parentNodeId),
           refresh = () => build(load());
@@ -33,6 +42,7 @@ function ComplexForm(context, complexId, parentNodeId) {
                     queryId: data["dataset-name"],
                 }
             );
+            setDatasetEventHandlers();
             search = initSearch(dataProvider);
         });
     }
@@ -45,21 +55,24 @@ function ComplexForm(context, complexId, parentNodeId) {
 
     function build(loaded) {
         built = loaded.then(
-            data => complexForm(
-                data["title"],
-                smartFields(
-                    {
-                        ...context,
-                        fieldsDefs: data["fields-defs"],
-                        dataFields: dataProvider.dataset.fields(),
-                    }
-                ),
-                null,
-                DataToolbar(
-                    { ...context, dataProvider, search },
-                    [actionGroups.nav, actionGroups.crud, actionGroups.additional],
-                ).hiccup(),
-            )
+            data => {
+                self.title = data["title"];
+                return complexForm(
+                    data["title"],
+                    smartFields(
+                        {
+                            ...context,
+                            fieldsDefs: data["fields-defs"],
+                            dataFields: dataProvider.dataset.fields(),
+                        }
+                    ),
+                    null,
+                    DataToolbar(
+                        { ...context, dataProvider, search },
+                        [actionGroups.nav, actionGroups.crud, actionGroups.additional],
+                    ).hiccup(),
+                );
+            }
         );
         return built;
     }
@@ -71,11 +84,23 @@ function ComplexForm(context, complexId, parentNodeId) {
         formDom.render(built);
     }
 
-    return {
-        definition: callback => loaded.then(data => callback(data)),
-        refresh,
-        render,
-    };
+    function setDatasetEventHandlers() {
+        dataProvider.dataset.beforeDelete((args) => {
+            return UIkit.modal.confirm(
+                translate("Delete the current record?"),
+                { labels: { cancel: translate("Dismiss"), ok: translate("Confirm") } }
+            );
+        });
+    }
+
+    return Object.assign(
+        self,
+        {
+            definition: callback => loaded.then(data => callback(data)),
+            refresh,
+            render,
+        }
+    );
 }
 
 export default ComplexForm;
