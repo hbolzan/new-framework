@@ -3,4 +3,7 @@ const trace = x => {
     return x;
 };
 
-export { trace };
+const isPromise = x => x?.then ? true : false;
+const first = x => ( _.isArray(x) && x.length ) > 0 ? x[0] : null;
+
+export { trace, isPromise, first };

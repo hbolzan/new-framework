@@ -69,7 +69,7 @@ function indexInsideRange(rows, index) {
 const copyRows = rows => _.map(rows, row => Object.assign({}, row));
 
 function DataSet(context) {
-    const { BaseComponent, fieldsDefs } = context;
+    const { BaseComponent, fieldsDefs, eventHandlers } = context;
     let self = BaseComponent(events),
         fields = dataFields({
             ...context,
@@ -186,12 +186,13 @@ function DataSet(context) {
 
     function _delete() {
         let recordCount = data.rows.length;
-        self.events.run(events.beforeDelete, [self]);
-        data = deleteRow(data);
-        if (recordCount != data.rows.length) {
-            self.events.run(events.afterDelete, [self]);
-            self.events.run(events.onDataChange, [self, data.rows[data.recordIndex]]);
-        }
+        self.events.runConfirmation(events.beforeDelete, [self], (args) => {
+            data = deleteRow(data);
+            if (recordCount != data.rows.length) {
+                self.events.run(events.afterDelete, [self]);
+                self.events.run(events.onDataChange, [self, data.rows[data.recordIndex]]);
+            }
+        });
     }
 
     function navigate(direction, gotoIndex) {
@@ -227,8 +228,17 @@ function DataSet(context) {
         return data.rows[rowIndex];
     }
 
+    function init() {
+        _.each(eventHandlers, (eventHandler) => self.events.on(
+            _.keys(eventHandler)[0], _.values(eventHandler)[0]
+        ));
+        return {};
+    }
+
     return Object.assign(
         self,
+
+        init(),
 
         _.reduce(navMethods, (nav, _, d) => Object.assign(
             {},

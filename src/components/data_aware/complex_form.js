@@ -6,7 +6,14 @@ const refresh = (provider, complexId) => build(load(provider, complexId));
 
 function ComplexForm(context, complexId, parentNodeId) {
     let loaded, built, dataProvider, search;
-    const { ComplexFormProvider, PersistentQueryProvider, ComplexFormDom, DataToolbar, ModalSearch } = context,
+    const {
+        ComplexFormProvider,
+        PersistentQueryProvider,
+        ComplexFormDom,
+        DataToolbar,
+        ModalSearch,
+        UIkit
+    } = context,
           provider = ComplexFormProvider(context),
           formDom = ComplexFormDom(context, parentNodeId),
           refresh = () => build(load());
@@ -33,6 +40,7 @@ function ComplexForm(context, complexId, parentNodeId) {
                     queryId: data["dataset-name"],
                 }
             );
+            setDatasetEventHandlers();
             search = initSearch(dataProvider);
         });
     }
@@ -69,6 +77,15 @@ function ComplexForm(context, complexId, parentNodeId) {
             refresh();
         }
         formDom.render(built);
+    }
+
+    async function handleBeforeDelete() {
+        return UIkit.modal.confirm("Tem certeza????");
+    }
+
+    function setDatasetEventHandlers(args) {
+        dataProvider.dataset.beforeDelete(() => UIkit.modal.confirm("Tem certeza?"));
+        dataProvider.dataset.beforeDelete(() => UIkit.modal.confirm("Mas tem certeza mesmo????"));
     }
 
     return {
