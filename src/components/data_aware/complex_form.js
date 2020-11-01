@@ -12,8 +12,10 @@ function ComplexForm(context, complexId, parentNodeId) {
         ComplexFormDom,
         DataToolbar,
         ModalSearch,
-        UIkit
+        UIkit,
     } = context,
+          self = {},
+          translate = context.i18n.translate,
           provider = ComplexFormProvider(context),
           formDom = ComplexFormDom(context, parentNodeId),
           refresh = () => build(load());
@@ -53,21 +55,24 @@ function ComplexForm(context, complexId, parentNodeId) {
 
     function build(loaded) {
         built = loaded.then(
-            data => complexForm(
-                data["title"],
-                smartFields(
-                    {
-                        ...context,
-                        fieldsDefs: data["fields-defs"],
-                        dataFields: dataProvider.dataset.fields(),
-                    }
-                ),
-                null,
-                DataToolbar(
-                    { ...context, dataProvider, search },
-                    [actionGroups.nav, actionGroups.crud, actionGroups.additional],
-                ).hiccup(),
-            )
+            data => {
+                self.title = data["title"];
+                return complexForm(
+                    data["title"],
+                    smartFields(
+                        {
+                            ...context,
+                            fieldsDefs: data["fields-defs"],
+                            dataFields: dataProvider.dataset.fields(),
+                        }
+                    ),
+                    null,
+                    DataToolbar(
+                        { ...context, dataProvider, search },
+                        [actionGroups.nav, actionGroups.crud, actionGroups.additional],
+                    ).hiccup(),
+                );
+            }
         );
         return built;
     }
@@ -83,16 +88,23 @@ function ComplexForm(context, complexId, parentNodeId) {
         return UIkit.modal.confirm("Tem certeza????");
     }
 
-    function setDatasetEventHandlers(args) {
-        dataProvider.dataset.beforeDelete(() => UIkit.modal.confirm("Tem certeza?"));
-        dataProvider.dataset.beforeDelete(() => UIkit.modal.confirm("Mas tem certeza mesmo????"));
+    function setDatasetEventHandlers() {
+        dataProvider.dataset.beforeDelete((args) => {
+            return UIkit.modal.confirm(
+                translate("Delete the current record?"),
+                { labels: { cancel: translate("Dismiss"), ok: translate("Confirm") } }
+            );
+        });
     }
 
-    return {
-        definition: callback => loaded.then(data => callback(data)),
-        refresh,
-        render,
-    };
+    return Object.assign(
+        self,
+        {
+            definition: callback => loaded.then(data => callback(data)),
+            refresh,
+            render,
+        }
+    );
 }
 
 export default ComplexForm;

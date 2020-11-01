@@ -186,7 +186,7 @@ function DataSet(context) {
 
     function _delete() {
         let recordCount = data.rows.length;
-        self.events.runConfirmation(events.beforeDelete, [self], (args) => {
+        self.events.runConfirmation(events.beforeDelete, [self, data.rows[data.recordIndex]], (args) => {
             data = deleteRow(data);
             if (recordCount != data.rows.length) {
                 self.events.run(events.afterDelete, [self]);
@@ -250,6 +250,7 @@ function DataSet(context) {
             fields: () => fields,
             rows: () => data.rows,
             recordIndex: () => data.recordIndex,
+            selectedRow: () => data.rows[data.recordIndex],
             recordCount: () => data.rows.length,
             state: () => data.state,
             eof: () => data.recordIndex == data.rows.length-1,
