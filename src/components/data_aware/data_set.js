@@ -54,14 +54,6 @@ function resetData({ rows, recordIndex, state }) {
     };
 }
 
-function fieldChangeHandler(self) {
-    dataField =>  {
-        self.edit();
-        data.rows[data.recordIndex][dataField.name] = dataField.value();
-        self.events.run(events.onDataChange, [self]);
-    };
-}
-
 function indexInsideRange(rows, index) {
     return index >= 0 && index < rows.length;
 }
@@ -84,6 +76,16 @@ function DataSet(context) {
             row: {},
         },
         rollbackRows = [];
+
+    function fieldChangeHandler() {
+        return (dataField, value, source) =>  {
+            if (source !== self) {
+                self.edit();
+                data.rows[data.recordIndex][dataField.name] = value;
+                self.events.run(events.onDataChange, [self]);
+            }
+        };
+    }
 
     function loadData(newRows) {
         let rows = _.map(newRows, rowData => newRow(fieldsDefs, rowData));
