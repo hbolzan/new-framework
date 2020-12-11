@@ -190,7 +190,7 @@ If an attribute value is an array, its elements will be rendered as string of va
 <p class="class-a class-b class-c">Paragraph content</p>
 ```
 
-When the attribute value is an object, it will be rendered as key/value pairs separated by semicolons. It is useful to declare style attributes.
+When the attribute value is an object, it will be rendered as key/value pairs separated by semicolons. This is useful to declare style attributes.
 ```
 ["div" { style: { color: "blue", maxHeight: "300px" }} "Some content"]
 
@@ -244,7 +244,7 @@ toHtml(todoList(["First", "Second", "Third"]), uuidv4)
     <li id="74b2c1ea-dab7-48ca-a4fd-d7547f10d0a8">Third</li>
   </ul>
 ```
-This approach allows to write components that are easily composable and extensible, and easier to reason about.
+This approach allows writing views that are easily composable and extensible, and easier to reason about.
 
 ## Components
 
