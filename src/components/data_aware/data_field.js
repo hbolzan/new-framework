@@ -12,12 +12,12 @@ function DataField({ BaseComponent }, fieldDef, dataSet, eventHandlers) {
         oldValue = value;
 
     // TODO: value data type validation
-    function setValue(newValue) {
+    function setValue(newValue, source) {
         if (newValue == value) {
             return;
         }
         value = newValue;
-        self.events.run(events.onChange, [self, value]);
+        self.events.run(events.onChange, [self, value, source]);
     }
 
     function init() {
@@ -27,7 +27,7 @@ function DataField({ BaseComponent }, fieldDef, dataSet, eventHandlers) {
         if (isDataSet(dataSet)) {
             dataSet.onDataChange(function (ds, row) {
                 if (! _.isUndefined(row)) {
-                    setValue(row[self.name]);
+                    setValue(row[self.name], ds);
                 }
             });
             dataSet.afterPost(() => oldValue = value);
@@ -40,7 +40,7 @@ function DataField({ BaseComponent }, fieldDef, dataSet, eventHandlers) {
         {
             ...fieldDef,
             fieldDef,
-            value: (newValue) => _.isUndefined(newValue) ? value : setValue(newValue),
+            value: (newValue, source) => _.isUndefined(newValue) ? value : setValue(newValue, source),
             valueChanged: () => value != oldValue,
             onChange: handler => self.events.on(events.onChange, handler),
         }
