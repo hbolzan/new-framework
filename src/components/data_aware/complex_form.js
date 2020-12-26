@@ -8,7 +8,7 @@ function ComplexForm(context, complexId, parentNodeId) {
     let loaded, built, dataProvider, search;
     const {
         ComplexFormProvider,
-        PersistentQueryProvider,
+        FormsDataProvider,
         ComplexFormDom,
         DataToolbar,
         ModalSearch,
@@ -35,11 +35,13 @@ function ComplexForm(context, complexId, parentNodeId) {
             return;
         }
         loaded.then(data => {
-            dataProvider = PersistentQueryProvider(
+            dataProvider = FormsDataProvider(
                 context,
                 {
                     fieldsDefs: data["fields-defs"],
                     queryId: data["dataset-name"],
+                    searchDataset: data["search-dataset"] || data["dataset-name"],
+                    searchFields: data["search-fields"],
                 }
             );
             setDatasetEventHandlers();
