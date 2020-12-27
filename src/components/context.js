@@ -34,6 +34,7 @@ const DataProvider = DSqlToRestProvider,
       FormsDataProvider = WebMrpDataProvider;
 
 const context = {
+    global: window,
     document: window.document,
     host,
     formsHost,
