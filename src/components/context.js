@@ -17,30 +17,27 @@ import I18n from "./i18n/i18n.js";
 import DataConnection from "./data_aware/data_connection.js";
 import HttpConnection from "./data_aware/http_connection.js";
 import DSqlToRestProvider from "./data_aware/dsqltorest_provider.js";
+import WebMrpFormsProvider from "./data_aware/webmrp_forms_provider.js";
+import WebMrpDataProvider from "./data_aware/webmrp_data_provider.js";
 import { Grid } from 'ag-grid-community';
 import { providerTypes } from "./data_aware/dsqltorest_provider.js";
 import { v4 as uuidv4 } from "uuid";
 
 UIkit.use(Icons);
 
-const host = "http://127.0.0.1:8000";
+const host = "http://127.0.0.1:9001",
+      formsHost = "http://127.0.0.1:9001";
 
 // TODO: add provider as a plugin so code doesn't need to change to set a different provider
 const DataProvider = DSqlToRestProvider,
-      ComplexFormProvider = (context, params={}) => DataProvider(
-          context,
-          providerTypes.complexForm,
-          params
-      ),
-      PersistentQueryProvider = (context, params={}) => DataProvider(
-          context,
-          providerTypes.persistentQuery,
-          params
-      );
+      ComplexFormProvider = WebMrpFormsProvider,
+      FormsDataProvider = WebMrpDataProvider;
 
 const context = {
+    global: window,
     document: window.document,
     host,
+    formsHost,
     i18n: I18n("pt-BR"),
     uuidGen: uuidv4,
 
@@ -60,7 +57,7 @@ const context = {
     DataGrid,
     DataProvider,
     ComplexFormProvider,
-    PersistentQueryProvider,
+    FormsDataProvider,
     ComplexFormDom,
     PageDom,
     ComplexForm,
