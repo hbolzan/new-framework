@@ -1,22 +1,22 @@
 const stdBuildUrl = ({ host }, resource) => `${ host }${ resource }`;
 
-function _get(params, resource) {
-    return fetch(params.buildUrl(params, resource), {
+function _get(context, resource) {
+    return context.global.fetch(context.buildUrl(context, resource), {
         method: "GET",
         mode: "cors",
     }).then(r => r.json());
 }
 
-function _delete(params, resource) {
-    return fetch(params.buildUrl(params, resource), { method: "DELETE" }).then(r => r.json());
+function _delete(context, resource) {
+    return context.global.fetch(context.buildUrl(context, resource), { method: "DELETE" }).then(r => r.json());
 }
 
-function _send(method, params, resource, payload) {
-    return fetch(
-        params.buildUrl(params, resource),
+function _send(method, context, resource, payload) {
+    return context.global.fetch(
+        context.buildUrl(context, resource),
         {
             method: method,
-            body: params.JSON.stringify(payload),
+            body: context.JSON.stringify(payload),
             headers: {
                 "Content-Type": "application/json",
             }
