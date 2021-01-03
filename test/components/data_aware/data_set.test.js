@@ -383,6 +383,9 @@ describe("DataSet actions", () => {
                 afterDelete = jest.fn(),
                 onDataChange = jest.fn();
 
+            // if beforeDelete event is set, it should return true to confirm delete
+            beforeDelete.mockReturnValue(true);
+
             dataSet.loadData(initialData);
             dataSet.beforeDelete(beforeDelete);
             dataSet.afterDelete(afterDelete);
@@ -394,6 +397,28 @@ describe("DataSet actions", () => {
             expect(beforeDelete).toHaveBeenCalledTimes(1);
             expect(afterDelete).toHaveBeenCalledTimes(1);
             expect(onDataChange).toHaveBeenCalledTimes(1);
+        });
+
+        it("does not delete current record if beforeDelete confirmation is false", () => {
+            let dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs }),
+                beforeDelete = jest.fn(),
+                afterDelete = jest.fn(),
+                onDataChange = jest.fn();
+
+            // if beforeDelete event is set, it should return true to confirm delete
+            beforeDelete.mockReturnValue(false);
+
+            dataSet.loadData(initialData);
+            dataSet.beforeDelete(beforeDelete);
+            dataSet.afterDelete(afterDelete);
+            dataSet.onDataChange(onDataChange);
+
+            expect(dataSet.recordCount()).toBe(3);
+            dataSet.delete();
+            expect(dataSet.recordCount()).toBe(3);
+            expect(beforeDelete).toHaveBeenCalledTimes(1);
+            expect(afterDelete).toHaveBeenCalledTimes(0);
+            expect(onDataChange).toHaveBeenCalledTimes(0);
         });
 
         it("does nothing if dataset was already empty", () => {
