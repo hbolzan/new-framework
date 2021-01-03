@@ -1,4 +1,4 @@
-import { first, isPromise } from "../../common/misc.js";
+import { first, isPromise } from "../../logic/misc.js";
 import { registerEvent, unregisterEvent } from "../../logic/components.js";
 
 function handleEvent(event, args, handler) {
