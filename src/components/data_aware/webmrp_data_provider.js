@@ -34,7 +34,7 @@ function expandedResource(resource) {
     return { provider, source };
 }
 
-function urlBuilder({ searchDataset, searchFields }) {
+function buildUrl({ searchDataset, searchFields }) {
     const { provider, source } = expandedResource(searchDataset);
 
     return (context, params) => {
@@ -64,7 +64,7 @@ function WebMrpDataProvider(context, params={}) {
     let self = context.BaseComponent(),
         lastSearchValue;
 
-    const connection = context.HttpConnection({ ...context, buildUrl: urlBuilder(params) }),
+    const connection = context.HttpConnection({ ...context, buildUrl: buildUrl(params) }),
           dataset = context.DataSet({ fieldsDefs: params.fieldsDefs, ...context });
 
     function search(searchValue) {
