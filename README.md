@@ -256,7 +256,7 @@ The data aware components are oriented to CRUD forms building, which we call "Co
 ![Architecture overview](docs/components-architecture.png)
 
 ### Features
-* All components receive the context as the first argument of their contructures. This way, a mocked context can easily be injected when testing a component.
+* All components receive the context as the first argument of their constructors. This way, a mocked context can easily be injected when testing a component.
 * Visual components are rendered with views, making it easy to change the look of any component without impacting functionality.
 
 ## Views

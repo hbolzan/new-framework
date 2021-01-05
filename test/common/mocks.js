@@ -15,12 +15,20 @@ function runChecker(response) {
     }
 }
 
+function isOk(status) {
+    if ( status < 400 ) {
+        return true;
+    }
+    return false;
+};
+
 function buildResponse(url, response) {
-    runChecker();
+    runChecker(response);
     return {
         url,
         status: response.status,
         statusText: statusTexts[response.status],
+        ok: isOk(response.status),
         json: () => response.body,
     };
 }
@@ -38,6 +46,9 @@ function MockedFetch(responses) {
 export { MockedFetch };
 
 /*
+
+// checker is an optional attribute that may point a function which will be called each time mockedFetch is called
+// if a jest.fn() function is passed as checker, it will be possible to check if fetch was performed and how many times it was performed
 
 let responses = {
     "http://test/api/version": { GET: { status: 200, body: { version: "1.2.3" }, checker: jest.fn() } }
