@@ -1,6 +1,5 @@
 const baseUrl = "/api/data";
 
-
 function objectToQueryParams(args) {
     const queryParams = _.map(args, (v, k) => `${ k }=${ v }`).join("&");
     return _.isEmpty(queryParams) ? "" : `?${ queryParams }`;
@@ -17,12 +16,12 @@ function urlWithKey({ host }, { key, args }, provider, source) {
 }
 
 function oneUrl({ host }, { key }, provider, source) {
-    return `${ host }/${ baseUrl }/${ provider }/${ source }/${ key }`;
+    return `${ host }${ baseUrl }/${ provider }/${ source }/${ key }`;
 }
 
 function searchUrl({ host }, { searchValue }, provider, source, searchFields) {
     return withQueryParams(
-        `${ host }/${ baseUrl }/${ provider }/${ source }`,
+        `${ host }${ baseUrl }/${ provider }/${ source }`,
         { searchValue, searchFields }
     );
 }
