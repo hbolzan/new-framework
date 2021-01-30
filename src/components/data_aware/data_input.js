@@ -1,4 +1,4 @@
-import input from "../../views/input/input.js";
+import { Input } from "../../views/input/input.js";
 import { trace } from "../../common/misc.js";
 
 const events = {
@@ -10,17 +10,19 @@ const events = {
 function DataInput({ BaseComponent, fieldDef, dataField }) {
 
     const self = BaseComponent(events),
-          hiccup = input(fieldDef);
+          input = Input(fieldDef),
+          inputAttrs = input.inputAttrs(),
+          hiccup = input.hiccup;
 
     let oldValue;
 
-    hiccup[1].private.onInitDom = function (node, { document }) {
+    inputAttrs.private.onInitDom = function (node, { document }) {
         self.node = node.self;
     };
 
     function initDomEvents() {
-        hiccup[1].onblur = e => self.events.run(events.onBlur, [self, e]);
-        hiccup[1].onfocus = e => self.events.run(events.onFocus, [self, e]);
+        inputAttrs.onblur = e => self.events.run(events.onBlur, [self, e]);
+        inputAttrs.onfocus = e => self.events.run(events.onFocus, [self, e]);
     }
 
     function initOwnEvents() {
