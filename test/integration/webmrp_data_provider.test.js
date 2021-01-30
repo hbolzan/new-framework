@@ -56,7 +56,7 @@ describe("WebMrpDataProvider", () => {
             .then(data => expect(data).toEqual(getOneResult));
     });
 
-    it("fetches a list of items from source at service", () => {
+    it("fetches a list of items from source at specified service", () => {
         return provider.search("xyz")
             .then(data => expect(data).toEqual(searchResult));
     });

@@ -1,24 +1,27 @@
-import { MockedFetch } from "../common/mocks.js";
+import "regenerator-runtime/runtime";
+import fetchMock from "jest-fetch-mock";
 import DataConnection from "../../src/components/data_aware/data_connection.js";
 import HttpConnection from "../../src/components/data_aware/http_connection.js";
 
-const host = "http://test",
-      responses = {
-          [`${ host }/api/test`]: {
-              GET: { status: 200, body: { test: "TEST" } },
-          }
-      };
+fetchMock.enableMocks();
+
+beforeEach(() => {
+    fetch.resetMocks();
+});
 
 const context = {
     host,
-    global: { fetch: MockedFetch(responses) },
+    global: { fetch },
     DataConnection,
 };
 
 describe("HttpConnection", () => {
-    const conn = HttpConnection(context);
-    it("Fetches data from resource at host defined in context", () => {
-        return conn.get("/api/test")
-            .then(body => expect(body).toEqual({ test: "TEST" }));
+    it("Fetches data from resource at host defined in context", async () => {
+        fetch.mockResponseOnce(JSON.stringify({ body: { test: "TEST" } }));
+        const conn = HttpConnection(context);
+        const result = await conn.get("/api/test");
+        expect(result).toEqual({ body: { test: "TEST" } });
+        expect(fetch).toHaveBeenCalledTimes(1);
+        expect(fetch).toHaveBeenCalledWith("http://test/api/test", { method: "GET", mode: "cors" });
     });
 });
