@@ -10,7 +10,7 @@ beforeEach(() => {
 });
 
 const context = {
-    host,
+    host: "http://test",
     global: { fetch },
     DataConnection,
 };
