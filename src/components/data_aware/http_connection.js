@@ -8,7 +8,12 @@ function _get(context, resource) {
 }
 
 function _delete(context, resource) {
-    return context.global.fetch(context.buildUrl(context, resource), { method: "DELETE" }).then(r => r.json());
+    return context.global.fetch(
+        context.buildUrl(context, resource), {
+            method: "DELETE",
+            mode: "cors",
+        }
+    ).then(r => r.json());
 }
 
 function _send(method, context, resource, payload) {
@@ -17,6 +22,7 @@ function _send(method, context, resource, payload) {
         {
             method: method,
             body: context.JSON.stringify(payload),
+            mode: "cors",
             headers: {
                 "Content-Type": "application/json",
             }
