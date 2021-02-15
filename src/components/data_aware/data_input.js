@@ -40,7 +40,7 @@ function DataInput({ BaseComponent, fieldDef, dataField }) {
     function handleDataFieldValueChange(df, value, source) {
         if (self.node.value && source !== self) {
             let oldValue = self.node.value();
-            self.node.value(value);
+            self.node.value(value, df, source);
             self.events.run(events.onChange, [self, oldValue, value]);
         }
     }
