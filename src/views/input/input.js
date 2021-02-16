@@ -38,9 +38,10 @@ function DefaultConstructor(hiccup) {
     };
 }
 
-function Input(field) {
-    const view = inputView(field);
-    return view.AltConstructor ? view.AltConstructor(field) : DefaultConstructor(view(field));
+function Input(context) {
+    const { fieldDef } = context,
+          view = inputView(fieldDef);
+    return view.AltConstructor ? view.AltConstructor(context) : DefaultConstructor(view(fieldDef));
 }
 
 export default input;

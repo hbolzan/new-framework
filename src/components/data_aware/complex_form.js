@@ -8,7 +8,7 @@ function ComplexForm(context, complexId, parentNodeId) {
     let loaded, built, dataProvider, search;
     const {
         ComplexFormProvider,
-        FormsDataProvider,
+        DataProvider,
         ComplexFormDom,
         DataToolbar,
         ModalSearch,
@@ -35,7 +35,7 @@ function ComplexForm(context, complexId, parentNodeId) {
             return;
         }
         loaded.then(data => {
-            dataProvider = FormsDataProvider(
+            dataProvider = DataProvider(
                 context,
                 {
                     fieldsDefs: data["fields-defs"],

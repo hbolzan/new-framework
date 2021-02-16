@@ -7,10 +7,10 @@ const events = {
     onChange: "onChange",
 };
 
-function DataInput({ BaseComponent, fieldDef, dataField }) {
-
-    const self = BaseComponent(events),
-          input = Input(fieldDef),
+function DataInput(context) {
+    const { BaseComponent, dataField } = context,
+          self = BaseComponent(events),
+          input = Input(context),
           inputAttrs = input.inputAttrs(),
           hiccup = input.hiccup;
 
