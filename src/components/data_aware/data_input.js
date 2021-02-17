@@ -10,7 +10,7 @@ const events = {
 function DataInput(context) {
     const { BaseComponent, dataField } = context,
           self = BaseComponent(events),
-          input = Input(context),
+          input = Input({ ...context, dataInput: self }),
           inputAttrs = input.inputAttrs(),
           hiccup = input.hiccup;
 

@@ -12,17 +12,17 @@ const groupStates = {
 function groupedActions({ dataProvider, search }) {
     return {
         [actionGroups.nav]: {
-            [toolbarActions.first.action]: () => dataProvider.dataset.first(),
-            [toolbarActions.prior.action]: () => dataProvider.dataset.prior(),
-            [toolbarActions.next.action]: () => dataProvider.dataset.next(),
-            [toolbarActions.last.action]: () => dataProvider.dataset.last(),
+            [toolbarActions.first.action]: () => dataProvider.dataSet.first(),
+            [toolbarActions.prior.action]: () => dataProvider.dataSet.prior(),
+            [toolbarActions.next.action]: () => dataProvider.dataSet.next(),
+            [toolbarActions.last.action]: () => dataProvider.dataSet.last(),
         },
         [actionGroups.crud]: {
-            [toolbarActions.append.action]: () => dataProvider.dataset.append(),
-            [toolbarActions.delete.action]: () => dataProvider.dataset.delete(),
-            [toolbarActions.edit.action]: () => dataProvider.dataset.edit(),
-            [toolbarActions.confirm.action]: () => dataProvider.dataset.confirm(),
-            [toolbarActions.dismiss.action]: () => dataProvider.dataset.cancel(),
+            [toolbarActions.append.action]: () => dataProvider.dataSet.append(),
+            [toolbarActions.delete.action]: () => dataProvider.dataSet.delete(),
+            [toolbarActions.edit.action]: () => dataProvider.dataSet.edit(),
+            [toolbarActions.confirm.action]: () => dataProvider.dataSet.confirm(),
+            [toolbarActions.dismiss.action]: () => dataProvider.dataSet.cancel(),
         },
         [actionGroups.additional]: {
             [toolbarActions.search.action]: () => search.show(),
@@ -55,8 +55,8 @@ function DataToolbar(context, groups) {
     }
 
     function setListeners() {
-        context.dataProvider.dataset.onStateChange(handleDatasetEvents);
-        context.dataProvider.dataset.onDataChange(handleDatasetEvents);
+        context.dataProvider.dataSet.onStateChange(handleDatasetEvents);
+        context.dataProvider.dataSet.onDataChange(handleDatasetEvents);
     }
 
     function init() {

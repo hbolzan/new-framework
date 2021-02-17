@@ -32,7 +32,7 @@ function gridOptions(columnDefs, rowData, eventHandlers, translate) {
 function DataGrid(insertionNode, context) {
     let self = context.BaseComponent();
     const { i18n, Grid, dataProvider } = context,
-          { fieldsDefs, dataset } = dataProvider,
+          { fieldsDefs, dataSet } = dataProvider,
           eventHandlers = _.reduce(events, (handlers, event) => Object.assign(
               {},
               handlers,
@@ -40,10 +40,10 @@ function DataGrid(insertionNode, context) {
           ), {}),
           grid = new Grid(
               insertionNode,
-              gridOptions(fieldsDefsToColumnDefs(fieldsDefs), dataset.rows(), eventHandlers, i18n.translate)
+              gridOptions(fieldsDefsToColumnDefs(fieldsDefs), dataSet.rows(), eventHandlers, i18n.translate)
           );
 
-    dataset.onDataChange(ds => grid.gridOptions.api.setRowData(ds.rows()));
+    dataSet.onDataChange(ds => grid.gridOptions.api.setRowData(ds.rows()));
 
     return Object.assign(
         self,

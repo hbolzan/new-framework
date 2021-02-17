@@ -25,7 +25,7 @@ function ComplexForm(context, complexId, parentNodeId) {
             { dataProvider, ...context },
             {
                 onSearch: searchValue => dataProvider.search(searchValue),
-                onSelectRow: node => dataProvider.dataset.seek(node.rowIndex),
+                onSelectRow: node => dataProvider.dataSet.seek(node.rowIndex),
             }
         );
     }
@@ -65,7 +65,7 @@ function ComplexForm(context, complexId, parentNodeId) {
                         {
                             ...context,
                             fieldsDefs: data["fields-defs"],
-                            dataFields: dataProvider.dataset.fields(),
+                            dataFields: dataProvider.dataSet.fields(),
                         }
                     ),
                     null,
@@ -87,7 +87,7 @@ function ComplexForm(context, complexId, parentNodeId) {
     }
 
     function setDatasetEventHandlers() {
-        dataProvider.dataset.beforeDelete((args) => {
+        dataProvider.dataSet.beforeDelete((args) => {
             return UIkit.modal.confirm(
                 translate("Delete the current record?"),
                 { labels: { cancel: translate("Dismiss"), ok: translate("Confirm") } }

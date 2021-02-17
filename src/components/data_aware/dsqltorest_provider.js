@@ -44,17 +44,17 @@ function selectedFieldsDefs(type, fieldsDefs) {
         fieldsDefs;
 }
 
-function getOne(connection, dataset, key) {
+function getOne(connection, dataSet, key) {
     return connection
         .get(key)
-        .then(resp => dataset.loadData(resp.data.slice(0, 1)))
+        .then(resp => dataSet.loadData(resp.data.slice(0, 1)))
         .then(ds => ds.rows()[0]);
 }
 
-function get(connection, dataset, params) {
+function get(connection, dataSet, params) {
     return connection
         .get(params)
-        .then(resp => dataset.loadData(resp.data))
+        .then(resp => dataSet.loadData(resp.data))
         .then(ds => ds.rows());
 }
 
@@ -65,14 +65,14 @@ function DSqlToRestProvider(context, type, params={}) {
     const connection = connectionByType(context, type),
           fieldsDefs = selectedFieldsDefs(type, params.fieldsDefs),
           queryId = params.queryId,
-          dataset = context.DataSet({ fieldsDefs, ...context });
+          dataSet = context.DataSet({ fieldsDefs, ...context });
 
     // TODO: write onCommit handler that posts changes through connection
     // context.dataset.onCommit((_, beforeRows, afterRows) => null);
 
     function search(searchValue) {
         lastSearchValue = searchValue;
-        return get(connection, dataset, { queryId, queryParams: `?_search_=${ searchValue }`});
+        return get(connection, dataSet, { queryId, queryParams: `?_search_=${ searchValue }`});
     }
 
     function refresh() {
@@ -83,12 +83,12 @@ function DSqlToRestProvider(context, type, params={}) {
     }
 
     return Object.assign(self, {
-        getOne: key => getOne(connection, dataset, key),
+        getOne: key => getOne(connection, dataSet, key),
         get: () => get(connection, params),
         search,
         refresh,
         fieldsDefs,
-        dataset,
+        dataSet,
     });
 }
 

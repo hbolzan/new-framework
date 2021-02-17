@@ -33,13 +33,22 @@ function provider(context) {
     );
 }
 
+let view;
+
 function initSearch(context) {
-    const { ModalSearch, dataProvider } = context;
+    const { fieldDef, ModalSearch, dataProvider, dataField, dataInput } = context;
     return ModalSearch(
         context,
         {
             onSearch: searchValue => dataProvider.search(searchValue),
-            onSelectRow: node => dataProvider.dataset.seek(node.rowIndex),
+            onSelectRow: node => {
+                const dataFields = dataField.dataSet.fields(),
+                      searchKey = node.data[fieldDef.xLookup.key],
+                      result = node.data[fieldDef.xLookup.result];
+                dataFields[fieldDef.xLookup.displayField].value(result);
+                dataField.value(searchKey);
+                dataInput.node.value(searchKey, dataField, dataField.dataSet);
+            },
         }
     );
 }
@@ -48,8 +57,9 @@ function XLookupInput(context) {
     const { fieldDef } = context,
           fieldsDefs = searchFieldDefs(fieldDef.xLookup),
           dataProvider = provider({ ...context, fieldsDefs }),
-          search = initSearch({ dataProvider, ...context, fieldsDefs }),
-          view = xLookupInput(fieldDef, search);
+          search = initSearch({ dataProvider, ...context, fieldsDefs });
+
+    view = xLookupInput(fieldDef, search);
     return {
         hiccup: view.hiccup,
         inputAttrs: () => view.inputHiccup[1]

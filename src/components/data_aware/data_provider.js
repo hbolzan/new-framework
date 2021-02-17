@@ -1,11 +1,11 @@
 function DataProvider(context, { connection, fieldsDefs }) {
     let self = context.BaseComponent();
-    const dataset = context.DataSet(context, { connection, fieldsDefs });
-    dataset.onCommit((_, beforeRows, afterRows) => null);
+    const dataSet = context.DataSet(context, { connection, fieldsDefs });
+    dataSet.onCommit((_, beforeRows, afterRows) => null);
 
     return Object.assign(self, {
         fieldsDefs, // schema
-        dataset,
+        dataSet,
     });
 }
 

@@ -45,17 +45,17 @@ function buildUrl({ searchDataset, searchFields }) {
     };
 }
 
-function get(connection, dataset, params) {
+function get(connection, dataSet, params) {
     return connection
         .get(params)
-        .then(resp => dataset.loadData(resp.data))
+        .then(resp => dataSet.loadData(resp.data))
         .then(ds => ds.rows());
 }
 
-function getOne(connection, dataset, key) {
+function getOne(connection, dataSet, key) {
     return connection
         .get({ mode: "one", "key": key })
-        .then(resp => dataset.loadData(resp.data))
+        .then(resp => dataSet.loadData(resp.data))
         .then(ds => ds.rows()[0]);
 }
 
@@ -64,18 +64,18 @@ function WebMrpDataProvider(context, params={}) {
         lastSearchValue;
 
     const connection = context.HttpConnection({ ...context, buildUrl: buildUrl(params) }),
-          dataset = context.DataSet({ fieldsDefs: params.fieldsDefs, ...context });
+          dataSet = context.DataSet({ fieldsDefs: params.fieldsDefs, ...context });
 
     function search(searchValue) {
         lastSearchValue = searchValue;
-        return get(connection, dataset, { mode: "search", searchValue });
+        return get(connection, dataSet, { mode: "search", searchValue });
     }
 
     return Object.assign(self, {
-        getOne: key => getOne(connection, dataset, key),
+        getOne: key => getOne(connection, dataSet, key),
         search,
         fieldsDefs: params.fieldsDefs,
-        dataset,
+        dataSet,
     });
 }
 
