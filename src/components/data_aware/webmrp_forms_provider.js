@@ -36,22 +36,22 @@ function withSearchFields(formData) {
     }.join(",");
 }
 
-function getOne(connection, dataset, key) {
+function getOne(connection, dataSet, key) {
     return connection
         .get(key)
-        .then(resp => dataset.loadData(resp.form.data))
+        .then(resp => dataSet.loadData(resp.form.data))
         .then(ds => withSearchFields(ds.rows()[0]));
 }
 
 function WebMrpFormsProvider(context, params={}) {
     let self = context.BaseComponent();
     const connection = context.HttpConnection({ ...context, buildUrl: urlBuilder }),
-          dataset = context.DataSet({ fieldsDefs, ...context });
+          dataSet = context.DataSet({ fieldsDefs, ...context });
 
     return Object.assign(self, {
-        getOne: formId => getOne(connection, dataset, formId),
+        getOne: formId => getOne(connection, dataSet, formId),
         fieldsDefs,
-        dataset,
+        dataSet,
     });
 }
 

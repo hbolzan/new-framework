@@ -1,5 +1,4 @@
-import input from "../../views/input/input.js";
-import { trace } from "../../common/misc.js";
+import { Input } from "../../views/input/input.js";
 
 const events = {
     onFocus: "onFocus",
@@ -7,20 +6,22 @@ const events = {
     onChange: "onChange",
 };
 
-function DataInput({ BaseComponent, fieldDef, dataField }) {
-
-    const self = BaseComponent(events),
-          hiccup = input(fieldDef);
+function DataInput(context) {
+    const { BaseComponent, dataField } = context,
+          self = BaseComponent(events),
+          input = Input({ ...context, dataInput: self }),
+          inputAttrs = input.inputAttrs(),
+          hiccup = input.hiccup;
 
     let oldValue;
 
-    hiccup[1].private.onInitDom = function (node, { document }) {
+    inputAttrs.private.onInitDom = function (node, { document }) {
         self.node = node.self;
     };
 
     function initDomEvents() {
-        hiccup[1].onblur = e => self.events.run(events.onBlur, [self, e]);
-        hiccup[1].onfocus = e => self.events.run(events.onFocus, [self, e]);
+        inputAttrs.onblur = e => self.events.run(events.onBlur, [self, e]);
+        inputAttrs.onfocus = e => self.events.run(events.onFocus, [self, e]);
     }
 
     function initOwnEvents() {
@@ -38,7 +39,7 @@ function DataInput({ BaseComponent, fieldDef, dataField }) {
     function handleDataFieldValueChange(df, value, source) {
         if (self.node.value && source !== self) {
             let oldValue = self.node.value();
-            self.node.value(value);
+            self.node.value(value, df, source);
             self.events.run(events.onChange, [self, oldValue, value]);
         }
     }

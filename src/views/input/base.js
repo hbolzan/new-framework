@@ -1,16 +1,21 @@
 import { mergeAttrs } from "../../logic/hiccup.js";
 
 function initValueGetterSetter({ id, self }, { document }) {
-    self.value = function (newValue) {
+    self.value = function (newValue, dataField, dataset) {
         if (_.isUndefined(newValue)) {
             return _.get(self, "attrs.value");
         }
 
         _.set(self, "attrs.value", newValue);
-        document.getElementById(id).value = newValue || "";
+        document.getElementById(id).value = displayValue(newValue, dataField, dataset) || "";
         return newValue;
     };
     return self;
+}
+
+function displayValue(newValue, dataField, dataset) {
+    const displayField = dataField?.xLookup?.displayField;
+    return displayField && dataset ? dataset?.selectedRow()[displayField] : newValue;
 }
 
 const basicInputAttrs = (field, type) => {

@@ -40,6 +40,7 @@ function DataField({ BaseComponent }, fieldDef, dataSet, eventHandlers) {
         {
             ...fieldDef,
             fieldDef,
+            dataSet,
             value: (newValue, source) => _.isUndefined(newValue) ? value : setValue(newValue, source),
             valueChanged: () => value != oldValue,
             onChange: handler => self.events.on(events.onChange, handler),

@@ -29,9 +29,8 @@ const host = "http://127.0.0.1:9001",
       formsHost = "http://127.0.0.1:9001";
 
 // TODO: add provider as a plugin so code doesn't need to change to set a different provider
-const DataProvider = DSqlToRestProvider,
-      ComplexFormProvider = WebMrpFormsProvider,
-      FormsDataProvider = WebMrpDataProvider;
+const ComplexFormProvider = WebMrpFormsProvider,
+      DataProvider  = WebMrpDataProvider;
 
 const context = {
     global: window,
@@ -57,7 +56,6 @@ const context = {
     DataGrid,
     DataProvider,
     ComplexFormProvider,
-    FormsDataProvider,
     ComplexFormDom,
     PageDom,
     ComplexForm,
