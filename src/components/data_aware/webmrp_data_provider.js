@@ -1,12 +1,7 @@
+import { withQueryParams } from "../../logic/http.js";
 const baseUrl = "/api/data";
 
-function objectToQueryParams(args) {
-    const queryParams = _.map(args, (v, k) => `${ k }=${ v }`).join("&");
-    return _.isEmpty(queryParams) ? "" : `?${ queryParams }`;
-}
-
 const withKey = (url, key) => _.isEmpty(key) ? url : `${ url }/${ key }`;
-const withQueryParams = (url, args) => `${ url }${ objectToQueryParams(args) }`;
 
 function urlWithKey({ host }, { key, args }, provider, source) {
     return withKey(
@@ -19,10 +14,10 @@ function oneUrl({ host }, { key }, provider, source) {
     return `${ host }${ baseUrl }/${ provider }/${ source }/${ key }`;
 }
 
-function searchUrl({ host }, { searchValue }, provider, source, searchFields) {
+function searchUrl({ host }, { searchValue, searchFilter }, provider, source, searchFields) {
     return withQueryParams(
         `${ host }${ baseUrl }/${ provider }/${ source }`,
-        { searchValue, searchFields }
+        { searchValue, searchFields, ...searchFilter }
     );
 }
 
@@ -33,7 +28,7 @@ function expandedResource(resource) {
     return { provider, source };
 }
 
-function buildUrl({ searchDataset, searchFields }) {
+function buildUrl({ searchDataset, searchFields, filterBy, filterWith }) {
     const { provider, source } = expandedResource(searchDataset);
 
     return (context, params) => {
@@ -66,9 +61,9 @@ function WebMrpDataProvider(context, params={}) {
     const connection = context.HttpConnection({ ...context, buildUrl: buildUrl(params) }),
           dataSet = context.DataSet({ fieldsDefs: params.fieldsDefs, ...context });
 
-    function search(searchValue) {
+    function search(searchValue, searchFilter) {
         lastSearchValue = searchValue;
-        return get(connection, dataSet, { mode: "search", searchValue });
+        return get(connection, dataSet, { mode: "search", searchValue, searchFilter });
     }
 
     return Object.assign(self, {

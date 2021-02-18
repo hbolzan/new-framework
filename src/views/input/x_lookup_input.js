@@ -1,6 +1,6 @@
 import { inputAttrs } from "./base.js";
 import { mergeAttrs } from "../../logic/hiccup.js";
-import { capitalize } from "../../logic/misc.js";
+import { capitalize, assocIf } from "../../logic/misc.js";
 
 function xLookupInput(field, search) {
     const attrs = inputAttrs(field, { style: { cursor: "pointer" }, readonly: true, onclick: () => search.show() }),
@@ -21,6 +21,17 @@ function searchFieldDefs({ key, result, keyLabel, resultLabel }) {
     ];
 }
 
+function filterParams(fieldDef) {
+    return assocIf(
+        assocIf(
+            null,
+            "filterBy", fieldDef.xLookup?.filter?.by
+        ),
+        "filterWith",
+        fieldDef.xLookup?.filter?.with
+    );
+}
+
 function provider(context) {
     const { fieldDef, DataProvider, fieldsDefs } = context;
     return DataProvider(
@@ -29,18 +40,29 @@ function provider(context) {
             fieldsDefs,
             searchDataset: fieldDef.xLookup.source,
             searchFields: `${ fieldDef.xLookup.key },${ fieldDef.xLookup.result }`,
+            ...filterParams(fieldDef),
         }
     );
 }
 
 let view;
 
+// TODO: make it work with composite filters, i.e. { filterBy: "uf,pais", filterWith: "uf,pais"}
+function searchFilter({ dataField }) {
+    const params = filterParams(dataField.fieldDef),
+          rowData = dataField.dataSet.selectedRow() || {};
+    if ( ! params ) {
+        return null;
+    }
+    return { ...params, filterWith: rowData[params.filterWith] || "" };
+}
+
 function initSearch(context) {
     const { fieldDef, ModalSearch, dataProvider, dataField, dataInput } = context;
     return ModalSearch(
         context,
         {
-            onSearch: searchValue => dataProvider.search(searchValue),
+            onSearch: searchValue => dataProvider.search(searchValue, searchFilter(context)),
             onSelectRow: node => {
                 const dataFields = dataField.dataSet.fields(),
                       searchKey = node.data[fieldDef.xLookup.key],
