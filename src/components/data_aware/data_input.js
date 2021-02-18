@@ -1,5 +1,4 @@
 import { Input } from "../../views/input/input.js";
-import { trace } from "../../common/misc.js";
 
 const events = {
     onFocus: "onFocus",
