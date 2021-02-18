@@ -62,7 +62,6 @@ function WebMrpDataProvider(context, params={}) {
           dataSet = context.DataSet({ fieldsDefs: params.fieldsDefs, ...context });
 
     function search(searchValue, searchFilter) {
-        lastSearchValue = searchValue;
         return get(connection, dataSet, { mode: "search", searchValue, searchFilter });
     }
 

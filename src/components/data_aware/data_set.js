@@ -100,6 +100,10 @@ function DataSet(context) {
         return self;
     }
 
+    function clear() {
+        return loadData([]);
+    }
+
     function setRollbackData() {
         if ( ! data.pending ) {
             rollbackRows = copyRows(data.rows);
@@ -261,6 +265,7 @@ function DataSet(context) {
             pending: () => data.pending,
 
             loadData,
+            clear,
             setData,
             append,
             edit,
