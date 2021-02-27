@@ -3,7 +3,7 @@ import { mergeAttrs } from "../../logic/hiccup.js";
 import { capitalize, assocIf } from "../../logic/misc.js";
 
 function xLookupInput(field, search) {
-    const attrs = inputAttrs(field, { style: { cursor: "pointer" }, readonly: true, onclick: () => search.clear().show() }),
+    const attrs = inputAttrs(field, { style: { cursor: "pointer" }, readonly: true, onclick: () => search.clearSearch().show() }),
           iconAttrs = { class: ["uk-form-icon", "uk-form-icon-flip"], ukIcon: "icon: search" },
           inputHiccup = ["input", attrs],
           hiccup = ["div", { style: { width: "100%" } },
@@ -63,20 +63,22 @@ function initSearch(context) {
               context,
               {
                   onSearch: searchValue => dataProvider.search(searchValue, searchFilter(context)),
-                  onSelectRow: node => {
-                      const dataFields = dataField.dataSet.fields(),
-                            searchKey = node.data[fieldDef.xLookup.key],
-                            result = node.data[fieldDef.xLookup.result];
-                      dataFields[fieldDef.xLookup.displayField].value(result);
-                      dataField.value(searchKey);
-                      dataInput.node.value(searchKey, dataField, dataField.dataSet);
-                  },
+                  onSelectRow: handleSearchResult,
               }
           );
 
+    function handleSearchResult(node) {
+        const dataFields = dataField.dataSet.fields(),
+              searchKey = node.data[fieldDef.xLookup.key],
+              result = node.data[fieldDef.xLookup.result];
+        dataFields[fieldDef.xLookup.displayField].value(result);
+        dataField.value(searchKey);
+        dataInput.node.value(searchKey, dataField, dataField.dataSet);
+    }
+
     return {
         ...self,
-        clear: () => {
+        clearSearch: () => {
             dataProvider.dataSet.clear();
             return self;
         },

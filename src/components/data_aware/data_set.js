@@ -60,6 +60,11 @@ function indexInsideRange(rows, index) {
 
 const copyRows = rows => _.map(rows, row => Object.assign({}, row));
 
+function initFieldsValidation(fields) {
+    (_.map(fields, f => f.initValidation(fields)));
+    return fields;
+}
+
 function DataSet(context) {
     const { BaseComponent, fieldsDefs, eventHandlers } = context;
     let self = BaseComponent(events),
@@ -76,6 +81,8 @@ function DataSet(context) {
             row: {},
         },
         rollbackRows = [];
+
+    initFieldsValidation(fields);
 
     function fieldChangeHandler() {
         return (dataField, value, source) =>  {

@@ -1,15 +1,6 @@
 import { withQueryParams } from "../../logic/http.js";
 const baseUrl = "/api/data";
 
-const withKey = (url, key) => _.isEmpty(key) ? url : `${ url }/${ key }`;
-
-function urlWithKey({ host }, { key, args }, provider, source) {
-    return withKey(
-        `${ host }/${ baseUrl }/${ provider }/${ source }`,
-        key
-    );
-}
-
 function oneUrl({ host }, { key }, provider, source) {
     return `${ host }${ baseUrl }/${ provider }/${ source }/${ key }`;
 }
