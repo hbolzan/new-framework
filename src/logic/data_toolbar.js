@@ -22,7 +22,7 @@ function crudStates(dataset) {
           browse = state == datasetStates.browse;
 
     return {
-        append: browse,
+        append: browse || ! dataset,
         delete: browse && ! isEmpty,
         edit: browse && ! isEmpty,
         confirm: edit || insert,
