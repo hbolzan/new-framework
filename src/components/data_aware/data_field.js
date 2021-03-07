@@ -54,7 +54,6 @@ function DataField(context, fieldDef, dataSet, eventHandlers) {
         ));
         if (isDataSet(dataSet)) {
             dataSet.onDataChange(dataSetDataChangeHandler);
-            dataSet.onStateChange((ds, state) => console.log(state));
             dataSet.afterPost(() => oldValue = value);
         }
     }
