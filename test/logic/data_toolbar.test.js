@@ -64,12 +64,12 @@ describe("crudStates", () => {
             .toEqual({ append: false, delete: false, edit: false, confirm: true, dismiss: true });
     });
 
-    it("disables all buttons when dataset is undefined or null", () => {
+    it("disables all buttons but append when dataset is undefined or null", () => {
         expect(crudStates())
-            .toEqual({ append: false, delete: false, edit: false, confirm: false, dismiss: false });
+            .toEqual({ append: true, delete: false, edit: false, confirm: false, dismiss: false });
 
         expect(crudStates(null))
-            .toEqual({ append: false, delete: false, edit: false, confirm: false, dismiss: false });
+            .toEqual({ append: true, delete: false, edit: false, confirm: false, dismiss: false });
     });
 });
 

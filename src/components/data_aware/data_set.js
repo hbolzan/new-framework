@@ -60,6 +60,11 @@ function indexInsideRange(rows, index) {
 
 const copyRows = rows => _.map(rows, row => Object.assign({}, row));
 
+function initFieldsValidation(fields) {
+    (_.map(fields, f => f.initValidation(fields)));
+    return fields;
+}
+
 function DataSet(context) {
     const { BaseComponent, fieldsDefs, eventHandlers } = context;
     let self = BaseComponent(events),
@@ -77,12 +82,21 @@ function DataSet(context) {
         },
         rollbackRows = [];
 
+    initFieldsValidation(fields);
+
+    const runOnDataChangeEvent = () => self.events.run(
+        events.onDataChange,
+        [self, data.rows[data.recordIndex]]
+    );
+
+    const runOnStateChangeEvent = () => self.events.run(events.onStateChange, [self, data.state]);
+
     function fieldChangeHandler() {
         return (dataField, value, source) =>  {
             if (source !== self) {
                 self.edit();
                 data.rows[data.recordIndex][dataField.name] = value;
-                self.events.run(events.onDataChange, [self]);
+                runOnDataChangeEvent();
             }
         };
     }
@@ -94,8 +108,8 @@ function DataSet(context) {
             state: datasetStates.browse
         });
         data.recordIndex = navMethods["first"](data);
-        self.events.run(events.onDataChange, [self, data.rows[data.recordIndex]]);
-        self.events.run(events.onStateChange, [self, data.state]);
+        runOnDataChangeEvent();
+        runOnStateChangeEvent();
         self.events.run(events.afterScroll, [self]);
         return self;
     }
@@ -117,8 +131,8 @@ function DataSet(context) {
         self.events.run(events.beforeInsert, [self]);
         data = appendRow(data, fieldsDefs);
         self.events.run(events.afterInsert, [self]);
-        self.events.run(events.onStateChange, [self, data.state]);
-        self.events.run(events.onDataChange, [self, data.rows[data.recordIndex]]);
+        runOnStateChangeEvent();
+        runOnDataChangeEvent();
         return data.rows[data.recordIndex];
     }
 
@@ -135,7 +149,7 @@ function DataSet(context) {
         self.events.run(events.beforeEdit, [self]);
         data.state = datasetStates.edit;
         self.events.run(events.afterEdit, [self]);
-        self.events.run(events.onStateChange, [self, data.state]);
+        runOnStateChangeEvent();
         return data.rows[data.recordIndex];
     }
 
@@ -144,7 +158,7 @@ function DataSet(context) {
         data.state = datasetStates.browse;
         data.pending = true;
         self.events.run(events.afterPost, [self]);
-        self.events.run(events.onStateChange, [self, data.state]);
+        runOnStateChangeEvent();
     }
 
     function cancel() {
@@ -160,8 +174,8 @@ function DataSet(context) {
         data.state = datasetStates.browse;
         self.events.run(events.beforeCancel, [self]);
         self.events.run(events.afterCancel, [self]);
-        self.events.run(events.onStateChange, [self, data.state]);
-        self.events.run(events.onDataChange, [self, data.rows[data.recordIndex]]);
+        runOnStateChangeEvent();
+        runOnDataChangeEvent();
     }
 
     function rollback() {
@@ -173,7 +187,7 @@ function DataSet(context) {
         data.rows = rollbackRows;
         data.pending = false;
         self.events.run(events.afterRollback, [self]);
-        self.events.run(events.onDataChange, [self, data.rows[data.recordIndex]]);
+        runOnDataChangeEvent();
     }
 
     function commit() {
@@ -196,7 +210,7 @@ function DataSet(context) {
             data = deleteRow(data);
             if (recordCount != data.rows.length) {
                 self.events.run(events.afterDelete, [self]);
-                self.events.run(events.onDataChange, [self, data.rows[data.recordIndex]]);
+                runOnDataChangeEvent();
             }
         });
     }
@@ -207,7 +221,7 @@ function DataSet(context) {
         data.recordIndex = navMethods[direction](data, gotoIndex);
         self.events.run(events.afterScroll, [self]);
         if (data.recordIndex != recordIndex) {
-            self.events.run(events.onDataChange, [self, data.rows[data.recordIndex]]);
+            runOnDataChangeEvent();
         };
     }
 
@@ -215,8 +229,7 @@ function DataSet(context) {
         throwIfInactive(self, data);
         self.edit();
         data.rows[data.recordIndex][fieldName] = value;
-        // self.events.run(events.onDataChange, [self, { name: fieldName, value: () => value }]);
-        self.events.run(events.onDataChange, [self, data.rows[data.recordIndex]]);
+        runOnDataChangeEvent();
     }
 
     function find(pred) {
@@ -230,7 +243,7 @@ function DataSet(context) {
         self.events.run(events.beforeScroll, [self]);
         data.recordIndex = rowIndex;
         self.events.run(events.afterScroll, [self]);
-        self.events.run(events.onDataChange, [self, data.rows[data.recordIndex]]);
+        runOnDataChangeEvent();
         return data.rows[rowIndex];
     }
 

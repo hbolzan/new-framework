@@ -2,7 +2,7 @@ import BaseComponent from "../../../src/components/common/base.js";
 import DataSet from "../../../src/components/data_aware/data_set.js";
 
 describe("DataSet constructor", () => {
-    const DataField = jest.fn(),
+    const DataField = jest.fn(x => Object.assign({ initValidation: x => null })),
           fieldsDefs = [{ name: "a" }, { name: "b" }],
           dataSet = DataSet({ BaseComponent, DataField, fieldsDefs });
 
@@ -20,7 +20,7 @@ describe("DataSet constructor", () => {
 });
 
 describe("DataSet load data", () => {
-    const DataField = jest.fn(),
+    const DataField = jest.fn(x => Object.assign({ initValidation: x => null })),
           fieldsDefs = [{ name: "a" }, { name: "b" }],
           initialData = [{ a: 1, b: 2 }, { a: 10, b: 20 }],
           dataSet =  DataSet({ BaseComponent, DataField, fieldsDefs }),
@@ -75,7 +75,7 @@ describe("DataSet load data", () => {
 });
 
 describe("DataSet actions", () => {
-    const DataField = jest.fn(),
+    const DataField = jest.fn(x => Object.assign({ initValidation: x => null })),
           fieldsDefs = [{ name: "a" }, { name: "b" }],
           initialData = [{ a: 1, b: 2 }, { a: 10, b: 20 }, { a: 100, b: 200 }];
 
@@ -512,7 +512,7 @@ describe("DataSet actions", () => {
 });
 
 describe("DataSet search", () => {
-    const DataField = jest.fn(),
+    const DataField = jest.fn(x => Object.assign({ initValidation: x => null })),
           fieldsDefs = [{ name: "a" }, { name: "b" }],
           initialData = [{ a: 1, b: 2 }, { a: 10, b: 20 }, { a: 100, b: 200 }, { a: 1000, b: 2000 }, ];
 
@@ -525,7 +525,7 @@ describe("DataSet search", () => {
 });
 
 describe("DataSet seek", () => {
-    const DataField = jest.fn(),
+    const DataField = jest.fn(x => Object.assign({ initValidation: x => null })),
           fieldsDefs = [{ name: "a" }, { name: "b" }],
           initialData = [{ a: 1, b: 2 }, { a: 10, b: 20 }, { a: 100, b: 200 }, { a: 1000, b: 2000 }, ];
 

@@ -19,6 +19,7 @@ import HttpConnection from "./data_aware/http_connection.js";
 import DSqlToRestProvider from "./data_aware/dsqltorest_provider.js";
 import WebMrpFormsProvider from "./data_aware/webmrp_forms_provider.js";
 import WebMrpDataProvider from "./data_aware/webmrp_data_provider.js";
+import WebMrpValidationProvider from "./data_aware/webmrp_validation_provider.js";
 import { Grid } from 'ag-grid-community';
 import { providerTypes } from "./data_aware/dsqltorest_provider.js";
 import { v4 as uuidv4 } from "uuid";
@@ -30,6 +31,7 @@ const host = "http://127.0.0.1:9001",
 
 // TODO: add provider as a plugin so code doesn't need to change to set a different provider
 const ComplexFormProvider = WebMrpFormsProvider,
+      ValidationProvider = WebMrpValidationProvider,
       DataProvider  = WebMrpDataProvider;
 
 const context = {
@@ -55,6 +57,7 @@ const context = {
     DataInput,
     DataGrid,
     DataProvider,
+    ValidationProvider,
     ComplexFormProvider,
     ComplexFormDom,
     PageDom,

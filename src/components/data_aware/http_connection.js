@@ -1,3 +1,5 @@
+import { assocIf } from "../../logic/misc.js";
+
 const stdBuildUrl = ({ host }, resource) => `${ host }${ resource }`;
 
 function _get(context, resource) {
@@ -19,14 +21,17 @@ function _delete(context, resource) {
 function _send(method, context, resource, payload) {
     return context.global.fetch(
         context.buildUrl(context, resource),
-        {
-            method: method,
-            body: context.JSON.stringify(payload),
-            mode: "cors",
-            headers: {
-                "Content-Type": "application/json",
-            }
-        }
+        assocIf(
+            {
+                method: method,
+                mode: "cors",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            },
+            "body",
+            payload ? context.JSON.stringify(payload) : null
+        )
     ).then(r => r.json());
 }
 
