@@ -7,15 +7,16 @@ function initValueGetterSetter({ id, self }, { document }) {
         }
 
         _.set(self, "attrs.value", newValue);
-        document.getElementById(id).value = displayValue(newValue, dataField, dataset) || "";
+        document.getElementById(id).value = displayValue(newValue, dataField) || "";
         return newValue;
     };
     return self;
 }
 
-function displayValue(newValue, dataField, dataset) {
-    const displayField = dataField?.xLookup?.displayField;
-    return displayField && dataset ? dataset?.selectedRow()[displayField] : newValue;
+function displayValue(newValue, dataField) {
+    const displayField = dataField?.xLookup?.displayField,
+          dataSet = dataField?.dataSet;
+    return displayField && dataSet ? dataSet?.selectedRow()[displayField] : newValue;
 }
 
 const basicInputAttrs = (field, type) => {

@@ -3,7 +3,12 @@ import { validationAssignments, validationAssigner } from "../../src/logic/data_
 const validation = {
     handling: {
         assignmentsPath: "data.result.subject_data",
-        assignments: {a: "x", e: "y", c: "z",}
+        // assignments: {a: "x", e: "y", c: "z",},
+        assignments: [
+            { destination: "a", origin: "x" },
+            { destination: "e", origin: "y" },
+            { destination: "c", origin: "z" },
+        ]
     }
 };
 
@@ -23,8 +28,8 @@ describe("validationAssignments", () => {
         expect(validationAssignments(validation, fields))
             .toEqual([
                 { name: "a",  label: "A", path: "data.result.subject_data.x" },
-                { name: "c",  label: "C", path: "data.result.subject_data.z" },
                 { name: "e",  label: "E", path: "data.result.subject_data.y" },
+                { name: "c",  label: "C", path: "data.result.subject_data.z" },
             ]);
     });
 });

@@ -4,17 +4,11 @@ if (window._ == undefined) {
 
 function validationAssignments(validation, fields) {
     const basePath = validation?.handling?.assignmentsPath || {},
-          assignments = validation?.handling?.assignments || {},
-          assignees = _.keys(assignments);
-    return _.reduce(
-        fields,
-        (t, f, fieldName) => {
-            return assignees.includes(fieldName) ?
-                t.concat(Object.assign( f, { path: `${ basePath }.${ assignments[fieldName] }`})) :
-                t;
-        },
-        []
-    );
+          assignments = validation?.handling?.assignments || [],
+          assignmentsMap = assignments.reduce((m, a) => Object.assign(m, { [a.destination]: a.origin }), {}),
+          assignees = assignments.map(a => a.destination);
+
+    return assignees.map(a => Object.assign( fields[a], { path: `${ basePath }.${ assignmentsMap[a] }`}));
 }
 
 function validationAssigner(assignments) {
