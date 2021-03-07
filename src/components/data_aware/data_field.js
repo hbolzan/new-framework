@@ -36,23 +36,25 @@ function DataField(context, fieldDef, dataSet, eventHandlers) {
                 ValidationProvider(context, { resource: fieldDef?.validation?.source }) :
                 null;
         self.validate = newValue => {
-            console.log(newValue);
             provider.validate(fieldDef.validation, newValue)
                 .then(resp => assigner(resp));
         };
 
     }
 
+    const dataSetDataChangeHandler = (ds, row) => {
+        if (! _.isUndefined(row)) {
+            setValue(row[self.name], ds);
+        }
+    };
+
     function init() {
         _.each(eventHandlers, (eventHandler) => self.events.on(
             _.keys(eventHandler)[0], _.values(eventHandler)[0]
         ));
         if (isDataSet(dataSet)) {
-            dataSet.onDataChange(function (ds, row) {
-                if (! _.isUndefined(row)) {
-                    setValue(row[self.name], ds);
-                }
-            });
+            dataSet.onDataChange(dataSetDataChangeHandler);
+            dataSet.onStateChange((ds, state) => console.log(state));
             dataSet.afterPost(() => oldValue = value);
         }
     }
