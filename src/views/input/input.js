@@ -4,6 +4,7 @@ import dateInput from "./date.js";
 import maskedInput from "./masked_input.js";
 import { integer, float } from "./numeric.js";
 import textArea from "./text_area.js";
+import Checkbox from "./checkbox.js";
 import XLookupInput from "./x_lookup_input.js";
 
 const hidden = field => ["input", inputAttrs(field, {}, "hidden")];
@@ -11,6 +12,7 @@ const text = field => field.mask ? maskedInput(field) : ["input", inputAttrs(fie
 
 const types = {
     "data/char": text,
+    "yes-no/char": { AltConstructor: Checkbox },
     "data/integer": integer,
     "data/float": float,
     "data/date": dateInput,
