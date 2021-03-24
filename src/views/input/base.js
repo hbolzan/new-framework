@@ -1,15 +1,23 @@
 import { mergeAttrs } from "../../logic/hiccup.js";
 
-function initValueGetterSetter({ id, self }, { document }) {
+function initValueGetterSetter({ id, self }, { document }, valueChangedHandler) {
+
     self.value = function (newValue, dataField, dataset) {
         if (_.isUndefined(newValue)) {
             return _.get(self, "attrs.value");
         }
-
-        _.set(self, "attrs.value", newValue);
-        document.getElementById(id).value = displayValue(newValue, dataField) || "";
-        return newValue;
+        return setValue(document.getElementById(id), newValue, dataField);
     };
+
+    function setValue(el, newValue, dataField) {
+        _.set(self, "attrs.value", newValue);
+        el.value = displayValue(newValue, dataField) || "";
+        if (_.isFunction(valueChangedHandler)) {
+            valueChangedHandler(newValue, el);
+        }
+        return newValue;
+    }
+
     return self;
 }
 
@@ -20,6 +28,7 @@ function displayValue(newValue, dataField) {
 }
 
 const basicInputAttrs = (field, type) => {
+
     return Object.assign(
         {
             class: ["uk-input"],
