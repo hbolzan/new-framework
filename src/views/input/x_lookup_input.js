@@ -45,8 +45,6 @@ function provider(context) {
     );
 }
 
-let view;
-
 // TODO: make it work with composite filters, i.e. { filterBy: "uf,pais", filterWith: "uf,pais"}
 function searchFilter({ dataField }) {
     const params = filterParams(dataField.fieldDef),
@@ -89,9 +87,8 @@ function XLookupInput(context) {
     const { fieldDef } = context,
           fieldsDefs = searchFieldDefs(fieldDef.xLookup),
           dataProvider = provider({ ...context, fieldsDefs }),
-          search = initSearch({ dataProvider, ...context, fieldsDefs });
-
-    view = xLookupInput(fieldDef, search);
+          search = initSearch({ dataProvider, ...context, fieldsDefs }),
+          view = xLookupInput(fieldDef, search);
     return {
         hiccup: view.hiccup,
         inputAttrs: () => view.inputHiccup[1]
